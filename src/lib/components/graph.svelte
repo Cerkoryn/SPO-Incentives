@@ -2,17 +2,15 @@
   import { onMount } from 'svelte';
   import { Chart, registerables } from 'chart.js';
   import { pools } from '$lib/utils/graphs';
-  import { graphCheckboxes, sliderParams } from '$lib/stores/store'; // <-- Import sliderParams
-  import { getSaturationCap } from '$lib/utils/graphs'; // <-- Import the saturation cap function
+  import { graphCheckboxes, sliderParams, graphSettings, saturationMode } from '$lib/stores/store'; // Added saturationMode
+  import { getSaturationCapLinear, getSaturationCapExpSaturation } from '$lib/utils/graphs';
   import { get } from 'svelte/store';
 
-  // Register all necessary chart components.
   Chart.register(...registerables);
   
   let canvas: HTMLCanvasElement;
   let chart: Chart;
 
-  // Define color mapping based on the pool's group.
   const groupColors: Record<string, string> = {
     EDEN: 'rgba(75, 192, 192, 0.6)',
     COPPER: 'rgba(192, 75, 75, 0.6)',
@@ -29,7 +27,6 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    // Use the current checkbox settings for initial grouping.
     const currentCheckboxes = get(graphCheckboxes);
     const groups: Record<string, any[]> = {};
     pools.forEach(pool => {
@@ -56,15 +53,13 @@
       type: 'scatter'
     }));
 
-    // Compute saturation cap using the current k value and incorporate L*pledge adjustment.
     const { k, L } = get(sliderParams);
-    const baseCap = getSaturationCap(k);
+    const { maxX, stepSizeX } = get(graphSettings);
+    const mode = get(saturationMode);
+    const getSaturationCap = mode === 'linear' ? getSaturationCapLinear : getSaturationCapExpSaturation;
     const lineDataset = {
       label: 'Saturation Cap',
-      data: [
-        { x: 0, y: baseCap + L * 0 },
-        { x: 10000000, y: baseCap + L * 10000000 }
-      ],
+      data: getSaturationCap(k, L, maxX, stepSizeX),  // Using the selected function
       type: 'line',
       borderColor: 'red',
       borderWidth: 2,
@@ -81,7 +76,7 @@
         ]
       },
       options: {
-        animation: { duration: 0 }, // disable animations for instant updates
+        animation: { duration: 0 },
         scales: {
           x: {
             type: 'linear',
@@ -91,9 +86,9 @@
               text: 'Pledge'
             },
             min: 0,
-            max: 10000000,
+            max: maxX,
             ticks: {
-              stepSize: 1000000,
+              stepSize: stepSizeX,
               callback: function(value) {
                 return new Intl.NumberFormat('en-US').format(Number(value));
               }
@@ -135,21 +130,16 @@
     });
   }
 
-  $: if (chart && $sliderParams) {
-    const baseCap = getSaturationCap($sliderParams.k);
-    // Find the saturation cap line dataset by looking for its label.
+  // Update reactive block to listen to changes in both slider parameters and graph settings.
+  $: if (chart && $sliderParams && $graphSettings && $saturationMode) {
     const saturationDatasetIndex = chart.data.datasets.findIndex(ds => ds.label === 'Saturation Cap');
     if (saturationDatasetIndex !== -1) {
-      // Update the line's data points with L*pledge adjustment.
-      chart.data.datasets[saturationDatasetIndex].data = [
-        { x: 0, y: baseCap + $sliderParams.L * 0 },
-        { x: 10000000, y: baseCap + $sliderParams.L * 10000000 }
-      ];
+      const getSaturationCap = $saturationMode === 'linear' ? getSaturationCapLinear : getSaturationCapExpSaturation;
+      chart.data.datasets[saturationDatasetIndex].data = getSaturationCap($sliderParams.k, $sliderParams.L, $graphSettings.maxX, $graphSettings.stepSizeX);
       chart.update();
     }
   }
 
-  // Reactive block to update scatter datasets when checkbox selections change.
   $: if (chart && $graphCheckboxes) {
     const groups: Record<string, any[]> = {};
     pools.forEach(pool => {
@@ -175,7 +165,6 @@
       type: 'scatter'
     }));
     
-    // Preserve the saturation cap dataset from the existing chart.
     const saturationDataset = chart.data.datasets.find(ds => ds.label === 'Saturation Cap');
     chart.data.datasets = saturationDataset ? [...scatterDatasets, saturationDataset] : [...scatterDatasets];
     chart.update();

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { sliderParams, graphCheckboxes } from '$lib/stores/store';
+  import { sliderParams, graphCheckboxes, saturationMode } from '$lib/stores/store';
 </script>
 
 <div class="slider-controls">
@@ -100,6 +100,29 @@
   </div>
 </div>
 
+  <!-- New Radio Buttons for selecting the saturation function -->
+  <div class="saturation-mode-toggle">
+    <span>Saturation Mode:</span>
+    <label>
+      <input 
+        type="radio" 
+        name="saturation-mode" 
+        value="linear" 
+        on:change={() => saturationMode.set('linear')} 
+        checked={$saturationMode === 'linear'} />
+      Linear
+    </label>
+    <label>
+      <input 
+        type="radio" 
+        name="saturation-mode" 
+        value="exponential" 
+        on:change={() => saturationMode.set('exponential')} 
+        checked={$saturationMode === 'exponential'} />
+      Exponential
+    </label>
+  </div>
+
 <style>
   .slider-controls {
     display: flex;
@@ -122,5 +145,12 @@
   .checkbox-control {
     display: flex;
     align-items: center;
+  }
+
+  .saturation-mode-toggle {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 </style>

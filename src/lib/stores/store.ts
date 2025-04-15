@@ -28,3 +28,16 @@ export const graphCheckboxes = writable<GraphCheckboxes>({
   cag: true,
   custom: false
 });
+
+export interface GraphSettings {
+  maxX: number;
+  stepSizeX: number;
+}
+
+export const graphSettings = writable<GraphSettings>({
+  maxX: 10000000,
+  stepSizeX: 1000000
+});
+
+export type SaturationMode = "linear" | "exponential";
+export const saturationMode = writable<SaturationMode>("exponential");

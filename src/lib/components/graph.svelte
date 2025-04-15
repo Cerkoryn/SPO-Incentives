@@ -2,7 +2,8 @@
   import { onMount } from 'svelte';
   import { Chart, registerables } from 'chart.js';
   import { pools } from '$lib/utils/graphs';
-  import { graphCheckboxes } from '$lib/stores/store';
+  import { graphCheckboxes, sliderParams } from '$lib/stores/store'; // <-- Import sliderParams
+  import { getSaturationCap } from '$lib/utils/graphs'; // <-- Import the saturation cap function
   import { get } from 'svelte/store';
 
   // Register all necessary chart components.
@@ -47,19 +48,40 @@
       }
     });
     
-    const datasets = Object.entries(groups).map(([group, dataPoints]) => ({
+    const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => ({
       label: group,
       data: dataPoints,
       backgroundColor: groupColors[group] || 'rgba(0, 0, 0, 0.6)',
-      pointRadius: 5
+      pointRadius: 5,
+      type: 'scatter'
     }));
+
+    // Compute saturation cap using the current k value and incorporate L*pledge adjustment.
+    const { k, L } = get(sliderParams);
+    const baseCap = getSaturationCap(k);
+    const lineDataset = {
+      label: 'Saturation Cap',
+      data: [
+        { x: 0, y: baseCap + L * 0 },
+        { x: 10000000, y: baseCap + L * 10000000 }
+      ],
+      type: 'line',
+      borderColor: 'red',
+      borderWidth: 2,
+      fill: false,
+      pointRadius: 0
+    };
 
     chart = new Chart(ctx, {
       type: 'scatter',
       data: {
-        datasets
+        datasets: [
+          ...scatterDatasets,
+          lineDataset
+        ]
       },
       options: {
+        animation: { duration: 0 }, // disable animations for instant updates
         scales: {
           x: {
             type: 'linear',
@@ -73,7 +95,7 @@
             ticks: {
               stepSize: 1000000,
               callback: function(value) {
-                return new Intl.NumberFormat('en-US').format(value);
+                return new Intl.NumberFormat('en-US').format(Number(value));
               }
             }
           },
@@ -83,11 +105,11 @@
               text: 'Stake'
             },
             min: 0,
-            max: 300000000,
+            max: 1000000000,
             ticks: {
-              stepSize: 50000000,
+              stepSize: 100000000,
               callback: function(value) {
-                return new Intl.NumberFormat('en-US').format(value);
+                return new Intl.NumberFormat('en-US').format(Number(value));
               }
             }
           }
@@ -96,7 +118,7 @@
           tooltip: {
             callbacks: {
               label: function(context) {
-                const { ticker, name, x, y } = context.raw;
+                const { ticker, name, x, y } = context.raw as { ticker: string; name: string; x: number; y: number };
                 const formattedX = typeof x === 'number' ? new Intl.NumberFormat('en-US').format(x) : x;
                 const formattedY = typeof y === 'number' ? new Intl.NumberFormat('en-US').format(y) : y;
                 return [
@@ -113,8 +135,22 @@
     });
   }
 
-  // Reactive block to update chart when the checkbox selections change.
-  $: if (chart) {
+  $: if (chart && $sliderParams) {
+    const baseCap = getSaturationCap($sliderParams.k);
+    // Find the saturation cap line dataset by looking for its label.
+    const saturationDatasetIndex = chart.data.datasets.findIndex(ds => ds.label === 'Saturation Cap');
+    if (saturationDatasetIndex !== -1) {
+      // Update the line's data points with L*pledge adjustment.
+      chart.data.datasets[saturationDatasetIndex].data = [
+        { x: 0, y: baseCap + $sliderParams.L * 0 },
+        { x: 10000000, y: baseCap + $sliderParams.L * 10000000 }
+      ];
+      chart.update();
+    }
+  }
+
+  // Reactive block to update scatter datasets when checkbox selections change.
+  $: if (chart && $graphCheckboxes) {
     const groups: Record<string, any[]> = {};
     pools.forEach(pool => {
       const key = pool.group.toLowerCase();
@@ -131,13 +167,17 @@
         });
       }
     });
-    const datasets = Object.entries(groups).map(([group, dataPoints]) => ({
+    const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => ({
       label: group,
       data: dataPoints,
       backgroundColor: groupColors[group] || 'rgba(0, 0, 0, 0.6)',
-      pointRadius: 5
+      pointRadius: 5,
+      type: 'scatter'
     }));
-    chart.data.datasets = datasets;
+    
+    // Preserve the saturation cap dataset from the existing chart.
+    const saturationDataset = chart.data.datasets.find(ds => ds.label === 'Saturation Cap');
+    chart.data.datasets = saturationDataset ? [...scatterDatasets, saturationDataset] : [...scatterDatasets];
     chart.update();
   }
 </script>

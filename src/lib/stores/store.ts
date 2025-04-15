@@ -9,10 +9,11 @@ export interface SliderParameters {
 export const sliderParams = writable<SliderParameters>({
   k: 500,
   a0: 0.3,
-  L: 70
+  L: 0
 });
 
 export interface GraphCheckboxes {
+  [key: string]: boolean;
   copper: boolean;
   eden: boolean;
   blade: boolean;
@@ -21,9 +22,9 @@ export interface GraphCheckboxes {
 }
 
 export const graphCheckboxes = writable<GraphCheckboxes>({
-  copper: false,
-  eden: false,
-  blade: false,
-  cag: false,
+  copper: true,
+  eden: true,
+  blade: true,
+  cag: true,
   custom: false
 });

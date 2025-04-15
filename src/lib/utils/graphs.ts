@@ -1,4 +1,6 @@
+// ... existing code ...
 import poolData from '../data/pools.json';
+import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from './constants';
 
 export interface Pool {
   ticker: string;
@@ -10,3 +12,6 @@ export interface Pool {
 
 export const pools: Pool[] = poolData;
 
+export function getSaturationCap(k: number): number {
+  return (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
+}

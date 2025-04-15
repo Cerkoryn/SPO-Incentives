@@ -1,0 +1,17 @@
+---
+description: 
+globs: *.svelte,*.css
+alwaysApply: false
+---
+---
+Description: Svelte Frontend Standards
+Globs: **/*.svelte
+---
+
+# Guidelines
+- Use Svelte's .svelte structure and reactive declarations.
+- Use Tailwind CSS utilities.
+- Avoid inline styles; prefer scoped styles or CSS modules.
+- Use clear, descriptive component names.
+- Leverage Svelte stores and reactive statements.
+- Use HTML range inputs with `bind:value` for real-time graph updates.

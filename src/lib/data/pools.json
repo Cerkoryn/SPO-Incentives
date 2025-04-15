@@ -1,0 +1,121 @@
+[
+    {
+        "ticker": "EDEN",
+        "name": "Garden Pool",
+        "group": "EDEN",
+        "stake": 75310000.00,
+        "pledge": 10000000.00
+    },
+    {
+        "ticker": "EDEN",
+        "name": "Garden Pool Two",
+        "group": "EDEN",
+        "stake": 66880000.00,
+        "pledge": 5000000.00
+    },
+    {
+        "ticker": "EDEN",
+        "name": "Garden Pool Three",
+        "group": "EDEN",
+        "stake": 40080000.00,
+        "pledge": 5000000.00
+    },
+    {
+        "ticker": "EDEN",
+        "name": "Garden Pool Four",
+        "group": "EDEN",
+        "stake": 67420000.00,
+        "pledge": 5000000.00
+    },
+    {
+        "ticker": "EDEN",
+        "name": "Garden Pool Five",
+        "group": "EDEN",
+        "stake": 69150000.00,
+        "pledge": 5000000.00
+    },
+    {
+        "ticker": "COP1",
+        "name": "Copper Stake Pool 1",
+        "group": "COPPER",
+        "stake": 275670000.00,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP2",
+        "name": "Copper Stake Pool 2",
+        "group": "COPPER",
+        "stake": 26660.00,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP3",
+        "name": "Copper Stake Pool 3",
+        "group": "COPPER",
+        "stake": 44540.00,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP4",
+        "name": "Copper Stake Pool 4",
+        "group": "COPPER",
+        "stake": 1005.00,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP5",
+        "name": "Copper Stake Pool 5",
+        "group": "COPPER",
+        "stake": 4270.00,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP6",
+        "name": "Copper Stake Pool 6",
+        "group": "COPPER",
+        "stake": 97.05,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP7",
+        "name": "Copper Stake Pool 7",
+        "group": "COPPER",
+        "stake": 49450000.00,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP8",
+        "name": "Copper Stake Pool 8",
+        "group": "COPPER",
+        "stake": 2120000.00,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP9",
+        "name": "Copper Stake Pool 9",
+        "group": "COPPER",
+        "stake": 97.05,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "COP10",
+        "name": "Copper Stake Pool 10",
+        "group": "COPPER",
+        "stake": 86.88,
+        "pledge": 0.00
+    },
+    {
+        "ticker": "BLADE",
+        "name": "BLADE Pool",
+        "group": "BLADE",
+        "stake": 74900000.00,
+        "pledge": 500000.00
+    },
+    {
+        "ticker": "CAG",
+        "name": "Cardano AG Pool - Private",
+        "group": "CAG",
+        "stake": 62500000.00,
+        "pledge": 0.00
+    }
+]

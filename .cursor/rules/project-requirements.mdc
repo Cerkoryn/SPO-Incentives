@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: "Project Requirements"
+globs: "**/*"
+---
+
+# Project Requirements
+
+## Overview
+A single-page website built with **TypeScript**, **SvelteKit**, **Tailwind CSS**, and **Chart.js**. The site displays an interactive graph that updates in real time as users adjust parameter sliders.
+
+## Technology Stack
+- **TypeScript**: Ensures strong typing and code clarity.
+- **SvelteKit**: Provides a reactive, single-page application framework.
+- **Tailwind CSS**: Enables rapid, responsive UI development.
+- **Chart.js**: Renders dynamic, interactive graphs.
+
+## Functional Requirements
+1. **Real-time Updates**: Graph updates immediately as slider values change.
+2. **Interactive Sliders**: Sliders control parameters affecting the graph.
+3. **Responsive Design**:
+   - **Desktop**: Sliders and graph are shown side-by-side.
+   - **Mobile**: Sliders are accessible via a collapsible menu.
+4. **Dynamic Interactions**: All updates occur via SvelteKit’s reactivity—no page reloads.
+
+## Implementation Guidelines
+- Use **Tailwind CSS** for styling.
+- Leverage SvelteKit’s built-in reactivity (e.g., reactive declarations using `$:`) to update UI components immediately.
+- Ensure Typescript components use proper typing.
+- Code should separate concerns clearly.
+- UI should be designed for mobile first, ensuring that the slider controls are wrapped in a collapsible container.
+- On wider screens and desktops, the slider controls should be side-by-side with the graphs.

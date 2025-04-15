@@ -1,0 +1,15 @@
+---
+description: 
+globs: *.ts
+alwaysApply: false
+---
+---
+Description: Backend Coding Standards
+Globs: **/*.ts
+---
+
+# Backend Guidelines
+- Always validate inputs at API endpoints.
+- Use async/await consistently (no callback patterns).
+- Add detailed error handling with clear log messages.
+- Follow RESTful conventions for route design.

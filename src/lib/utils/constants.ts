@@ -1,6 +1,12 @@
 export const ADA_TOTAL_SUPPLY = 45000000000
 export const ADA_RESERVES = 7251344361
+export const SUPPLY_MINUS_RESERVE = ADA_TOTAL_SUPPLY - ADA_RESERVES
 export const ADA_CIRCULATING = 35287114426
 export const ADA_TREASURY = 1730343069
 export const STAKED_RATIO = 0.6
 export const ADA_TOTAL_STAKED = ADA_CIRCULATING*STAKED_RATIO
+export const RHO = 0.003
+export const TAU = 0.2
+export const TREASURY_CUT = (RHO*ADA_RESERVES)*TAU
+export const REWARDS_POT = (RHO*ADA_RESERVES)-TREASURY_CUT
+//export const REWARDS_POT =  14000000  # o3 came up with this somehow

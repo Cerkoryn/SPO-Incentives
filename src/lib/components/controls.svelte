@@ -8,7 +8,7 @@
     <input 
       id="k-slider" 
       type="range" 
-      min="0" 
+      min="1" 
       max="2000" 
       step="1" 
       value={$sliderParams.k} 

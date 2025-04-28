@@ -10,9 +10,9 @@
   
   function getPointRadius(roi: number): number {
     const minROI = 0;
-    const maxROI = 10;      // 10% cap
+    const maxROI = 5;      // 10% cap
     const minR   = 1;       // smallest bubble
-    const maxR   = 50;      // largest bubble
+    const maxR   = 25;      // largest bubble
 
     // normalize to [0…1]
     const t = Math.max(0, Math.min((roi - minROI) / (maxROI - minROI), 1));
@@ -215,7 +215,7 @@
   }
 
   // Update reactive block to listen to changes in both slider parameters and graph settings.
-  $: if (chart && $sliderParams && $graphSettings && $saturationMode) {
+  $: if (chart && $sliderParams && $graphSettings && $saturationMode && $graphCheckboxes && $customPool) {
     const idx = chart.data.datasets.findIndex(ds => ds.label === 'Saturation Cap');
     if (idx !== -1) {
       const { k, L, L2 } = $sliderParams;
@@ -245,7 +245,28 @@
           });
         }
       });
-
+      // Handle custom pool dataset presence and updates
+      const customIdx = chart.data.datasets.findIndex(ds => ds.label === 'Custom Pool');
+      if ($graphCheckboxes.custom) {
+        const { pledge, stake } = $customPool;
+        if (!isNaN(pledge) && !isNaN(stake)) {
+          const roi = getRewards(stake, pledge, k, $sliderParams.a0, L, L2, $saturationMode);
+          const r = getPointRadius(roi);
+          const customData = { x: pledge, y: stake, ticker: 'CUSTOM', name: 'Custom Pool', group: 'Custom Pool', roi, r };
+          if (customIdx === -1) {
+            chart.data.datasets.splice(0, 0, {
+              label: 'Custom Pool',
+              data: [customData],
+              type: 'bubble',
+              backgroundColor: groupColors['Custom Pool'] ?? 'rgba(255, 0, 0, 1)'
+            });
+          } else {
+            (chart.data.datasets[customIdx].data as any[]) = [customData];
+          }
+        }
+      } else if (customIdx !== -1) {
+        chart.data.datasets.splice(customIdx, 1);
+      }
       chart.update();
     }
   }

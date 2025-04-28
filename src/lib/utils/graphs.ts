@@ -1,5 +1,8 @@
 import poolData from '../data/pools.json';
 import { ADA_TOTAL_SUPPLY, ADA_RESERVES, ADA_CIRCULATING, REWARDS_POT } from './constants';
+import { satCapFns, type Env } from '$lib/utils/types';
+import type { SaturationMode } from '$lib/stores/store';
+import { get } from 'svelte/store';
 
 export interface Pool {
   ticker: string;
@@ -33,11 +36,14 @@ export function getSaturationCapExpSaturation(k: number, L: number, maxX: number
   return points;
 }
 
-export function getRewards(poolStake: number, poolPledge: number, k: number, a0: number): number {
+export function getRewards(poolStake: number, poolPledge: number, k: number, a0: number, L: number, L2: number, saturationMode: SaturationMode): number {
   // Convert absolute ADA values to relative fractions
   const sigma = poolStake  / ADA_CIRCULATING;   // σ
   const s     = poolPledge / ADA_CIRCULATING;   // s
-  const z0    = 1 / k;                               // 0.005, depending on slider
+
+  const env: Env = { k: k, L: L, L2: L2, ADA_TOTAL_SUPPLY, ADA_RESERVES }; // We need to determine saturation cap here
+  const satCap = satCapFns[saturationMode](poolPledge, env);               // Switch between the three saturation modes to determine formula
+  const z0    = satCap / (ADA_TOTAL_SUPPLY - ADA_RESERVES);                // Use the calculated value for z0 going forward
 
   const sigmaP = Math.min(sigma, z0);                // σ′
   const sP     = Math.min(s,     z0);                // s′

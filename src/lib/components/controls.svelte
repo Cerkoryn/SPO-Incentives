@@ -5,97 +5,127 @@
   function applyModeDefaults(mode: SaturationMode) {
     saturationMode.set(mode);
     if (mode === 'current') {
-      sliderParams.set({ k: 500, a0: 0.3, L: 0 });
+      sliderParams.set({ k: 500, a0: 0.3, L: 0, L2: 0 });
     } else if (mode === 'linear') {
-      sliderParams.set({ k: 1000, a0: 0.2, L: 50 });
+      sliderParams.set({ k: 1000, a0: 0.2, L: 50, L2: 0 });
     } else if (mode === 'exponential') {
-      sliderParams.set({ k: 1000, a0: 0.2, L: 30 });
+      sliderParams.set({ k: 1000, a0: 0.2, L: 30, L2: 10 });
     }
   }
 </script>
 
 <div class="slider-controls">
-    <div class="slider-control">
-      <div class="label-row">
-        <label for="k-slider">k:</label>
-        <input
-          type="number"
-          min="1"
-          max="2000"
-          step="1"
-          value={$sliderParams.k}
-          on:input={(e) => {
-            const v = parseInt((e.target as HTMLInputElement).value, 10);
-            if (!isNaN(v)) sliderParams.update(s => ({ ...s, k: Math.min(2000, Math.max(1, v)) }));
-          }}
-          class="value-input"
-        />
-        <span class="hint-text">min: 1, max: 2000</span>
-      </div>
+  <div class="slider-control">
+    <div class="label-row">
+      <label for="k-slider">k:</label>
       <input
-        id="k-slider"
-        type="range"
+        type="number"
         min="1"
         max="2000"
         step="1"
         value={$sliderParams.k}
-        on:input={(e) => sliderParams.update(s => ({ ...s, k: parseInt((e.target as HTMLInputElement).value, 10) }))}
+        on:input={(e) => {
+          const v = parseInt((e.target as HTMLInputElement).value, 10);
+          if (!isNaN(v)) sliderParams.update(s => ({ ...s, k: Math.min(2000, Math.max(1, v)) }));
+        }}
+        class="value-input"
       />
+      <span class="hint-text">min: 1, max: 2000</span>
     </div>
-    <div class="slider-control">
-      <div class="label-row">
-        <label for="a0-slider">a0:</label>
-        <input
-          type="number"
-          min="0"
-          max="1"
-          step="0.01"
-          value={$sliderParams.a0}
-          on:input={(e) => {
-            const v = parseFloat((e.target as HTMLInputElement).value);
-            if (!isNaN(v)) sliderParams.update(s => ({ ...s, a0: Math.min(1, Math.max(0, v)) }));
-          }}
-          class="value-input"
-        />
-        <span class="hint-text">min: 0, max: 1</span>
-      </div>
+    <input
+      id="k-slider"
+      type="range"
+      min="1"
+      max="2000"
+      step="1"
+      value={$sliderParams.k}
+      on:input={(e) => sliderParams.update(s => ({ ...s, k: parseInt((e.target as HTMLInputElement).value, 10) }))}
+    />
+  </div>
+
+  <div class="slider-control">
+    <div class="label-row">
+      <label for="a0-slider">a0:</label>
       <input
-        id="a0-slider"
-        type="range"
+        type="number"
         min="0"
         max="1"
         step="0.01"
         value={$sliderParams.a0}
-        on:input={(e) => sliderParams.update(s => ({ ...s, a0: parseFloat((e.target as HTMLInputElement).value) }))}
+        on:input={(e) => {
+          const v = parseFloat((e.target as HTMLInputElement).value);
+          if (!isNaN(v)) sliderParams.update(s => ({ ...s, a0: Math.min(1, Math.max(0, v)) }));
+        }}
+        class="value-input"
       />
+      <span class="hint-text">min: 0, max: 1</span>
     </div>
-    <div class="slider-control">
-      <div class="label-row">
-        <label for="L-slider">L:</label>
-        <input
-          type="number"
-          min="0"
-          max="100"
-          step="1"
-          value={$sliderParams.L}
-          on:input={(e) => {
-            const v = parseInt((e.target as HTMLInputElement).value, 10);
-            if (!isNaN(v)) sliderParams.update(s => ({ ...s, L: Math.min(100, Math.max(0, v)) }));
-          }}
-          class="value-input"
-        />
-        <span class="hint-text">min: 0, max: 100</span>
-      </div>
+    <input
+      id="a0-slider"
+      type="range"
+      min="0"
+      max="1"
+      step="0.01"
+      value={$sliderParams.a0}
+      on:input={(e) => sliderParams.update(s => ({ ...s, a0: parseFloat((e.target as HTMLInputElement).value) }))}
+    />
+  </div>
+
+  <div class="slider-control">
+    <div class="label-row">
+      <label for="L-slider">L:</label>
       <input
-        id="L-slider"
-        type="range"
+        type="number"
         min="0"
         max="100"
         step="1"
         value={$sliderParams.L}
-        on:input={(e) => sliderParams.update(s => ({ ...s, L: parseInt((e.target as HTMLInputElement).value, 10) }))}
+        on:input={(e) => {
+          const v = parseInt((e.target as HTMLInputElement).value, 10);
+          if (!isNaN(v)) sliderParams.update(s => ({ ...s, L: Math.min(100, Math.max(0, v)) }));
+        }}
+        class="value-input"
       />
+      <span class="hint-text">min: 0, max: 100</span>
     </div>
+    <input
+      id="L-slider"
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      value={$sliderParams.L}
+      on:input={(e) => sliderParams.update(s => ({ ...s, L: parseInt((e.target as HTMLInputElement).value, 10) }))}
+    />
+  </div>
+
+  <div class="slider-control">
+    <div class="label-row">
+      <label for="L2-slider">L2:</label>
+      <input
+        type="number"
+        min="0"
+        max="100"
+        step="1"
+        value={$sliderParams.L2}
+        on:input={(e) => {
+          const v = parseInt((e.target as HTMLInputElement).value, 10);
+          if (!isNaN(v)) sliderParams.update(s => ({ ...s, L2: Math.min(100, Math.max(0, v)) }));
+        }}
+        class="value-input"
+      />
+      <span class="hint-text">min: 0, max: 100</span>
+    </div>
+    <input
+      id="L2-slider"
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      value={$sliderParams.L2}
+      on:input={(e) => sliderParams.update(s => ({ ...s, L2: parseInt((e.target as HTMLInputElement).value, 10) }))}
+    />
+  </div>
 </div>
 
 <!-- Checkbox controls for selecting graph points -->

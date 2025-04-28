@@ -4,12 +4,14 @@ export interface SliderParameters {
   k: number;
   a0: number;
   L: number;
+  L2: number;
 }
 
 export const sliderParams = writable<SliderParameters>({
   k: 500,
   a0: 0.3,
-  L: 0
+  L: 0,
+  L2: 0
 });
 
 export interface GraphCheckboxes {

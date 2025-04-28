@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { satCapFns, type Env } from '$lib/utils/types';
   import { onMount } from 'svelte';
   import { Chart, registerables } from 'chart.js';
   import { pools, getSaturationCapLinear, getSaturationCapExpSaturation, getRewards } from '$lib/utils/graphs';
@@ -72,12 +73,13 @@
       }
     }
     
-    const { k, a0, L } = get(sliderParams);
+    const { k, a0, L, L2 } = get(sliderParams);
     const { maxX, stepSizeX } = get(graphSettings);
+    const mode = get(saturationMode);
     // Build bubble datasets: size proportional to annualized ROI
     const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
       const datasetData = dataPoints.map(dp => {
-        const roi = getRewards(dp.y, dp.x, k, a0);
+        const roi = getRewards(dp.y, dp.x, k, a0, L, L2, mode);
         return { ...dp, roi, r: getPointRadius(roi) };
       });
       return {
@@ -88,7 +90,6 @@
       };
     });
 
-    const mode = get(saturationMode);
     const getSaturationCap = mode === 'linear' ? getSaturationCapLinear : getSaturationCapExpSaturation;
     const lineDataset = {
       label: 'Saturation Cap',
@@ -207,7 +208,7 @@
       chart.data.datasets.forEach(ds => {
         if (ds.type === 'bubble') {
           ds.data = (ds.data as any[]).map(point => {
-            const roiVal = getRewards(point.y, point.x, $sliderParams.k, $sliderParams.a0);
+            const roiVal = getRewards(point.y, point.x, $sliderParams.k, $sliderParams.a0, $sliderParams.L, $sliderParams.L2, $saturationMode);
             return { ...point, roi: roiVal, r: getPointRadius(roiVal) };
           });
         }
@@ -244,7 +245,7 @@
     }
     const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
       const datasetData = dataPoints.map(dp => {
-        const roi = getRewards(dp.y, dp.x, $sliderParams.k, $sliderParams.a0);
+        const roi = getRewards(dp.y, dp.x, $sliderParams.k, $sliderParams.a0, $sliderParams.L, $sliderParams.L2, $saturationMode);
         return { ...dp, roi, r: getPointRadius(roi) };
       });
       return {

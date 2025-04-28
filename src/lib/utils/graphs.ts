@@ -1,5 +1,5 @@
 import poolData from '../data/pools.json';
-import { ADA_TOTAL_SUPPLY, ADA_RESERVES, SUPPLY_MINUS_RESERVE, REWARDS_POT } from './constants';
+import { ADA_TOTAL_SUPPLY, ADA_RESERVES, ADA_CIRCULATING, REWARDS_POT } from './constants';
 
 export interface Pool {
   ticker: string;
@@ -35,15 +35,15 @@ export function getSaturationCapExpSaturation(k: number, L: number, maxX: number
 
 export function getRewards(poolStake: number, poolPledge: number, k: number, a0: number): number {
   // Convert absolute ADA values to relative fractions
-  const sigma = poolStake  / SUPPLY_MINUS_RESERVE;   // σ
-  const s     = poolPledge / SUPPLY_MINUS_RESERVE;   // s
+  const sigma = poolStake  / ADA_CIRCULATING;   // σ
+  const s     = poolPledge / ADA_CIRCULATING;   // s
   const z0    = 1 / k;                               // 0.002
 
   const sigmaP = Math.min(sigma, z0);                // σ′
   const sP     = Math.min(s,     z0);                // s′
 
   const inner  = sigmaP - sP * (z0 - sigmaP) / z0;
-  const f      = sigmaP + (sP * a0 * inner) / z0;
+  const f      = sigmaP + sP * a0 * (inner / z0);
 
   const rewardPerEpoch = (REWARDS_POT / (1 + a0)) * f;   // pool reward share
   const roiEpoch       = rewardPerEpoch / poolStake; // per-ADA

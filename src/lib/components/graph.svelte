@@ -163,6 +163,38 @@
         }
       }
     });
+    // Enable dragging only on the custom pool bubble
+    let isDragging = false;
+    let dragDatasetIndex: number;
+    let dragDataIndex: number;
+    canvas.addEventListener('mousedown', (e: MouseEvent) => {
+      const pts = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
+      if (pts.length) {
+        const el = pts[0];
+        if (chart.data.datasets[el.datasetIndex].label === 'Custom Pool') {
+          isDragging = true;
+          dragDatasetIndex = el.datasetIndex;
+          dragDataIndex = el.index;
+        }
+      }
+    });
+    canvas.addEventListener('mousemove', (e: MouseEvent) => {
+      if (!isDragging) return;
+      // Calculate nearest whole number values for custom pool
+      const rawX = chart.scales.x.getValueForPixel(e.offsetX);
+      const rawY = chart.scales.y.getValueForPixel(e.offsetY);
+      const pledge = Math.round(rawX);
+      const stake = Math.round(rawY);
+      const ds = chart.data.datasets[dragDatasetIndex];
+      const point: any = (ds.data as any[])[dragDataIndex];
+      point.x = pledge;
+      point.y = stake;
+      customPool.set({ pledge, stake });
+      chart.update('none');
+    });
+    canvas.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
   }
 
   // Update reactive block to listen to changes in both slider parameters and graph settings.

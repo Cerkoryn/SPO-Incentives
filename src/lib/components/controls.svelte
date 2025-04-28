@@ -168,7 +168,7 @@
           value={$customPool.pledge}
           on:input={(e) => {
             const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
-            const v = parseFloat(raw);
+            const v = parseInt(raw, 10);
             if (!isNaN(v)) customPool.update(c => ({ ...c, pledge: v }));
           }}
           class="value-input"
@@ -180,11 +180,11 @@
           type="number"
           id="custom-stake"
           min="0"
-          step="100000"
+          step="1000000"
           value={$customPool.stake}
           on:input={(e) => {
             const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
-            const v = parseFloat(raw);
+            const v = parseInt(raw, 10);
             if (!isNaN(v)) customPool.update(c => ({ ...c, stake: v }));
           }}
           class="value-input"

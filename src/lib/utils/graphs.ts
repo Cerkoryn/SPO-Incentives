@@ -37,7 +37,7 @@ export function getRewards(poolStake: number, poolPledge: number, k: number, a0:
   // Convert absolute ADA values to relative fractions
   const sigma = poolStake  / ADA_CIRCULATING;   // σ
   const s     = poolPledge / ADA_CIRCULATING;   // s
-  const z0    = 1 / k;                               // 0.002
+  const z0    = 1 / k;                               // 0.005, depending on slider
 
   const sigmaP = Math.min(sigma, z0);                // σ′
   const sP     = Math.min(s,     z0);                // s′
@@ -45,7 +45,7 @@ export function getRewards(poolStake: number, poolPledge: number, k: number, a0:
   const inner  = sigmaP - sP * (z0 - sigmaP) / z0;
   const f      = sigmaP + sP * a0 * (inner / z0);
 
-  const rewardPerEpoch = (REWARDS_POT / (1 + a0)) * f;   // pool reward share
-  const roiEpoch       = rewardPerEpoch / poolStake; // per-ADA
-  return roiEpoch * 73 * 100;                        // annualised %
+  const rewardPerEpoch = (REWARDS_POT / (1 + a0)) * f; // pool reward share
+  const roiEpoch       = rewardPerEpoch / poolStake;   // per-ADA
+  return roiEpoch * 73 * 100;                          // annualised %
 }

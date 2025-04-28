@@ -1,5 +1,17 @@
 <script lang="ts">
+  import type { SaturationMode } from '$lib/stores/store';
   import { sliderParams, graphCheckboxes, saturationMode } from '$lib/stores/store';
+
+  function applyModeDefaults(mode: SaturationMode) {
+    saturationMode.set(mode);
+    if (mode === 'current') {
+      sliderParams.set({ k: 500, a0: 0.3, L: 0 });
+    } else if (mode === 'linear') {
+      sliderParams.set({ k: 1000, a0: 0.2, L: 50 });
+    } else if (mode === 'exponential') {
+      sliderParams.set({ k: 1000, a0: 0.2, L: 30 });
+    }
+  }
 </script>
 
 <div class="slider-controls">
@@ -100,24 +112,33 @@
   </div>
 </div>
 
-  <!-- New Radio Buttons for selecting the saturation function -->
+  <!-- Radio Buttons for selecting the saturation function with default presets -->
   <div class="saturation-mode-toggle">
     <span>Saturation Mode:</span>
     <label>
-      <input 
-        type="radio" 
-        name="saturation-mode" 
-        value="linear" 
-        on:change={() => saturationMode.set('linear')} 
+      <input
+        type="radio"
+        name="saturation-mode"
+        value="current"
+        on:change={() => applyModeDefaults('current')}
+        checked={$saturationMode === 'current'} />
+      Current
+    </label>
+    <label>
+      <input
+        type="radio"
+        name="saturation-mode"
+        value="linear"
+        on:change={() => applyModeDefaults('linear')}
         checked={$saturationMode === 'linear'} />
       Linear
     </label>
     <label>
-      <input 
-        type="radio" 
-        name="saturation-mode" 
-        value="exponential" 
-        on:change={() => saturationMode.set('exponential')} 
+      <input
+        type="radio"
+        name="saturation-mode"
+        value="exponential"
+        on:change={() => applyModeDefaults('exponential')}
         checked={$saturationMode === 'exponential'} />
       Exponential
     </label>

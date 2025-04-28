@@ -39,5 +39,5 @@ export const graphSettings = writable<GraphSettings>({
   stepSizeX: 1000000
 });
 
-export type SaturationMode = "linear" | "exponential";
-export const saturationMode = writable<SaturationMode>("exponential");
+export type SaturationMode = "current" | "linear" | "exponential";
+export const saturationMode = writable<SaturationMode>("current");

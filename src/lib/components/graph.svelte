@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { satCapFns, type Env } from '$lib/utils/types';
   import { onMount } from 'svelte';
   import { Chart, registerables } from 'chart.js';
   import { pools, getSaturationCapLinear, getSaturationCapExpSaturation, getRewards } from '$lib/utils/graphs';
   import { graphCheckboxes, sliderParams, graphSettings, saturationMode, customPool } from '$lib/stores/store';
+  import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from '$lib/utils/constants';
   import { get } from 'svelte/store';
 
   Chart.register(...registerables);
@@ -90,15 +90,31 @@
       };
     });
 
-    const getSaturationCap = mode === 'linear' ? getSaturationCapLinear : getSaturationCapExpSaturation;
+    // pull these out so we use them in all three modes
+    const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
+
+    // pick exactly the right data for each mode
+    let lineData: { x: number; y: number }[];
+    if (mode === 'current') {
+      lineData = [
+        { x: 0, y: baseCap },
+        { x: maxX, y: baseCap }
+      ];
+    } else if (mode === 'linear') {
+      lineData = getSaturationCapLinear(k, L, maxX, stepSizeX);
+    } else {
+      lineData = getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX);
+    }
+
     const lineDataset = {
       label: 'Saturation Cap',
-      data: getSaturationCap(k, L, maxX, stepSizeX),  // Using the selected function
+      data: lineData,
       type: 'line',
       borderColor: 'red',
       borderWidth: 2,
       fill: false,
-      pointRadius: 0
+      pointRadius: 0,
+      showLine: true
     };
 
     chart = new Chart(ctx, {
@@ -200,65 +216,38 @@
 
   // Update reactive block to listen to changes in both slider parameters and graph settings.
   $: if (chart && $sliderParams && $graphSettings && $saturationMode) {
-    const saturationDatasetIndex = chart.data.datasets.findIndex(ds => ds.label === 'Saturation Cap');
-    if (saturationDatasetIndex !== -1) {
-      const getSaturationCap = $saturationMode === 'linear' ? getSaturationCapLinear : getSaturationCapExpSaturation;
-      chart.data.datasets[saturationDatasetIndex].data = getSaturationCap($sliderParams.k, $sliderParams.L, $graphSettings.maxX, $graphSettings.stepSizeX);
-      // Update bubble radii based on new ROI
+    const idx = chart.data.datasets.findIndex(ds => ds.label === 'Saturation Cap');
+    if (idx !== -1) {
+      const { k, L, L2 } = $sliderParams;
+      const { maxX, stepSizeX } = $graphSettings;
+
+      let updatedLine: { x: number; y: number }[];
+      const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
+      if ($saturationMode === 'current') {
+        updatedLine = [
+          { x: 0, y: base },
+          { x: maxX, y: base }
+        ];
+      } else if ($saturationMode === 'linear') {
+        updatedLine = getSaturationCapLinear(k, L, maxX, stepSizeX);
+      } else {
+        updatedLine = getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX);
+      }
+
+      chart.data.datasets[idx].data = updatedLine;
+
+      // update bubble radii as before…
       chart.data.datasets.forEach(ds => {
         if (ds.type === 'bubble') {
-          ds.data = (ds.data as any[]).map(point => {
-            const roiVal = getRewards(point.y, point.x, $sliderParams.k, $sliderParams.a0, $sliderParams.L, $sliderParams.L2, $saturationMode);
-            return { ...point, roi: roiVal, r: getPointRadius(roiVal) };
+          ds.data = (ds.data as any[]).map(pt => {
+            const roi = getRewards(pt.y, pt.x, k, $sliderParams.a0, L, L2, $saturationMode);
+            return { ...pt, roi, r: getPointRadius(roi) };
           });
         }
       });
+
       chart.update();
     }
-  }
-
-  $: if (chart && $graphCheckboxes) {
-    const groups: Record<string, any[]> = {};
-    pools.forEach(pool => {
-      const key = pool.group.toLowerCase();
-      if ($graphCheckboxes[key]) {
-        if (!groups[pool.group]) {
-          groups[pool.group] = [];
-        }
-        groups[pool.group].push({
-          x: pool.pledge,
-          y: pool.stake,
-          ticker: pool.ticker,
-          name: pool.name,
-          group: pool.group
-        });
-      }
-    });
-    // Include custom pool when toggled
-    if ($graphCheckboxes.custom) {
-      const { pledge, stake } = $customPool;
-      if (!isNaN(pledge) && !isNaN(stake)) {
-        const groupKey = 'Custom Pool';
-        if (!groups[groupKey]) groups[groupKey] = [];
-        groups[groupKey].push({ x: pledge, y: stake, ticker: 'CUSTOM', name: 'Custom Pool', group: groupKey });
-      }
-    }
-    const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
-      const datasetData = dataPoints.map(dp => {
-        const roi = getRewards(dp.y, dp.x, $sliderParams.k, $sliderParams.a0, $sliderParams.L, $sliderParams.L2, $saturationMode);
-        return { ...dp, roi, r: getPointRadius(roi) };
-      });
-      return {
-        label: group,
-        data: datasetData,
-        backgroundColor: groupColors[group] || 'rgba(0, 0, 0, 0.6)',
-        type: 'bubble'
-      };
-    });
-    
-    const saturationDataset = chart.data.datasets.find(ds => ds.label === 'Saturation Cap');
-    chart.data.datasets = saturationDataset ? [...scatterDatasets, saturationDataset] : [...scatterDatasets];
-    chart.update();
   }
 </script>
 

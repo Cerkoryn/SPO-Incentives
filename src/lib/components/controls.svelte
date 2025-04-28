@@ -5,9 +5,9 @@
   function applyModeDefaults(mode: SaturationMode) {
     saturationMode.set(mode);
     if (mode === 'current') {
-      sliderParams.set({ k: 500, a0: 0.3, L: 0, L2: 0 });
+      sliderParams.set({ k: 500, a0: 0.3, L: 0, L2: 1 });
     } else if (mode === 'linear') {
-      sliderParams.set({ k: 1000, a0: 0.2, L: 50, L2: 0 });
+      sliderParams.set({ k: 1000, a0: 0.2, L: 50, L2: 1 });
     } else if (mode === 'exponential') {
       sliderParams.set({ k: 1000, a0: 0.2, L: 30, L2: 10 });
     }
@@ -104,7 +104,7 @@
       <label for="L2-slider">L2:</label>
       <input
         type="number"
-        min="0"
+        min="1"
         max="100"
         step="1"
         value={$sliderParams.L2}
@@ -114,12 +114,12 @@
         }}
         class="value-input"
       />
-      <span class="hint-text">min: 0, max: 100</span>
+      <span class="hint-text">min: 1, max: 100</span>
     </div>
     <input
       id="L2-slider"
       type="range"
-      min="0"
+      min="1"
       max="100"
       step="1"
       value={$sliderParams.L2}

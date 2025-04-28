@@ -2,7 +2,6 @@ import poolData from '../data/pools.json';
 import { ADA_TOTAL_SUPPLY, ADA_RESERVES, ADA_CIRCULATING, REWARDS_POT } from './constants';
 import { satCapFns, type Env } from '$lib/utils/types';
 import type { SaturationMode } from '$lib/stores/store';
-import { get } from 'svelte/store';
 
 export interface Pool {
   ticker: string;
@@ -23,16 +22,20 @@ export function getSaturationCapLinear(k: number, L: number, maxX: number, stepS
   return points;
 }
 
-export function getSaturationCapExpSaturation(k: number, L: number, maxX: number, stepSizeX: number): { x: number; y: number }[] {
+export function getSaturationCapExpSaturation(k: number, L: number, L2: number, maxX: number, stepSizeX: number): { x: number; y: number }[] {
   const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
-  const points = [];
-  const scalingConstant = 10000000;  // adjusted to range of x-values, modify this to change curve's aggressiveness
-  // Denom normalizes the exponential value to range [0,1]
-  const denom = 1 - Math.exp(-maxX / scalingConstant);
-  for (let x = 0; x <= maxX; x += stepSizeX/2) {
-    const normalizedExponential = (1 - Math.exp(-x / scalingConstant)) / denom;
-    points.push({ x, y: baseCap + 10000000*L*normalizedExponential });  // The number here controls how high the horizontal asymptote is
+  const F = 10_000_000;  // constant to map bump to our y-values (stake ranges)
+  const points: { x: number; y: number }[] = [];
+
+  // map L2 to values roughly corresponding to our x-values (pledge ranges)
+  const τ = (L2 / 100) * maxX;
+
+  for (let x = 0; x <= maxX; x += stepSizeX / 8) { // Denominator here just to change resolution of jagged edges in chart
+    const normalized = 1 - Math.exp(-x / τ);
+    const bump = F * L * normalized;
+    points.push({ x, y: baseCap + bump });
   }
+
   return points;
 }
 

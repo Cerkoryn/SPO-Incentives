@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { Chart, registerables } from 'chart.js';
   import { pools, getSaturationCapLinear, getSaturationCapExpSaturation, getRewards } from '$lib/utils/graphs';
-  import { graphCheckboxes, sliderParams, graphSettings, saturationMode } from '$lib/stores/store';
+  import { graphCheckboxes, sliderParams, graphSettings, saturationMode, customPool } from '$lib/stores/store';
   import { get } from 'svelte/store';
 
   Chart.register(...registerables);
@@ -25,7 +25,9 @@
     EDEN: 'rgba(75, 192, 192, 0.6)',
     COPPER: 'rgba(192, 75, 75, 0.6)',
     BLADE: 'rgba(75, 75, 192, 0.6)',
-    CAG: 'rgba(192, 192, 75, 0.6)'
+  CAG: 'rgba(192, 192, 75, 0.6)',
+  // Custom pool color: bright opaque red
+  'Custom Pool': 'rgba(255, 0, 0, 1)'
   };
 
   onMount(() => {
@@ -54,6 +56,21 @@
         });
       }
     });
+    // Include custom pool if toggled
+    if ($graphCheckboxes.custom) {
+      const { pledge, stake } = $customPool;
+      if (!isNaN(pledge) && !isNaN(stake)) {
+        const groupKey = 'Custom Pool';
+        if (!groups[groupKey]) groups[groupKey] = [];
+        groups[groupKey].push({
+          x: pledge,
+          y: stake,
+          ticker: 'CUSTOM',
+          name: 'Custom Pool',
+          group: groupKey
+        });
+      }
+    }
     
     const { k, a0, L } = get(sliderParams);
     const { maxX, stepSizeX } = get(graphSettings);
@@ -184,6 +201,15 @@
         });
       }
     });
+    // Include custom pool when toggled
+    if ($graphCheckboxes.custom) {
+      const { pledge, stake } = $customPool;
+      if (!isNaN(pledge) && !isNaN(stake)) {
+        const groupKey = 'Custom Pool';
+        if (!groups[groupKey]) groups[groupKey] = [];
+        groups[groupKey].push({ x: pledge, y: stake, ticker: 'CUSTOM', name: 'Custom Pool', group: groupKey });
+      }
+    }
     const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
       const datasetData = dataPoints.map(dp => {
         const roi = getRewards(dp.y, dp.x, $sliderParams.k, $sliderParams.a0);

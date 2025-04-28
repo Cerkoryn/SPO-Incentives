@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { SaturationMode } from '$lib/stores/store';
-  import { sliderParams, graphCheckboxes, saturationMode } from '$lib/stores/store';
+  import { sliderParams, graphCheckboxes, saturationMode, customPool } from '$lib/stores/store';
 
   function applyModeDefaults(mode: SaturationMode) {
     saturationMode.set(mode);
@@ -156,6 +156,42 @@
     </label>
   </div>
 </div>
+{#if $graphCheckboxes.custom}
+    <div class="custom-pool-inputs">
+      <div class="label-row">
+        <label for="custom-pledge">Pledge:</label>
+        <input
+          type="number"
+          id="custom-pledge"
+          min="0"
+          step="10000"
+          value={$customPool.pledge}
+          on:input={(e) => {
+            const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+            const v = parseFloat(raw);
+            if (!isNaN(v)) customPool.update(c => ({ ...c, pledge: v }));
+          }}
+          class="value-input"
+        />
+      </div>
+      <div class="label-row">
+        <label for="custom-stake">Stake:</label>
+        <input
+          type="number"
+          id="custom-stake"
+          min="0"
+          step="100000"
+          value={$customPool.stake}
+          on:input={(e) => {
+            const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+            const v = parseFloat(raw);
+            if (!isNaN(v)) customPool.update(c => ({ ...c, stake: v }));
+          }}
+          class="value-input"
+        />
+      </div>
+    </div>
+  {/if}
 
   <!-- Radio Buttons for selecting the saturation function with default presets -->
   <div class="saturation-mode-toggle">
@@ -205,7 +241,8 @@
     align-items: center;
     gap: 0.5rem;
   }
-  .slider-control .value-input {
+  /* Global styling for numeric inputs */
+  .value-input {
     width: 4rem;
     background-color: white;
   }
@@ -231,5 +268,15 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+  }
+  .custom-pool-inputs {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  /* Widen custom inputs to show up to 10-digit values */
+  .custom-pool-inputs .value-input {
+    width: 12ch;
   }
 </style>

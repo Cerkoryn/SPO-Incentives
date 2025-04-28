@@ -39,5 +39,12 @@ export const graphSettings = writable<GraphSettings>({
   stepSizeX: 1000000
 });
 
+// Store for custom pool inputs
+export interface CustomPool {
+  pledge: number;
+  stake: number;
+}
+export const customPool = writable<CustomPool>({ pledge: 0, stake: 0 });
+
 export type SaturationMode = "current" | "linear" | "exponential";
 export const saturationMode = writable<SaturationMode>("current");

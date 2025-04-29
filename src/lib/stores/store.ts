@@ -37,8 +37,8 @@ export interface GraphSettings {
 }
 
 export const graphSettings = writable<GraphSettings>({
-  maxX: 10000000,
-  stepSizeX: 1000000
+  maxX: 75000000,
+  stepSizeX: 5000000
 });
 
 // Store for custom pool inputs

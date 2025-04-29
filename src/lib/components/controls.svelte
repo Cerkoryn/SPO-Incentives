@@ -7,9 +7,9 @@
     if (mode === 'current') {
       sliderParams.set({ k: 500, a0: 0.3, L: 0, L2: 1 });
     } else if (mode === 'linear') {
-      sliderParams.set({ k: 1000, a0: 0.2, L: 50, L2: 1 });
+      sliderParams.set({ k: 1000, a0: 0.2, L: 20, L2: 1 });
     } else if (mode === 'exponential') {
-      sliderParams.set({ k: 1000, a0: 0.2, L: 30, L2: 10 });
+      sliderParams.set({ k: 1000, a0: 0.2, L: 50, L2: 40 });
     }
   }
 </script>
@@ -71,6 +71,7 @@
     />
   </div>
 
+  {#if $saturationMode === 'linear' || $saturationMode === 'exponential'}
   <div class="slider-control">
     <div class="label-row">
       <label for="L-slider">L:</label>
@@ -98,7 +99,9 @@
       on:input={(e) => sliderParams.update(s => ({ ...s, L: parseInt((e.target as HTMLInputElement).value, 10) }))}
     />
   </div>
+  {/if}
 
+  {#if $saturationMode === 'exponential'}
   <div class="slider-control">
     <div class="label-row">
       <label for="L2-slider">L2:</label>
@@ -126,6 +129,7 @@
       on:input={(e) => sliderParams.update(s => ({ ...s, L2: parseInt((e.target as HTMLInputElement).value, 10) }))}
     />
   </div>
+  {/if}
 </div>
 
 <!-- Checkbox controls for selecting graph points -->
@@ -176,11 +180,17 @@
   </div>
   <div class="checkbox-control">
     <label for="custom-checkbox">
-      <input 
-        type="checkbox" 
-        id="custom-checkbox" 
-        checked={$graphCheckboxes.custom} 
-        on:change={(e) => graphCheckboxes.update(s => ({ ...s, custom: (e.target as HTMLInputElement).checked }))}
+      <input
+        type="checkbox"
+        id="custom-checkbox"
+        checked={$graphCheckboxes.custom}
+        on:change={(e) => {
+          const checked = (e.target as HTMLInputElement).checked;
+          graphCheckboxes.update(s => ({ ...s, custom: checked }));
+          if (checked) {
+            customPool.set({ pledge: 5000000, stake: 400000000 });
+          }
+        }}
       />
       Custom
     </label>

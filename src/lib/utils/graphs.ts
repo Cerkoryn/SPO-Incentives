@@ -44,9 +44,9 @@ export function getRewards(poolStake: number, poolPledge: number, k: number, a0:
   const sigma = poolStake  / ADA_CIRCULATING;   // σ
   const s     = poolPledge / ADA_CIRCULATING;   // s
 
-  const env: Env = { k: k, L: L, L2: L2, ADA_TOTAL_SUPPLY, ADA_RESERVES }; // We need to determine saturation cap here
+  const env: Env = { k: k, L: L, L2: L2, ADA_CIRCULATING }; // We need to determine saturation cap here
   const satCap = satCapFns[saturationMode](poolPledge, env);               // Switch between the three saturation modes to determine formula
-  const z0    = satCap / (ADA_TOTAL_SUPPLY - ADA_RESERVES);                // Use the calculated value for z0 going forward
+  const z0    = satCap / (ADA_CIRCULATING);                                // Use the calculated value for z0 going forward
 
   const sigmaP = Math.min(sigma, z0);                // σ′
   const sP     = Math.min(s,     z0);                // s′

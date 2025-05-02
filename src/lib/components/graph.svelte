@@ -10,9 +10,9 @@
   
   function getPointRadius(roi: number): number {
     const minROI = 0;
-    const maxROI = 5;      // 10% cap
-    const minR   = 1;       // smallest bubble
-    const maxR   = 25;      // largest bubble
+    const maxROI = 5;      // 5% cap
+    const minR   = 1;      // smallest bubble
+    const maxR   = 25;     // largest bubble
 
     // normalize to [0…1]
     const t = Math.max(0, Math.min((roi - minROI) / (maxROI - minROI), 1));

@@ -85,9 +85,9 @@
   
   function getPointRadius(roi: number): number {
     const minROI = 0;
-    const maxROI = 5;      // 5% cap
+    const maxROI = 3.37;      // 5% cap
     const minR   = 1;      // smallest bubble
-    const maxR   = 25;     // largest bubble
+    const maxR   = 15;     // largest bubble
 
     // normalize to [0…1]
     const t = Math.max(0, Math.min((roi - minROI) / (maxROI - minROI), 1));
@@ -223,9 +223,9 @@
               text: 'Stake'
             },
             min: 0,
-            max: 500000000,
+            max: 300000000,
             ticks: {
-              stepSize: 50000000,
+              stepSize: 25000000,
               callback: function(value) {
                 return new Intl.NumberFormat('en-US').format(Number(value));
               }

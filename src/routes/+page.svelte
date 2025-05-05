@@ -12,6 +12,7 @@
     title: string;
     subtitle: string;
     subtext: string;
+    subtext2: string;
     legend: string[];
   }
 
@@ -20,6 +21,7 @@
       title: 'This is using the current formula for saturation cap on Cardano.',
       subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
       subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+      subtext2: 'Note that ROI calculations may differ slightly from live data.',
       legend: [
         'C<sub>0</sub> - Saturation Cap (constant)',
         'S  - Total Supply',
@@ -31,6 +33,7 @@
       title: 'This is a hypothetical linear formula for saturation cap on Cardano.',
       subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
       subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+      subtext2: 'Note that ROI calculations may differ slightly from live data.',
       legend: [
         'p  - Pool Pledge',
         'S  - Total Supply',
@@ -43,6 +46,7 @@
       title: 'This is a hypothetical exponential formula for saturation cap on Cardano.',
       subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
       subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+      subtext2: 'Note that ROI calculations may differ slightly from live data.',
       legend: [
         'p  - Pool Pledge',
         'S  - Total Supply',
@@ -62,6 +66,8 @@
     <h1 class="m-0">{data.title}</h1>
     <p class="m-0">{data.subtitle}</p>
     <p class="m-0">{data.subtext}</p>
+    <br>
+    <p class="m-0">{data.subtext2}</p>
   </div>
 
   <div class="flex flex-col gap-0 leading-tight">

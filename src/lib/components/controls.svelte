@@ -7,9 +7,9 @@
     if (mode === 'current') {
       sliderParams.set({ k: 500, a0: 0.3, L: 0, L2: 1 });
     } else if (mode === 'linear') {
-      sliderParams.set({ k: 1000, a0: 0.2, L: 20, L2: 1 });
+      sliderParams.set({ k: 1000, a0: 0.2, L: 2, L2: 1 });
     } else if (mode === 'exponential') {
-      sliderParams.set({ k: 1000, a0: 0.2, L: 50, L2: 40 });
+      sliderParams.set({ k: 1000, a0: 0.2, L: 12, L2: 10 });
     }
   }
 </script>
@@ -78,7 +78,7 @@
       <input
         type="number"
         min="0"
-        max="100"
+        max="50"
         step="1"
         value={$sliderParams.L}
         on:input={(e) => {
@@ -87,13 +87,13 @@
         }}
         class="value-input"
       />
-      <span class="hint-text">min: 0, max: 100</span>
+      <span class="hint-text">min: 0, max: 50</span>
     </div>
     <input
       id="L-slider"
       type="range"
       min="0"
-      max="100"
+      max="50"
       step="1"
       value={$sliderParams.L}
       on:input={(e) => sliderParams.update(s => ({ ...s, L: parseInt((e.target as HTMLInputElement).value, 10) }))}

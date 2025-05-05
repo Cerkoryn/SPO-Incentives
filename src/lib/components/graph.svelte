@@ -223,9 +223,9 @@
               text: 'Stake'
             },
             min: 0,
-            max: 1000000000,
+            max: 500000000,
             ticks: {
-              stepSize: 100000000,
+              stepSize: 50000000,
               callback: function(value) {
                 return new Intl.NumberFormat('en-US').format(Number(value));
               }
@@ -244,7 +244,6 @@
                 const formattedROI = typeof roi === 'number' ? roi.toFixed(2) : roi;
                 const lines = [
                   `Ticker: ${ticker}`,
-                  `Name: ${name}`,
                   `Stake: ${formattedY}`,
                   `Pledge: ${formattedX}`,
                   `ROI: ${formattedROI}%`

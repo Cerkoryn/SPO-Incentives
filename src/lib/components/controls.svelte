@@ -144,7 +144,7 @@
             const checked = (e.target as HTMLInputElement).checked;
             graphCheckboxes.update(s => ({ ...s, custom: checked }));
             if (checked) {
-              customPool.set({ pledge: 5000000, stake: 400000000 });
+              customPool.set({ pledge: 35000000, stake: 200000000 });
             }
           }}
         />

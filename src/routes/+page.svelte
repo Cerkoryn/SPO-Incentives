@@ -11,6 +11,7 @@
   interface ModeData {
     title: string;
     subtitle: string;
+    subtext: string;
     legend: string[];
   }
 
@@ -18,6 +19,7 @@
     current: {
       title: 'This is using the current formula for saturation cap on Cardano.',
       subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
+      subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
       legend: [
         'C<sub>0</sub> - Saturation Cap (constant)',
         'S  - Total Supply',
@@ -28,6 +30,7 @@
     linear: {
       title: 'This is a hypothetical linear formula for saturation cap on Cardano.',
       subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
+      subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
       legend: [
         'p  - Pool Pledge',
         'S  - Total Supply',
@@ -39,6 +42,7 @@
     exponential: {
       title: 'This is a hypothetical exponential formula for saturation cap on Cardano.',
       subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
+      subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
       legend: [
         'p  - Pool Pledge',
         'S  - Total Supply',
@@ -57,6 +61,7 @@
   <div class="flex flex-col gap-0.5 leading-tight">
     <h1 class="m-0">{data.title}</h1>
     <p class="m-0">{data.subtitle}</p>
+    <p class="m-0">{data.subtext}</p>
   </div>
 
   <div class="flex flex-col gap-0 leading-tight">

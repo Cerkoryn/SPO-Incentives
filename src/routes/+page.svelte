@@ -1,5 +1,8 @@
-<h1>We should put some explainer text here.</h1>
-<p>Maybe this text changes when you change between the 3 modes.</p>
-<p>And maybe a picture of the math formula to add legitimacy over here -></p>
-<p>Should the graph be underneath this text though?</p>
+<h1>This is using the current forumula for saturation cap on Cardano.</h1>
+<p>Experiment with the sliders to visualize the effects of changes to parameters.</p>
 
+<h2>Legend</h2>
+<p>C0 - Saturation Cap</p>
+<p>S - Total Supply</p>
+<p>R - Reserve</p>
+<p>z0 - Relative pool saturation size (1/k)</p>

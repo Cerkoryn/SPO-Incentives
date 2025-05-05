@@ -8,6 +8,81 @@
 
   Chart.register(...registerables);
   
+  // Custom external tooltip handler to allow rich text and styling
+  function externalTooltipHandler(context: any) {
+    const { chart, tooltip } = context;
+    const tooltipEl = chart.canvas.parentNode.querySelector('#chartjs-tooltip');
+    if (!tooltipEl) return;
+    // Hide if no tooltip
+    if (tooltip.opacity === 0) {
+      tooltipEl.style.opacity = '0';
+      return;
+    }
+    // Clear existing content
+    tooltipEl.innerHTML = '';
+    // Add title lines
+    tooltip.title.forEach(line => {
+      const el = document.createElement('div');
+      el.classList.add('tooltip-title');
+      el.textContent = line;
+      tooltipEl.appendChild(el);
+    });
+    // Add body items with colored box only on the 'Ticker' line
+    if (tooltip.dataPoints && tooltip.labelColors) {
+      tooltip.dataPoints.forEach((dp: any, i: number) => {
+        const lines = tooltip.body[i]?.lines || [];
+        const bgColor = tooltip.labelColors[i]?.backgroundColor || 'transparent';
+        lines.forEach((line: string, j: number) => {
+          const wrapper = document.createElement('div');
+          wrapper.classList.add('tooltip-item');
+          // prepend colored box only for first line (Ticker); transparent otherwise
+          const box = document.createElement('span');
+          box.classList.add('tooltip-box');
+          box.style.backgroundColor = j === 0 ? bgColor : 'transparent';
+          wrapper.appendChild(box);
+          // text content
+          const text = document.createElement('span');
+          if (line === 'Stake cannot be lower than pledge') {
+            text.classList.add('warning-text');
+            text.textContent = '⚠ ' + line;
+          } else {
+            text.textContent = line;
+          }
+          wrapper.appendChild(text);
+          tooltipEl.appendChild(wrapper);
+        });
+      });
+    }
+    // Display tooltip at caret position, flipping to stay within viewport
+    const { caretX, caretY } = tooltip;
+    tooltipEl.style.opacity = '1';
+    // Get canvas position on page
+    const canvasRect = chart.canvas.getBoundingClientRect();
+    // Calculate page coordinates for tooltip
+    let x = canvasRect.left + window.pageXOffset + caretX;
+    let y = canvasRect.top + window.pageYOffset + caretY;
+    // Measure tooltip size
+    const tooltipWidth = tooltipEl.offsetWidth;
+    const tooltipHeight = tooltipEl.offsetHeight;
+    // Flip horizontally if overflowing viewport
+    if (x + tooltipWidth > window.pageXOffset + window.innerWidth) {
+      x -= tooltipWidth;
+    }
+    if (x < window.pageXOffset) {
+      x = window.pageXOffset;
+    }
+    // Flip vertically if overflowing viewport bottom
+    if (y + tooltipHeight > window.pageYOffset + window.innerHeight) {
+      y -= tooltipHeight;
+    }
+    if (y < window.pageYOffset) {
+      y = window.pageYOffset;
+    }
+    // Position tooltip using fixed coordinates
+    tooltipEl.style.left = x + 'px';
+    tooltipEl.style.top = y + 'px';
+  }
+  
   function getPointRadius(roi: number): number {
     const minROI = 0;
     const maxROI = 5;      // 5% cap
@@ -159,19 +234,25 @@
         },
         plugins: {
           tooltip: {
+            enabled: false,
+            external: externalTooltipHandler,
             callbacks: {
               label: function(context) {
                 const { ticker, name, x, y, roi } = context.raw as { ticker: string; name: string; x: number; y: number; roi: number };
                 const formattedX = typeof x === 'number' ? new Intl.NumberFormat('en-US').format(x) : x;
                 const formattedY = typeof y === 'number' ? new Intl.NumberFormat('en-US').format(y) : y;
                 const formattedROI = typeof roi === 'number' ? roi.toFixed(2) : roi;
-                return [
+                const lines = [
                   `Ticker: ${ticker}`,
                   `Name: ${name}`,
                   `Stake: ${formattedY}`,
                   `Pledge: ${formattedX}`,
                   `ROI: ${formattedROI}%`
                 ];
+                if (name === 'Custom Pool' && y < x) {
+                  lines.push('Stake cannot be lower than pledge');
+                }
+                return lines;
               }
             }
           }
@@ -198,13 +279,14 @@
       // Calculate nearest whole number values for custom pool
       const rawX = chart.scales.x.getValueForPixel(e.offsetX);
       const rawY = chart.scales.y.getValueForPixel(e.offsetY);
-      const pledge = Math.round(rawX);
-      const stake = Math.round(rawY);
+      // Enforce positive values greater than 0
+      const pledgeVal = Math.max(0, Math.round(rawX));
+      const stakeVal = Math.max(0, Math.round(rawY));
       const ds = chart.data.datasets[dragDatasetIndex];
       const point: any = (ds.data as any[])[dragDataIndex];
-      point.x = pledge;
-      point.y = stake;
-      customPool.set({ pledge, stake });
+      point.x = pledgeVal;
+      point.y = stakeVal;
+      customPool.set({ pledge: pledgeVal, stake: stakeVal });
       chart.update('none');
     });
     canvas.addEventListener('mouseup', () => {
@@ -268,14 +350,54 @@
       chart.update();
     }
   }
-</script>
+  </script>
 
-<canvas bind:this={canvas} width="600" height="300"></canvas>
+  <div class="chart-container">
+    <canvas bind:this={canvas} width="600" height="300"></canvas>
+    <div id="chartjs-tooltip" class="chartjs-tooltip"></div>
+  </div>
 
 <style>
   canvas {
     width: 100%;
     height: auto;
     border: 1px solid #ccc;
+  }
+  .chart-container {
+    position: relative;
+  }
+  /* Tooltip container fixed to viewport for overflow handling */
+  :global(.chartjs-tooltip) {
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 3px;
+    font-size: 12px;
+    padding: 6px;
+    white-space: nowrap;
+    transition: opacity 0.1s ease;
+  }
+  :global(.chartjs-tooltip .tooltip-item) {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+  }
+  :global(.chartjs-tooltip .tooltip-item:last-child) {
+    margin-bottom: 0;
+  }
+  :global(.chartjs-tooltip .tooltip-box) {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+  }
+  :global(.chartjs-tooltip .warning-text) {
+    color: orange !important;
+  }
+  :global(.chartjs-tooltip .tooltip-title) {
+    font-weight: bold;
+    margin-bottom: 4px;
   }
 </style>

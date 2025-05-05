@@ -133,25 +133,28 @@
 </div>
 
 <!-- Checkbox controls for selecting graph points -->
-<div class="checkbox-controls">
-  <div class="checkbox-control">
-    <label for="custom-checkbox">
-      <input
-        type="checkbox"
-        id="custom-checkbox"
-        checked={$graphCheckboxes.custom}
-        on:change={(e) => {
-          const checked = (e.target as HTMLInputElement).checked;
-          graphCheckboxes.update(s => ({ ...s, custom: checked }));
-          if (checked) {
-            customPool.set({ pledge: 5000000, stake: 400000000 });
-          }
-        }}
-      />
-      Show Custom Pool
-    </label>
+  <div class="checkbox-controls">
+    <div class="checkbox-control">
+      <label for="custom-checkbox">
+        <input
+          type="checkbox"
+          id="custom-checkbox"
+          checked={$graphCheckboxes.custom}
+          on:change={(e) => {
+            const checked = (e.target as HTMLInputElement).checked;
+            graphCheckboxes.update(s => ({ ...s, custom: checked }));
+            if (checked) {
+              customPool.set({ pledge: 5000000, stake: 400000000 });
+            }
+          }}
+        />
+        Show Custom Pool
+      </label>
+      {#if $graphCheckboxes.custom && $customPool.stake < $customPool.pledge}
+        <span class="hint-text error-text">⚠ Stake cannot be lower than pledge</span>
+      {/if}
+    </div>
   </div>
-</div>
 {#if $graphCheckboxes.custom}
     <div class="custom-pool-inputs">
       <div class="label-row">
@@ -165,7 +168,10 @@
           on:input={(e) => {
             const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
             const v = parseInt(raw, 10);
-            if (!isNaN(v)) customPool.update(c => ({ ...c, pledge: v }));
+            if (!isNaN(v)) {
+              const pledgeVal = Math.max(1, v);
+              customPool.update(c => ({ ...c, pledge: pledgeVal }));
+            }
           }}
           class="value-input"
         />
@@ -181,7 +187,10 @@
           on:input={(e) => {
             const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
             const v = parseInt(raw, 10);
-            if (!isNaN(v)) customPool.update(c => ({ ...c, stake: v }));
+            if (!isNaN(v)) {
+              const stakeVal = Math.max(1, v);
+              customPool.update(c => ({ ...c, stake: stakeVal }));
+            }
           }}
           class="value-input"
         />
@@ -274,5 +283,10 @@
   /* Widen custom inputs to show up to 10-digit values */
   .custom-pool-inputs .value-input {
     width: 12ch;
+  }
+  /* Error text next to custom pool toggle */
+  .error-text {
+    color: #d97706;
+    margin-left: 0.5rem;
   }
 </style>

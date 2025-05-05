@@ -22,13 +22,14 @@
   let canvas: HTMLCanvasElement;
   let chart: Chart;
 
+  // Define colors for pool groups: MPO, Single Pool, plus Custom Pool
   const groupColors: Record<string, string> = {
-    EDEN: 'rgba(75, 192, 192, 0.6)',
-    COPPER: 'rgba(192, 75, 75, 0.6)',
-    BLADE: 'rgba(75, 75, 192, 0.6)',
-  CAG: 'rgba(192, 192, 75, 0.6)',
-  // Custom pool color: bright opaque red
-  'Custom Pool': 'rgba(255, 0, 0, 1)'
+    // Single Pool now uses a friendly green
+    'Single Pool': 'rgba(75, 192, 75, 0.6)',
+    // MPO uses a softer orange so Custom Pool red stands out
+    MPO: 'rgba(255, 140, 60, 0.6)',
+    // Custom pool color remains bright opaque red
+    'Custom Pool': 'rgba(255, 0, 0, 1)'
   };
 
   onMount(() => {
@@ -40,22 +41,19 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    const currentCheckboxes = get(graphCheckboxes);
+    // Group all pools by their group name (all non-custom pools displayed)
     const groups: Record<string, any[]> = {};
     pools.forEach(pool => {
-      const key = pool.group.toLowerCase();
-      if (currentCheckboxes[key]) {
-        if (!groups[pool.group]) {
-          groups[pool.group] = [];
-        }
-        groups[pool.group].push({
-          x: pool.pledge,
-          y: pool.stake,
-          ticker: pool.ticker,
-          name: pool.name,
-          group: pool.group
-        });
+      if (!groups[pool.group]) {
+        groups[pool.group] = [];
       }
+      groups[pool.group].push({
+        x: pool.pledge,
+        y: pool.stake,
+        ticker: pool.ticker,
+        name: pool.name,
+        group: pool.group
+      });
     });
     // Include custom pool if toggled
     if ($graphCheckboxes.custom) {

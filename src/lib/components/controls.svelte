@@ -135,50 +135,6 @@
 <!-- Checkbox controls for selecting graph points -->
 <div class="checkbox-controls">
   <div class="checkbox-control">
-    <label for="copper-checkbox">
-      <input 
-        type="checkbox" 
-        id="copper-checkbox" 
-        checked={$graphCheckboxes.copper} 
-        on:change={(e) => graphCheckboxes.update(s => ({ ...s, copper: (e.target as HTMLInputElement).checked }))}
-      />
-      COPPER
-    </label>
-  </div>
-  <div class="checkbox-control">
-    <label for="eden-checkbox">
-      <input 
-        type="checkbox" 
-        id="eden-checkbox" 
-        checked={$graphCheckboxes.eden} 
-        on:change={(e) => graphCheckboxes.update(s => ({ ...s, eden: (e.target as HTMLInputElement).checked }))}
-      />
-      EDEN
-    </label>
-  </div>
-  <div class="checkbox-control">
-    <label for="blade-checkbox">
-      <input 
-        type="checkbox" 
-        id="blade-checkbox" 
-        checked={$graphCheckboxes.blade} 
-        on:change={(e) => graphCheckboxes.update(s => ({ ...s, blade: (e.target as HTMLInputElement).checked }))}
-      />
-      BLADE
-    </label>
-  </div>
-  <div class="checkbox-control">
-    <label for="cag-checkbox">
-      <input 
-        type="checkbox" 
-        id="cag-checkbox" 
-        checked={$graphCheckboxes.cag} 
-        on:change={(e) => graphCheckboxes.update(s => ({ ...s, cag: (e.target as HTMLInputElement).checked }))}
-      />
-      CAG
-    </label>
-  </div>
-  <div class="checkbox-control">
     <label for="custom-checkbox">
       <input
         type="checkbox"
@@ -192,7 +148,7 @@
           }
         }}
       />
-      Custom
+      Show Custom Pool
     </label>
   </div>
 </div>

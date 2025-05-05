@@ -82,7 +82,7 @@
         step="0.1"
         value={$sliderParams.L}
         on:input={(e) => {
-          const v = parseInt((e.target as HTMLInputElement).value, 10);
+          const v = parseFloat((e.target as HTMLInputElement).value);
           if (!isNaN(v)) sliderParams.update(s => ({ ...s, L: Math.min(100, Math.max(0, v)) }));
         }}
         class="value-input"
@@ -96,7 +96,7 @@
       max="50"
       step="0.1"
       value={$sliderParams.L}
-      on:input={(e) => sliderParams.update(s => ({ ...s, L: parseInt((e.target as HTMLInputElement).value, 10) }))}
+      on:input={(e) => sliderParams.update(s => ({ ...s, L: parseFloat((e.target as HTMLInputElement).value) }))}
     />
   </div>
   {/if}

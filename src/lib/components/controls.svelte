@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { SaturationMode } from '$lib/stores/store';
-  import { sliderParams, graphCheckboxes, saturationMode, customPool } from '$lib/stores/store';
+  import { sliderParams, graphCheckboxes, saturationMode, customPool, zoomEnabled } from '$lib/stores/store';
 
   function applyModeDefaults(mode: SaturationMode) {
     saturationMode.set(mode);
@@ -227,6 +227,18 @@
         on:change={() => applyModeDefaults('exponential')}
         checked={$saturationMode === 'exponential'} />
       Exponential
+    </label>
+  </div>
+  <br>
+  <div class="checkbox-control">
+    <label for="toggle-zoom-checkbox">
+      <input
+        type="checkbox"
+        id="toggle-zoom-checkbox"
+        checked={$zoomEnabled}
+        on:change={(e) => zoomEnabled.set((e.target as HTMLInputElement).checked)}
+      />
+      Toggle Zoom
     </label>
   </div>
 

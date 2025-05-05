@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { Chart, registerables } from 'chart.js';
   import { pools, getSaturationCapLinear, getSaturationCapExpSaturation, getRewards } from '$lib/utils/graphs';
-  import { graphCheckboxes, sliderParams, graphSettings, saturationMode, customPool } from '$lib/stores/store';
+  import { graphCheckboxes, sliderParams, graphSettings, saturationMode, customPool, zoomEnabled } from '$lib/stores/store';
   import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from '$lib/utils/constants';
   import { get } from 'svelte/store';
 
@@ -148,6 +148,7 @@
     
     const { k, a0, L, L2 } = get(sliderParams);
     const { maxX, stepSizeX } = get(graphSettings);
+    const isZoomOn = get(zoomEnabled);
     const mode = get(saturationMode);
     // Build bubble datasets: size proportional to annualized ROI
     const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
@@ -209,7 +210,7 @@
               text: 'Pledge'
             },
             min: 0,
-            max: maxX,
+            max: isZoomOn ? 5000000 : maxX,
             ticks: {
               stepSize: stepSizeX,
               callback: function(value) {
@@ -223,7 +224,7 @@
               text: 'Stake'
             },
             min: 0,
-            max: 300000000,
+            max: isZoomOn ? 80000000 : 300000000,
             ticks: {
               stepSize: 25000000,
               callback: function(value) {
@@ -348,6 +349,15 @@
       }
       chart.update();
     }
+  }
+  // Reactive handler: update axis limits and tick sizes when zoom toggles or settings change
+  $: if (chart) {
+    const { maxX, stepSizeX } = $graphSettings;
+    chart.options.scales.x.max = $zoomEnabled ? 1000000 : maxX;
+    chart.options.scales.x.ticks.stepSize = $zoomEnabled ? 100000 : stepSizeX;
+    chart.options.scales.y.max = $zoomEnabled ? 80000000 : 300000000;
+    chart.options.scales.y.ticks.stepSize = $zoomEnabled ? 5000000 : 25000000;
+    chart.update();
   }
   </script>
 

@@ -79,7 +79,7 @@
         type="number"
         min="0"
         max="50"
-        step="1"
+        step="0.1"
         value={$sliderParams.L}
         on:input={(e) => {
           const v = parseInt((e.target as HTMLInputElement).value, 10);
@@ -94,7 +94,7 @@
       type="range"
       min="0"
       max="50"
-      step="1"
+      step="0.1"
       value={$sliderParams.L}
       on:input={(e) => sliderParams.update(s => ({ ...s, L: parseInt((e.target as HTMLInputElement).value, 10) }))}
     />
@@ -200,7 +200,7 @@
 
   <!-- Radio Buttons for selecting the saturation function with default presets -->
   <div class="saturation-mode-toggle">
-    <span>Saturation Mode:</span>
+    <span>Formula:</span>
     <label>
       <input
         type="radio"

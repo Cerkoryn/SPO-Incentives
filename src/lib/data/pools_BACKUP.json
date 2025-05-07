@@ -1,0 +1,1465 @@
+[
+  {
+    "ticker": "COP1",
+    "name": "COP1-2w36c",
+    "group": "MPO",
+    "stake": 275674669,
+    "pledge": 0
+  },
+  {
+    "ticker": "CH1",
+    "name": "CH1-pv4vk",
+    "group": "Single Pool",
+    "stake": 75551050,
+    "pledge": 3000000
+  },
+  {
+    "ticker": "ADALO",
+    "name": "ADALO-zty9z",
+    "group": "Single Pool",
+    "stake": 75469162,
+    "pledge": 1000000
+  },
+  {
+    "ticker": "EDEN",
+    "name": "EDEN-lxvmc",
+    "group": "MPO",
+    "stake": 75291265,
+    "pledge": 10000000
+  },
+  {
+    "ticker": "POLY",
+    "name": "POLY-p8f88",
+    "group": "Single Pool",
+    "stake": 74750624,
+    "pledge": 1000000
+  },
+  {
+    "ticker": "BLADE",
+    "name": "BLADE-rnz6a",
+    "group": "Single Pool",
+    "stake": 74687052,
+    "pledge": 500000
+  },
+  {
+    "ticker": "LBF3",
+    "name": "LBF3-p24x4",
+    "group": "MPO",
+    "stake": 74610823,
+    "pledge": 2
+  },
+  {
+    "ticker": "KILN7",
+    "name": "KILN7-2p2j7",
+    "group": "MPO",
+    "stake": 74475922,
+    "pledge": 100
+  },
+  {
+    "ticker": "ADV2",
+    "name": "ADV2-43jw9",
+    "group": "MPO",
+    "stake": 74475070,
+    "pledge": 250000
+  },
+  {
+    "ticker": "KILN3",
+    "name": "KILN3-vccux",
+    "group": "MPO",
+    "stake": 74469661,
+    "pledge": 100
+  },
+  {
+    "ticker": "KILN2",
+    "name": "KILN2-atklv",
+    "group": "MPO",
+    "stake": 74425814,
+    "pledge": 100
+  },
+  {
+    "ticker": "KILN1",
+    "name": "KILN1-nvjvw",
+    "group": "MPO",
+    "stake": 74415300,
+    "pledge": 100
+  },
+  {
+    "ticker": "YORO1",
+    "name": "YORO1-hhqs2",
+    "group": "MPO",
+    "stake": 74263574,
+    "pledge": 500
+  },
+  {
+    "ticker": "private6525",
+    "name": "private6525-40nj9",
+    "group": "MPO",
+    "stake": 74206025,
+    "pledge": 71000000
+  },
+  {
+    "ticker": "OGAM",
+    "name": "OGAM-ht6ww",
+    "group": "Single Pool",
+    "stake": 74162988,
+    "pledge": 500000
+  },
+  {
+    "ticker": "private6514",
+    "name": "private6514-49yqe",
+    "group": "MPO",
+    "stake": 74144313,
+    "pledge": 71000000
+  },
+  {
+    "ticker": "PILOT",
+    "name": "PILOT-p79kr",
+    "group": "MPO",
+    "stake": 74016617,
+    "pledge": 1050000
+  },
+  {
+    "ticker": "ADV3",
+    "name": "ADV3-ntwdz",
+    "group": "MPO",
+    "stake": 73817110,
+    "pledge": 250000
+  },
+  {
+    "ticker": "NORTH",
+    "name": "NORTH-hrtej",
+    "group": "MPO",
+    "stake": 73805483,
+    "pledge": 300000
+  },
+  {
+    "ticker": "CRDNS",
+    "name": "CRDNS-wcqrt",
+    "group": "MPO",
+    "stake": 73759942,
+    "pledge": 200000
+  },
+  {
+    "ticker": "BRAVO",
+    "name": "BRAVO-znyj3",
+    "group": "MPO",
+    "stake": 73428978,
+    "pledge": 310000
+  },
+  {
+    "ticker": "NORTH",
+    "name": "NORTH-5f0lx",
+    "group": "MPO",
+    "stake": 72914651,
+    "pledge": 110000
+  },
+  {
+    "ticker": "WAV1",
+    "name": "WAV1-f2zaj",
+    "group": "MPO",
+    "stake": 72838244,
+    "pledge": 5000000
+  },
+  {
+    "ticker": "WPBJ1",
+    "name": "WPBJ1-yrk44",
+    "group": "MPO",
+    "stake": 72481234,
+    "pledge": 50000000
+  },
+  {
+    "ticker": "NORTH",
+    "name": "NORTH-puwcd",
+    "group": "MPO",
+    "stake": 72012522,
+    "pledge": 300000
+  },
+  {
+    "ticker": "private6914",
+    "name": "private6914-yevz5",
+    "group": "MPO",
+    "stake": 71948386,
+    "pledge": 67000000
+  },
+  {
+    "ticker": "RSTK",
+    "name": "RSTK-v3l7s",
+    "group": "MPO",
+    "stake": 71908951,
+    "pledge": 1000
+  },
+  {
+    "ticker": "private6915",
+    "name": "private6915-7aknf",
+    "group": "MPO",
+    "stake": 71904903,
+    "pledge": 67000000
+  },
+  {
+    "ticker": "WPBJ2",
+    "name": "WPBJ2-vg0je",
+    "group": "MPO",
+    "stake": 71893291,
+    "pledge": 50000000
+  },
+  {
+    "ticker": "private6904",
+    "name": "private6904-kp83z",
+    "group": "MPO",
+    "stake": 71851554,
+    "pledge": 67000000
+  },
+  {
+    "ticker": "WPBJ3",
+    "name": "WPBJ3-9c70f",
+    "group": "MPO",
+    "stake": 71715062,
+    "pledge": 30000000
+  },
+  {
+    "ticker": "DARK",
+    "name": "DARK-a2v70",
+    "group": "MPO",
+    "stake": 71040011,
+    "pledge": 68000000
+  },
+  {
+    "ticker": "SPIRE",
+    "name": "SPIRE-crqtx",
+    "group": "MPO",
+    "stake": 70995803,
+    "pledge": 1500000
+  },
+  {
+    "ticker": "AICHI",
+    "name": "AICHI-p50l5",
+    "group": "MPO",
+    "stake": 70981329,
+    "pledge": 100000
+  },
+  {
+    "ticker": "ADV",
+    "name": "ADV-5uls9",
+    "group": "MPO",
+    "stake": 70664699,
+    "pledge": 250000
+  },
+  {
+    "ticker": "BALNC",
+    "name": "BALNC-way7z",
+    "group": "Single Pool",
+    "stake": 70630957,
+    "pledge": 100000
+  },
+  {
+    "ticker": "UBE",
+    "name": "UBE-zsx8c",
+    "group": "MPO",
+    "stake": 70310217,
+    "pledge": 0
+  },
+  {
+    "ticker": "WGM",
+    "name": "WGM-k9m5c",
+    "group": "MPO",
+    "stake": 70230780,
+    "pledge": 0
+  },
+  {
+    "ticker": "TBG",
+    "name": "TBG-gfj6h",
+    "group": "MPO",
+    "stake": 70215267,
+    "pledge": 0
+  },
+  {
+    "ticker": "ARH",
+    "name": "ARH-q6pru",
+    "group": "MPO",
+    "stake": 70187268,
+    "pledge": 0
+  },
+  {
+    "ticker": "private7329",
+    "name": "private7329-xuj9g",
+    "group": "MPO",
+    "stake": 70108558,
+    "pledge": 30000000
+  },
+  {
+    "ticker": "KOH",
+    "name": "KOH-t7hg6",
+    "group": "MPO",
+    "stake": 70077898,
+    "pledge": 0
+  },
+  {
+    "ticker": "FVG",
+    "name": "FVG-qnfaf",
+    "group": "MPO",
+    "stake": 70073426,
+    "pledge": 0
+  },
+  {
+    "ticker": "UTA",
+    "name": "UTA-h6vr2",
+    "group": "MPO",
+    "stake": 70050265,
+    "pledge": 0
+  },
+  {
+    "ticker": "LAG",
+    "name": "LAG-sk72r",
+    "group": "MPO",
+    "stake": 70047973,
+    "pledge": 0
+  },
+  {
+    "ticker": "TLK",
+    "name": "TLK-46vqk",
+    "group": "MPO",
+    "stake": 70043819,
+    "pledge": 0
+  },
+  {
+    "ticker": "RMH",
+    "name": "RMH-04qjl",
+    "group": "MPO",
+    "stake": 70038409,
+    "pledge": 0
+  },
+  {
+    "ticker": "private5217",
+    "name": "private5217-p447d",
+    "group": "MPO",
+    "stake": 70034915,
+    "pledge": 0
+  },
+  {
+    "ticker": "FMD",
+    "name": "FMD-kda25",
+    "group": "MPO",
+    "stake": 70034298,
+    "pledge": 0
+  },
+  {
+    "ticker": "GCN",
+    "name": "GCN-r4fww",
+    "group": "MPO",
+    "stake": 70032015,
+    "pledge": 0
+  },
+  {
+    "ticker": "N/A",
+    "name": "N/A-6t0rm",
+    "group": "MPO",
+    "stake": 70029376,
+    "pledge": 0
+  },
+  {
+    "ticker": "SECUR",
+    "name": "SECUR-h37c7",
+    "group": "MPO",
+    "stake": 70026269,
+    "pledge": 100000
+  },
+  {
+    "ticker": "N/A",
+    "name": "N/A-lhmtk",
+    "group": "MPO",
+    "stake": 70024730,
+    "pledge": 0
+  },
+  {
+    "ticker": "N/A",
+    "name": "N/A-gly97",
+    "group": "MPO",
+    "stake": 70022862,
+    "pledge": 0
+  },
+  {
+    "ticker": "FBA",
+    "name": "FBA-4zwwa",
+    "group": "MPO",
+    "stake": 70020290,
+    "pledge": 0
+  },
+  {
+    "ticker": "SSP",
+    "name": "SSP-eh57g",
+    "group": "MPO",
+    "stake": 70020181,
+    "pledge": 0
+  },
+  {
+    "ticker": "private5215",
+    "name": "private5215-83gck",
+    "group": "MPO",
+    "stake": 70018003,
+    "pledge": 0
+  },
+  {
+    "ticker": "N/A",
+    "name": "N/A-vnpwq",
+    "group": "MPO",
+    "stake": 70018001,
+    "pledge": 0
+  },
+  {
+    "ticker": "EDEN",
+    "name": "EDEN-qdg56",
+    "group": "MPO",
+    "stake": 69151976,
+    "pledge": 5000000
+  },
+  {
+    "ticker": "STR8",
+    "name": "STR8-7wrw8",
+    "group": "Single Pool",
+    "stake": 69002143,
+    "pledge": 650000
+  },
+  {
+    "ticker": "BD6",
+    "name": "BD6-rlps5",
+    "group": "MPO",
+    "stake": 68947135,
+    "pledge": 200
+  },
+  {
+    "ticker": "SASA",
+    "name": "SASA-q0hu2",
+    "group": "MPO",
+    "stake": 68464022,
+    "pledge": 80
+  },
+  {
+    "ticker": "CLOVR",
+    "name": "CLOVR-3yuy5",
+    "group": "Single Pool",
+    "stake": 68405041,
+    "pledge": 101000
+  },
+  {
+    "ticker": "N/A",
+    "name": "N/A-8s4t9",
+    "group": "MPO",
+    "stake": 68132663,
+    "pledge": 0
+  },
+  {
+    "ticker": "NORTH",
+    "name": "NORTH-u56cw",
+    "group": "MPO",
+    "stake": 68005356,
+    "pledge": 110000
+  },
+  {
+    "ticker": "private7357",
+    "name": "private7357-qxrsv",
+    "group": "MPO",
+    "stake": 67750636,
+    "pledge": 100
+  },
+  {
+    "ticker": "OCTAS",
+    "name": "OCTAS-ws0xt",
+    "group": "Single Pool",
+    "stake": 67623252,
+    "pledge": 300000
+  },
+  {
+    "ticker": "CAFE",
+    "name": "CAFE-4nrzx",
+    "group": "MPO",
+    "stake": 67565037,
+    "pledge": 100000
+  },
+  {
+    "ticker": "SECUR",
+    "name": "SECUR-nsuhq",
+    "group": "MPO",
+    "stake": 67557174,
+    "pledge": 100000
+  },
+  {
+    "ticker": "EDEN",
+    "name": "EDEN-3w5td",
+    "group": "MPO",
+    "stake": 67415818,
+    "pledge": 5000000
+  },
+  {
+    "ticker": "1COMM",
+    "name": "1COMM-jc6nh",
+    "group": "Single Pool",
+    "stake": 67394790,
+    "pledge": 402000
+  },
+  {
+    "ticker": "ROCKY",
+    "name": "ROCKY-m5kh8",
+    "group": "Single Pool",
+    "stake": 67031759,
+    "pledge": 151000
+  },
+  {
+    "ticker": "ATADA",
+    "name": "ATADA-35lr9",
+    "group": "MPO",
+    "stake": 66996877,
+    "pledge": 1300000
+  },
+  {
+    "ticker": "KILN4",
+    "name": "KILN4-5yknr",
+    "group": "MPO",
+    "stake": 66930541,
+    "pledge": 100
+  },
+  {
+    "ticker": "EDEN",
+    "name": "EDEN-k36sq",
+    "group": "MPO",
+    "stake": 66885823,
+    "pledge": 5000000
+  },
+  {
+    "ticker": "EVE1",
+    "name": "EVE1-nk2yp",
+    "group": "MPO",
+    "stake": 66344376,
+    "pledge": 1000
+  },
+  {
+    "ticker": "PNR39",
+    "name": "PNR39-xjcuj",
+    "group": "Single Pool",
+    "stake": 66171990,
+    "pledge": 500
+  },
+  {
+    "ticker": "DIGI",
+    "name": "DIGI-uc056",
+    "group": "MPO",
+    "stake": 66157806,
+    "pledge": 100000
+  },
+  {
+    "ticker": "private6952",
+    "name": "private6952-5kg3v",
+    "group": "MPO",
+    "stake": 65914236,
+    "pledge": 2
+  },
+  {
+    "ticker": "SECUR",
+    "name": "SECUR-nsdlc",
+    "group": "MPO",
+    "stake": 65435941,
+    "pledge": 100000
+  },
+  {
+    "ticker": "private7412",
+    "name": "private7412-c4y7v",
+    "group": "MPO",
+    "stake": 65254169,
+    "pledge": 100
+  },
+  {
+    "ticker": "STAT",
+    "name": "STAT-26hch",
+    "group": "Single Pool",
+    "stake": 64696602,
+    "pledge": 750000
+  },
+  {
+    "ticker": "LBF1",
+    "name": "LBF1-x9jdr",
+    "group": "MPO",
+    "stake": 64474365,
+    "pledge": 2
+  },
+  {
+    "ticker": "IOGP",
+    "name": "IOGP-usn35",
+    "group": "MPO",
+    "stake": 64329846,
+    "pledge": 64000000
+  },
+  {
+    "ticker": "IOGP",
+    "name": "IOGP-g3asc",
+    "group": "MPO",
+    "stake": 64329097,
+    "pledge": 64000000
+  },
+  {
+    "ticker": "IOGP",
+    "name": "IOGP-p6k53",
+    "group": "MPO",
+    "stake": 64328656,
+    "pledge": 64000000
+  },
+  {
+    "ticker": "private7185",
+    "name": "private7185-nlm74",
+    "group": "MPO",
+    "stake": 64242841,
+    "pledge": 2
+  },
+  {
+    "ticker": "private7184",
+    "name": "private7184-na2rl",
+    "group": "MPO",
+    "stake": 64083512,
+    "pledge": 2
+  },
+  {
+    "ticker": "private7186",
+    "name": "private7186-zxau8",
+    "group": "MPO",
+    "stake": 64060108,
+    "pledge": 2
+  },
+  {
+    "ticker": "GMO1",
+    "name": "GMO1-ln20q",
+    "group": "MPO",
+    "stake": 63834202,
+    "pledge": 35000000
+  },
+  {
+    "ticker": "FAIR",
+    "name": "FAIR-pkznz",
+    "group": "Single Pool",
+    "stake": 63733954,
+    "pledge": 100000
+  },
+  {
+    "ticker": "OCEA4",
+    "name": "OCEA4-cxzm9",
+    "group": "MPO",
+    "stake": 63626817,
+    "pledge": 10000
+  },
+  {
+    "ticker": "EMUR8",
+    "name": "EMUR8-npk2y",
+    "group": "MPO",
+    "stake": 63036883,
+    "pledge": 13000
+  },
+  {
+    "ticker": "SMAUG",
+    "name": "SMAUG-330fg",
+    "group": "Single Pool",
+    "stake": 62963589,
+    "pledge": 1000000
+  },
+  {
+    "ticker": "OCEA2",
+    "name": "OCEA2-d66vs",
+    "group": "MPO",
+    "stake": 62617098,
+    "pledge": 10000
+  },
+  {
+    "ticker": "CRDN1",
+    "name": "CRDN1-lrynp",
+    "group": "MPO",
+    "stake": 62503524,
+    "pledge": 100000
+  },
+  {
+    "ticker": "CAG",
+    "name": "CAG-gjcgl",
+    "group": "Single Pool",
+    "stake": 62500769,
+    "pledge": 0
+  },
+  {
+    "ticker": "private7164",
+    "name": "private7164-qtgk4",
+    "group": "MPO",
+    "stake": 62431960,
+    "pledge": 0
+  },
+  {
+    "ticker": "TITAN",
+    "name": "TITAN-ys74x",
+    "group": "MPO",
+    "stake": 62336054,
+    "pledge": 250000
+  },
+  {
+    "ticker": "1LOVE",
+    "name": "1LOVE-w4rgd",
+    "group": "Single Pool",
+    "stake": 62184869,
+    "pledge": 712000
+  },
+  {
+    "ticker": "HAPPY",
+    "name": "HAPPY-mzhej",
+    "group": "Single Pool",
+    "stake": 62141826,
+    "pledge": 100000
+  },
+  {
+    "ticker": "1PCT0",
+    "name": "1PCT0-fsg9a",
+    "group": "MPO",
+    "stake": 61901281,
+    "pledge": 50000
+  },
+  {
+    "ticker": "ATAD2",
+    "name": "ATAD2-0jxsx",
+    "group": "MPO",
+    "stake": 61753857,
+    "pledge": 1300000
+  },
+  {
+    "ticker": "ADAFR",
+    "name": "ADAFR-q704n",
+    "group": "Single Pool",
+    "stake": 61486879,
+    "pledge": 3030000
+  },
+  {
+    "ticker": "CRDN2",
+    "name": "CRDN2-xlm02",
+    "group": "MPO",
+    "stake": 61245321,
+    "pledge": 100000
+  },
+  {
+    "ticker": "NORTH",
+    "name": "NORTH-8txhy",
+    "group": "MPO",
+    "stake": 60948674,
+    "pledge": 110000
+  },
+  {
+    "ticker": "private7432",
+    "name": "private7432-pud2a",
+    "group": "MPO",
+    "stake": 60753389,
+    "pledge": 0
+  },
+  {
+    "ticker": "ONYX",
+    "name": "ONYX-tzkg2",
+    "group": "MPO",
+    "stake": 59920895,
+    "pledge": 250000
+  },
+  {
+    "ticker": "TITAN",
+    "name": "TITAN-ev0uc",
+    "group": "MPO",
+    "stake": 59604683,
+    "pledge": 250000
+  },
+  {
+    "ticker": "PAUL1",
+    "name": "PAUL1-ysvzx",
+    "group": "MPO",
+    "stake": 59128209,
+    "pledge": 100000
+  },
+  {
+    "ticker": "DAPP",
+    "name": "DAPP-g25r9",
+    "group": "MPO",
+    "stake": 58915103,
+    "pledge": 1000
+  },
+  {
+    "ticker": "ECO",
+    "name": "ECO-zdtf3",
+    "group": "Single Pool",
+    "stake": 58702063,
+    "pledge": 120000
+  },
+  {
+    "ticker": "KILN0",
+    "name": "KILN0-4eh5k",
+    "group": "MPO",
+    "stake": 58401186,
+    "pledge": 100
+  },
+  {
+    "ticker": "THNDR",
+    "name": "THNDR-45ghh",
+    "group": "Single Pool",
+    "stake": 58376937,
+    "pledge": 100
+  },
+  {
+    "ticker": "KKS",
+    "name": "KKS-9ntny",
+    "group": "MPO",
+    "stake": 58301804,
+    "pledge": 0
+  },
+  {
+    "ticker": "XSP",
+    "name": "XSP-8a97d",
+    "group": "MPO",
+    "stake": 58250991,
+    "pledge": 20000
+  },
+  {
+    "ticker": "1PCT2",
+    "name": "1PCT2-q55vw",
+    "group": "MPO",
+    "stake": 57487211,
+    "pledge": 50000
+  },
+  {
+    "ticker": "MIN",
+    "name": "MIN-mrdlk",
+    "group": "Single Pool",
+    "stake": 57153590,
+    "pledge": 30000000
+  },
+  {
+    "ticker": "private7387",
+    "name": "private7387-d7ekf",
+    "group": "MPO",
+    "stake": 56802595,
+    "pledge": 100
+  },
+  {
+    "ticker": "WFFL",
+    "name": "WFFL-0p0ks",
+    "group": "Single Pool",
+    "stake": 56397306,
+    "pledge": 850000
+  },
+  {
+    "ticker": "OCEAN",
+    "name": "OCEAN-4cefl",
+    "group": "MPO",
+    "stake": 56026371,
+    "pledge": 10000
+  },
+  {
+    "ticker": "OCEA3",
+    "name": "OCEA3-q8gqs",
+    "group": "MPO",
+    "stake": 55628045,
+    "pledge": 10000
+  },
+  {
+    "ticker": "IFS1",
+    "name": "IFS1-xjwfm",
+    "group": "Single Pool",
+    "stake": 55379011,
+    "pledge": 0
+  },
+  {
+    "ticker": "SDG13",
+    "name": "SDG13-jvlgh",
+    "group": "Single Pool",
+    "stake": 54688354,
+    "pledge": 10000
+  },
+  {
+    "ticker": "KILN6",
+    "name": "KILN6-d82f3",
+    "group": "MPO",
+    "stake": 54658659,
+    "pledge": 100
+  },
+  {
+    "ticker": "EMUR7",
+    "name": "EMUR7-cvs8h",
+    "group": "MPO",
+    "stake": 54636136,
+    "pledge": 500
+  },
+  {
+    "ticker": "COFFE",
+    "name": "COFFE-2s5r6",
+    "group": "Single Pool",
+    "stake": 54585843,
+    "pledge": 101
+  },
+  {
+    "ticker": "N/A",
+    "name": "N/A-rjzgv",
+    "group": "MPO",
+    "stake": 53793692,
+    "pledge": 0
+  },
+  {
+    "ticker": "LBF2",
+    "name": "LBF2-jqfze",
+    "group": "MPO",
+    "stake": 53593057,
+    "pledge": 2
+  },
+  {
+    "ticker": "TW001",
+    "name": "TW001-w62tm",
+    "group": "MPO",
+    "stake": 53182080,
+    "pledge": 100
+  },
+  {
+    "ticker": "ST3AK",
+    "name": "ST3AK-7feg0",
+    "group": "Single Pool",
+    "stake": 53042809,
+    "pledge": 2789000
+  },
+  {
+    "ticker": "private1540",
+    "name": "private1540-lpq3h",
+    "group": "MPO",
+    "stake": 53012332,
+    "pledge": 10000
+  },
+  {
+    "ticker": "ADAOZ",
+    "name": "ADAOZ-ts5ze",
+    "group": "Single Pool",
+    "stake": 52768008,
+    "pledge": 60000
+  },
+  {
+    "ticker": "FIKA",
+    "name": "FIKA-swwgg",
+    "group": "Single Pool",
+    "stake": 52762029,
+    "pledge": 50000
+  },
+  {
+    "ticker": "SWM01",
+    "name": "SWM01-6f7xa",
+    "group": "MPO",
+    "stake": 52589556,
+    "pledge": 500
+  },
+  {
+    "ticker": "TOKAI",
+    "name": "TOKAI-z9llr",
+    "group": "MPO",
+    "stake": 52353755,
+    "pledge": 100000
+  },
+  {
+    "ticker": "APOP",
+    "name": "APOP-vr475",
+    "group": "Single Pool",
+    "stake": 52072698,
+    "pledge": 1000000
+  },
+  {
+    "ticker": "dtDn",
+    "name": "dtDn-gzkfp",
+    "group": "Single Pool",
+    "stake": 51957694,
+    "pledge": 215000
+  },
+  {
+    "ticker": "AOS",
+    "name": "AOS-lnau0",
+    "group": "Single Pool",
+    "stake": 51539505,
+    "pledge": 350000
+  },
+  {
+    "ticker": "EGH",
+    "name": "EGH-95kd4",
+    "group": "MPO",
+    "stake": 51451469,
+    "pledge": 0
+  },
+  {
+    "ticker": "ABLE",
+    "name": "ABLE-9uu34",
+    "group": "Single Pool",
+    "stake": 51316262,
+    "pledge": 5000
+  },
+  {
+    "ticker": "EVRST",
+    "name": "EVRST-985qu",
+    "group": "MPO",
+    "stake": 51110544,
+    "pledge": 1000
+  },
+  {
+    "ticker": "EMURB",
+    "name": "EMURB-uhz6q",
+    "group": "MPO",
+    "stake": 50890805,
+    "pledge": 500
+  },
+  {
+    "ticker": "SBP1",
+    "name": "SBP1-lgt06",
+    "group": "MPO",
+    "stake": 50029810,
+    "pledge": 0
+  },
+  {
+    "ticker": "ETO5",
+    "name": "ETO5-sn4m7",
+    "group": "MPO",
+    "stake": 50010593,
+    "pledge": 0
+  },
+  {
+    "ticker": "ETO10",
+    "name": "ETO10-300ht",
+    "group": "MPO",
+    "stake": 50006996,
+    "pledge": 0
+  },
+  {
+    "ticker": "ETO11",
+    "name": "ETO11-656re",
+    "group": "MPO",
+    "stake": 50000340,
+    "pledge": 0
+  },
+  {
+    "ticker": "ETO12",
+    "name": "ETO12-hjwfy",
+    "group": "MPO",
+    "stake": 50000109,
+    "pledge": 0
+  },
+  {
+    "ticker": "ETO3",
+    "name": "ETO3-7uy45",
+    "group": "MPO",
+    "stake": 50000000,
+    "pledge": 0
+  },
+  {
+    "ticker": "ETO4",
+    "name": "ETO4-qrn40",
+    "group": "MPO",
+    "stake": 50000000,
+    "pledge": 0
+  },
+  {
+    "ticker": "AUTO",
+    "name": "AUTO-qsrjs",
+    "group": "MPO",
+    "stake": 49995689,
+    "pledge": 100
+  },
+  {
+    "ticker": "HRMS",
+    "name": "HRMS-rp6vv",
+    "group": "MPO",
+    "stake": 49738161,
+    "pledge": 250000
+  },
+  {
+    "ticker": "SNAKE",
+    "name": "SNAKE-vqffx",
+    "group": "Single Pool",
+    "stake": 49666685,
+    "pledge": 25000
+  },
+  {
+    "ticker": "0AAAA",
+    "name": "0AAAA-paxfp",
+    "group": "Single Pool",
+    "stake": 49628208,
+    "pledge": 50000
+  },
+  {
+    "ticker": "ATLAS",
+    "name": "ATLAS-ufk5p",
+    "group": "MPO",
+    "stake": 49623526,
+    "pledge": 500000
+  },
+  {
+    "ticker": "private7085",
+    "name": "private7085-jet2f",
+    "group": "MPO",
+    "stake": 49445776,
+    "pledge": 0
+  },
+  {
+    "ticker": "SIPO",
+    "name": "SIPO-dfg2f",
+    "group": "MPO",
+    "stake": 48460507,
+    "pledge": 50000
+  },
+  {
+    "ticker": "HODLA",
+    "name": "HODLA-u86l7",
+    "group": "MPO",
+    "stake": 48393309,
+    "pledge": 8313000
+  },
+  {
+    "ticker": "MS6",
+    "name": "MS6-p50dz",
+    "group": "MPO",
+    "stake": 48282132,
+    "pledge": 100000
+  },
+  {
+    "ticker": "CCV",
+    "name": "CCV-d4wtu",
+    "group": "MPO",
+    "stake": 48031049,
+    "pledge": 20000
+  },
+  {
+    "ticker": "MS4",
+    "name": "MS4-jndk2",
+    "group": "MPO",
+    "stake": 47601508,
+    "pledge": 100000
+  },
+  {
+    "ticker": "BD0",
+    "name": "BD0-7rrst",
+    "group": "MPO",
+    "stake": 47470745,
+    "pledge": 200
+  },
+  {
+    "ticker": "ACL",
+    "name": "ACL-2z5y3",
+    "group": "MPO",
+    "stake": 47329486,
+    "pledge": 750000
+  },
+  {
+    "ticker": "AZUR",
+    "name": "AZUR-6yauc",
+    "group": "MPO",
+    "stake": 47142840,
+    "pledge": 1000000
+  },
+  {
+    "ticker": "MOKSH",
+    "name": "MOKSH-kc86s",
+    "group": "Single Pool",
+    "stake": 47060858,
+    "pledge": 200000
+  },
+  {
+    "ticker": "WAV11",
+    "name": "WAV11-69j8p",
+    "group": "MPO",
+    "stake": 47033525,
+    "pledge": 40000000
+  },
+  {
+    "ticker": "1JPN",
+    "name": "1JPN-37jtl",
+    "group": "Single Pool",
+    "stake": 46734565,
+    "pledge": 100000
+  },
+  {
+    "ticker": "VIPER",
+    "name": "VIPER-yqqlr",
+    "group": "MPO",
+    "stake": 46378987,
+    "pledge": 401000
+  },
+  {
+    "ticker": "ETO9",
+    "name": "ETO9-jdhqf",
+    "group": "MPO",
+    "stake": 46200077,
+    "pledge": 0
+  },
+  {
+    "ticker": "VRSTK",
+    "name": "VRSTK-4ch87",
+    "group": "MPO",
+    "stake": 45914758,
+    "pledge": 1000
+  },
+  {
+    "ticker": "ETO2",
+    "name": "ETO2-lyeuc",
+    "group": "MPO",
+    "stake": 45901816,
+    "pledge": 0
+  },
+  {
+    "ticker": "DIGI2",
+    "name": "DIGI2-5xkvm",
+    "group": "MPO",
+    "stake": 45898167,
+    "pledge": 100000
+  },
+  {
+    "ticker": "SUNNY",
+    "name": "SUNNY-h2v8t",
+    "group": "MPO",
+    "stake": 45806370,
+    "pledge": 1000
+  },
+  {
+    "ticker": "CROW",
+    "name": "CROW-mrhq2",
+    "group": "Single Pool",
+    "stake": 45314948,
+    "pledge": 100000
+  },
+  {
+    "ticker": "STI",
+    "name": "STI-vcvne",
+    "group": "MPO",
+    "stake": 45189536,
+    "pledge": 150000
+  },
+  {
+    "ticker": "LEAF",
+    "name": "LEAF-7yjky",
+    "group": "Single Pool",
+    "stake": 44995258,
+    "pledge": 150000
+  },
+  {
+    "ticker": "SECUR",
+    "name": "SECUR-pm46x",
+    "group": "MPO",
+    "stake": 44807907,
+    "pledge": 100000
+  },
+  {
+    "ticker": "EVE3",
+    "name": "EVE3-y87gm",
+    "group": "MPO",
+    "stake": 44610205,
+    "pledge": 1000
+  },
+  {
+    "ticker": "NEDS1",
+    "name": "NEDS1-m5hyf",
+    "group": "MPO",
+    "stake": 44266379,
+    "pledge": 1000000
+  },
+  {
+    "ticker": "BLC",
+    "name": "BLC-vwvja",
+    "group": "Single Pool",
+    "stake": 44194019,
+    "pledge": 1000
+  },
+  {
+    "ticker": "CNODE",
+    "name": "CNODE-pd25m",
+    "group": "MPO",
+    "stake": 44129780,
+    "pledge": 500000
+  },
+  {
+    "ticker": "FIMI",
+    "name": "FIMI-7ex39",
+    "group": "MPO",
+    "stake": 44104663,
+    "pledge": 10000
+  },
+  {
+    "ticker": "LOVE",
+    "name": "LOVE-rksfj",
+    "group": "Single Pool",
+    "stake": 43690007,
+    "pledge": 100000
+  },
+  {
+    "ticker": "XSP2",
+    "name": "XSP2-nqgve",
+    "group": "MPO",
+    "stake": 43234621,
+    "pledge": 20000
+  },
+  {
+    "ticker": "COOL2",
+    "name": "COOL2-098l2",
+    "group": "MPO",
+    "stake": 42604309,
+    "pledge": 100000
+  },
+  {
+    "ticker": "AHL",
+    "name": "AHL-z7f74",
+    "group": "Single Pool",
+    "stake": 41834838,
+    "pledge": 400000
+  },
+  {
+    "ticker": "private7288",
+    "name": "private7288-tvypm",
+    "group": "Single Pool",
+    "stake": 41139054,
+    "pledge": 2
+  },
+  {
+    "ticker": "ESTK",
+    "name": "ESTK-kfak7",
+    "group": "MPO",
+    "stake": 41017196,
+    "pledge": 1000
+  },
+  {
+    "ticker": "NUFID",
+    "name": "NUFID-7wuv7",
+    "group": "MPO",
+    "stake": 40625756,
+    "pledge": 1000
+  },
+  {
+    "ticker": "LGNS1",
+    "name": "LGNS1-9rwha",
+    "group": "Single Pool",
+    "stake": 40478548,
+    "pledge": 10
+  },
+  {
+    "ticker": "PRIDE",
+    "name": "PRIDE-7ck0j",
+    "group": "Single Pool",
+    "stake": 40472425,
+    "pledge": 100000
+  },
+  {
+    "ticker": "EDEN",
+    "name": "EDEN-fcjep",
+    "group": "MPO",
+    "stake": 40084316,
+    "pledge": 5000000
+  },
+  {
+    "ticker": "CCV2",
+    "name": "CCV2-auzlh",
+    "group": "MPO",
+    "stake": 39728284,
+    "pledge": 20000
+  },
+  {
+    "ticker": "NKR",
+    "name": "NKR-eajs8",
+    "group": "MPO",
+    "stake": 39648104,
+    "pledge": 40000
+  },
+  {
+    "ticker": "DIGI3",
+    "name": "DIGI3-3y8kh",
+    "group": "MPO",
+    "stake": 39603253,
+    "pledge": 100000
+  },
+  {
+    "ticker": "MS9",
+    "name": "MS9-tjy6w",
+    "group": "MPO",
+    "stake": 39270630,
+    "pledge": 30000
+  },
+  {
+    "ticker": "A4G",
+    "name": "A4G-ek2h6",
+    "group": "Single Pool",
+    "stake": 39219105,
+    "pledge": 100000
+  },
+  {
+    "ticker": "EVE",
+    "name": "EVE-tg90u",
+    "group": "MPO",
+    "stake": 39074526,
+    "pledge": 1000
+  },
+  {
+    "ticker": "CCV1",
+    "name": "CCV1-tuwzc",
+    "group": "MPO",
+    "stake": 38791580,
+    "pledge": 20000
+  },
+  {
+    "ticker": "ANP",
+    "name": "ANP-05csz",
+    "group": "Single Pool",
+    "stake": 38789424,
+    "pledge": 350000
+  },
+  {
+    "ticker": "ITC",
+    "name": "ITC-50kne",
+    "group": "MPO",
+    "stake": 38750312,
+    "pledge": 100000
+  },
+  {
+    "ticker": "EVE4",
+    "name": "EVE4-lt7ez",
+    "group": "MPO",
+    "stake": 38544766,
+    "pledge": 1000
+  },
+  {
+    "ticker": "ZZZ2",
+    "name": "ZZZ2-u7uc6",
+    "group": "MPO",
+    "stake": 38130227,
+    "pledge": 50000
+  },
+  {
+    "ticker": "KTN3",
+    "name": "KTN3-jzqwl",
+    "group": "MPO",
+    "stake": 38069423,
+    "pledge": 50000
+  },
+  {
+    "ticker": "BLOOM",
+    "name": "BLOOM-2kxse",
+    "group": "MPO",
+    "stake": 38067501,
+    "pledge": 1000000
+  },
+  {
+    "ticker": "private7023",
+    "name": "private7023-2zec3",
+    "group": "MPO",
+    "stake": 37879410,
+    "pledge": 0
+  },
+  {
+    "ticker": "EVERS",
+    "name": "EVERS-tp2el",
+    "group": "MPO",
+    "stake": 37553526,
+    "pledge": 1000
+  },
+  {
+    "ticker": "SPS2",
+    "name": "SPS2-ahufs",
+    "group": "MPO",
+    "stake": 37522899,
+    "pledge": 10000
+  },
+  {
+    "ticker": "ADAST",
+    "name": "ADAST-myvzj",
+    "group": "Single Pool",
+    "stake": 37512280,
+    "pledge": 1000000
+  }
+]

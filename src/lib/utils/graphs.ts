@@ -4,11 +4,11 @@ import { satCapFns, type Env } from '$lib/utils/types';
 import type { SaturationMode } from '$lib/stores/store';
 
 export interface Pool {
+  pool_id_bech32: string;
   ticker: string;
-  name: string;
-  group: string;
-  stake: number;
   pledge: number;
+  active_stake: number;
+  group: string;
 }
 
 export const pools: Pool[] = poolData;

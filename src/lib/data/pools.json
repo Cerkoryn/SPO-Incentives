@@ -1015,6 +1015,13 @@
     "group": "sSPO"
   },
   {
+    "pool_id_bech32": "pool150hft90uw7tzr9uvj7tqkjp4u98a9hl20llj3n9ew76kkfm768r",
+    "ticker": "MONKY",
+    "pledge": 333333,
+    "active_stake": 1767358,
+    "group": "sSPO"
+  },
+  {
     "pool_id_bech32": "pool19ae6xhzsscypyha0sszv90xwjsh20hxecxjpcqynshfawvwxqnn",
     "ticker": "GENE",
     "pledge": 1000000,
@@ -1579,7 +1586,7 @@
     "ticker": "IOG1",
     "pledge": 5000000,
     "active_stake": 32092662,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool17rns3wjyql9jg9xkzw9h88f0kstd693pm6urwxmvejqgsyjw7ta",
@@ -12653,7 +12660,7 @@
     "ticker": "GMO2",
     "pledge": 10000000,
     "active_stake": 12824421,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool1xmtmp6cmmmaatkn3jd9dlht8xjyf7xnqmrurs59kj2ygxuz2jkd",

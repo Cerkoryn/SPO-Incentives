@@ -11,14 +11,17 @@ export interface Pool {
 	group: string;
 }
 
-/**
- * Load and sanitize pool data: ensure active_stake is at least the pledge amount.
- * Pools cannot earn rewards if stake < pledge, so we clamp active_stake accordingly.
- */
-export const pools: Pool[] = poolData.map((pool) => ({
-	...pool,
-	active_stake: Math.max(pool.active_stake, pool.pledge)
-}));
+export const pools: Pool[] = poolData
+	.map((pool) => {
+		const active_stake = Math.max(pool.active_stake, pool.pledge);
+		const pledge = pool.active_stake < pool.pledge ? pool.active_stake : pool.pledge;
+		return {
+			...pool,
+			active_stake,
+			pledge
+		};
+	})
+	.filter((pool) => pool.active_stake > 0);
 
 export function getSaturationCapLinear(
 	k: number,

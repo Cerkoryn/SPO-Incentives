@@ -14,7 +14,7 @@
 		if (mode === 'current') {
 			sliderParams.set({ k: 500, a0: 0.3, L: 0, L2: 1 });
 		} else if (mode === 'linear') {
-			sliderParams.set({ k: 1000, a0: 0.2, L: 2, L2: 1 });
+			sliderParams.set({ k: 1000, a0: 0.1, L: 2, L2: 1 });
 		} else if (mode === 'exponential') {
 			sliderParams.set({ k: 1000, a0: 0.2, L: 12, L2: 20 });
 		}

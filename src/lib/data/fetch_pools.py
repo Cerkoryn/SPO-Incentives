@@ -45,153 +45,140 @@ def get_all_pools():
 
     return all_pools
 
-def assign_pool_groups(pools_data):
-    """
-    Assigns a 'group' to each pool based on its ticker by matching
-    with 'label' from an external data source.
-    Also converts 'pledge' and 'stake' fields from lovelace to ADA (divides by 1_000_000).
-    Ensures every pool has a 'group' field.
-    """
-    try:
-        response = requests.get("https://www.balanceanalytics.io/api/mavdata.json")
-        response.raise_for_status()
-        mav_data = response.json()
-        mav_data = mav_data["api_data"] 
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching MAV data: {e}")
-        # Even if MAV data can't be fetched, ensure every pool has a 'group'
-        updated_pools = []
-        for pool in pools_data:
-            # Convert 'pledge' from lovelace to ADA as int if present and is a string or int
-            pledge_val = pool.get("pledge")
-            if pledge_val is not None:
-                try:
-                    pool["pledge"] = int(int(pledge_val) / 1_000_000)
-                except (ValueError, TypeError):
-                    pass  # Leave as is if not convertible
+def _convert_pool_values(pool_dict: dict) -> dict:
+    """Converts pledge and active_stake from lovelace to ADA in a pool dictionary."""
+    # Convert 'pledge'
+    pledge_val = pool_dict.get("pledge")
+    if pledge_val is not None:
+        try:
+            pool_dict["pledge"] = int(int(pledge_val) / 1_000_000)
+        except (ValueError, TypeError):
+            # If conversion fails, print a warning but leave the value as is
+            print(f"Warning: Could not convert pledge '{pledge_val}' for pool {pool_dict.get('pool_id_bech32', 'N/A')}")
+            pass
 
-            # Convert 'stake' or 'active_stake' from lovelace to ADA as int if present and is a string or int
-            for stake_key in ("stake", "active_stake"):
-                stake_val = pool.get(stake_key)
-                if stake_val is not None:
-                    try:
-                        pool[stake_key] = int(int(stake_val) / 1_000_000)
-                    except (ValueError, TypeError):
-                        pass  # Leave as is if not convertible
-
-            # Always assign a group, fallback to "sSPO"
-            pool["group"] = pool.get("group", "sSPO")
-            updated_pools.append(pool)
-        return updated_pools
-
-    mav_map = {item["label"]: item["class"] for item in mav_data}
-    
-    updated_pools = []
-    for pool in pools_data:
-        # Convert 'pledge' from lovelace to ADA as int if present and is a string or int
-        pledge_val = pool.get("pledge")
-        if pledge_val is not None:
-            try:
-                pool["pledge"] = int(int(pledge_val) / 1_000_000)
-            except (ValueError, TypeError):
-                pass  # Leave as is if not convertible
-
-        # Convert 'stake' or 'active_stake' from lovelace to ADA as int if present and is a string or int
-        for stake_key in ("stake", "active_stake"):
-            stake_val = pool.get(stake_key)
+    # Convert 'active_stake' (handles both 'stake' and 'active_stake' keys)
+    # The Koios API uses 'active_stake', but 'stake' might exist from other sources like backup.
+    for stake_key in ("stake", "active_stake"):
+        if stake_key in pool_dict: # Process only if the key exists
+            stake_val = pool_dict.get(stake_key)
             if stake_val is not None:
                 try:
-                    pool[stake_key] = int(int(stake_val) / 1_000_000)
+                    pool_dict[stake_key] = int(int(stake_val) / 1_000_000)
                 except (ValueError, TypeError):
-                    pass  # Leave as is if not convertible
+                    print(f"Warning: Could not convert {stake_key} '{stake_val}' for pool {pool_dict.get('pool_id_bech32', 'N/A')}")
+                    pass
+    return pool_dict
 
-        ticker = pool.get("ticker")
-        if ticker is None:
+def assign_pool_groups(pools_data: list) -> list:
+    """
+    Assigns a 'group' to each pool based on its 'pool_id_bech32' by matching
+    with 'pool_hash' from an external data source.
+    If the Koios ticker is null, it attempts to use the ticker from the external source.
+    Converts 'pledge' and 'active_stake' fields from lovelace to ADA.
+    Group assignment logic:
+    - If external data's 'pool_group' is "SINGLEPOOL", assigns "sSPO".
+    - Otherwise (for any other 'pool_group' value from external data), assigns "MPO".
+    - If no match in external data, or external data unavailable/malformed, assigns "sSPO".
+    Pools without a 'pool_id_bech32' are skipped from the final list.
+    """
+    
+    # Stores {api_pool_hash: {"group_name": api_pool_group, "ticker_from_api": api_pool_ticker}}
+    external_data_by_pool_hash = {} 
+    
+    try:
+        response = requests.get("https://www.balanceanalytics.io/api/groupdata.json")
+        response.raise_for_status() 
+        api_response_data = response.json()
+        
+        if (isinstance(api_response_data, list) and 
+            len(api_response_data) > 0 and
+            isinstance(api_response_data[0], dict) and
+            "pool_group_json" in api_response_data[0] and
+            isinstance(api_response_data[0]["pool_group_json"], list)):
+            
+            group_data_items = api_response_data[0]["pool_group_json"]
+            for item in group_data_items:
+                hash_from_api = item.get("pool_hash")
+                pool_group_value_from_api = item.get("pool_group")
+                ticker_from_api = item.get("pool_ticker") # Get ticker from external API
+                
+                if hash_from_api and pool_group_value_from_api is not None:
+                    if hash_from_api in external_data_by_pool_hash:
+                        print(f"DEBUG: Duplicate pool_hash '{hash_from_api}' in external data. Existing: '{external_data_by_pool_hash[hash_from_api]}', New group: '{pool_group_value_from_api}', New ticker: '{ticker_from_api}'. Using the new (last encountered) values.")
+                    external_data_by_pool_hash[hash_from_api] = {
+                        "group_name": pool_group_value_from_api,
+                        "ticker_from_api": ticker_from_api
+                    }
+        else:
+            print("Warning: External group data from API is not in the expected format. Defaulting groups to 'sSPO' and not updating tickers from external source.")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching external group data from API: {e}. Defaulting groups to 'sSPO' and not updating tickers from external source.")
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON from external group data API: {e}. Defaulting groups to 'sSPO' and not updating tickers from external source.")
+
+    updated_pools = []
+    for original_pool_item in pools_data:
+        pool = original_pool_item.copy()
+        pool = _convert_pool_values(pool)
+
+        pool_id_bech32 = pool.get("pool_id_bech32")
+
+        if pool_id_bech32 is None:
+            print(f"Warning: Pool data item missing 'pool_id_bech32'. Skipping item: {pool}")
             continue
 
-        matched_count = 0
-        assigned_group = None
+        assigned_group = "sSPO" 
+        current_koios_ticker = pool.get("ticker")
 
-        # Check for direct match in the pre-processed map
-        if ticker in mav_map:
-            assigned_group = mav_map[ticker]
-            matched_count = 1
-            # Check if this ticker might appear more than once in the raw mav_data (edge case for non-unique labels)
-            if sum(1 for item in mav_data if item["label"] == ticker) > 1:
-                 print(f"DEBUG: Ticker '{ticker}' (Pool ID: {pool.get('pool_id_bech32')}) matched more than once in MAV data. Using the first match.")
-
-        if matched_count == 1:
-            pool["group"] = assigned_group
-        else:
-            pool["group"] = "sSPO"
-
+        if pool_id_bech32 in external_data_by_pool_hash:
+            external_info = external_data_by_pool_hash[pool_id_bech32]
+            external_group_name = external_info["group_name"]
+            
+            if external_group_name == "SINGLEPOOL":
+                assigned_group = "sSPO"
+            else: 
+                assigned_group = "MPO"
+            
+            # If Koios ticker is None, and external ticker is available, use it.
+            if current_koios_ticker is None:
+                ticker_from_external_api = external_info.get("ticker_from_api")
+                if ticker_from_external_api is not None:
+                    pool["ticker"] = ticker_from_external_api
+                    # print(f"DEBUG: Pool {pool_id_bech32} had null ticker from Koios. Using ticker '{ticker_from_external_api}' from Balance Analytics.")
+        
+        pool["group"] = assigned_group
         updated_pools.append(pool)
-    
+            
     return updated_pools
 
-def reconcile_groups_with_backup(pools_with_groups):
+def manual_fixes(pools_with_groups):
     """
-    If a ticker is found in pools_BACKUP.json, all pools with that ticker
-    from pools_with_groups are removed. Then, all pools with that ticker
-    from pools_BACKUP.json are added (with 'group' normalized,
-    'name' field renamed to 'pool_id_bech32', and 'stake' renamed to 'active_stake').
-    Pools from pools_with_groups with tickers not in backup are kept.
+    Iterate through pools_with_groups to make manual fixes.
     """
-    with open("pools_BACKUP.json", "r") as f:
-        backup_pools_raw = json.load(f)
-
-    # Create a list of backup pools with transformations applied,
-    # and a set of unique tickers present in the backup file.
-    backup_pools_processed = []
-    backup_tickers_present_in_backup_file = set()
-
-    for bp_data in backup_pools_raw:
-        # Make a copy to avoid modifying the original list items
-        bp_copy = bp_data.copy()
-        
-        # Normalize "Single Pool" to "sSPO"
-        if bp_copy.get("group") == "Single Pool":
-            bp_copy["group"] = "sSPO"
-        
-        # If "name" field exists, rename it to "pool_id_bech32"
-        if "name" in bp_copy:
-            bp_copy["pool_id_bech32"] = bp_copy.pop("name")
-        
-        # If "stake" field exists, rename it to "active_stake"
-        if "stake" in bp_copy:
-            bp_copy["active_stake"] = bp_copy.pop("stake")
+    for pool in pools_with_groups:
+        if pool.get("ticker") is None:
+            pool_id = pool.get("pool_id_bech32")
+            if pool_id == "pool1ktkhv4sw2y68d4xgfg9sjw829kejnvnh5zajq6g7jycry6cd7h5":
+                pool["ticker"] = "EMPL"
+            elif pool_id == "pool1a6wdglfp93m2z4nhptx9xhjazgyqusjpu387gdrp899cj98yuqq":
+                pool["ticker"] = "HYVEN"
+            elif pool_id == "pool1mgkn6k5esursgcwyvhxy7guhnx8cdwjjcfmz2t5hve5n7shtphl":
+                pool["ticker"] = "NIGHT"
+            elif pool_id == "pool1j045vdrzmj3hl36p50c6mhhpwtu2q7cmecnrqjuqq0khja02sr0":
+                pool["ticker"] = "BNB"
+            elif pool_id is not None:
+                pool["ticker"] = "private" + pool_id[-4:]
             
-        backup_pools_processed.append(bp_copy)
-        
-        # Collect unique tickers from the backup file
-        if bp_copy.get("ticker"):
-            backup_tickers_present_in_backup_file.add(bp_copy.get("ticker"))
-
-    # Initialize the final list of pools.
-    # Start with pools from pools_with_groups whose tickers are NOT in the backup file.
-    final_pools_list = [
-        pool for pool in pools_with_groups 
-        if pool.get("ticker") not in backup_tickers_present_in_backup_file
-    ]
-
-    # Now, add all pools from the processed backup list that correspond to
-    # the tickers we identified as being present in the backup file.
-    for bp_processed in backup_pools_processed:
-        if bp_processed.get("ticker") in backup_tickers_present_in_backup_file:
-            final_pools_list.append(bp_processed)
-
-    # Manual correction loop.  I hate this.
-    mpo_tickers = {"LQWD", "GMO1", "GMO2", "IOG1"}
-    for pool in final_pools_list:
-        if pool.get("ticker") in mpo_tickers:
+        if pool.get("ticker") == "GMO2":
             pool["group"] = "MPO"
-            
-    return final_pools_list
+    return pools_with_groups
 
 if __name__ == "__main__":
     pools = get_all_pools()
     pools_with_groups = assign_pool_groups(pools)
-    pools_with_groups = reconcile_groups_with_backup(pools_with_groups)
+    pools_with_groups = manual_fixes(pools_with_groups)
     # Save to JSON file
     with open("pools.json", "w") as f:
         json.dump(pools_with_groups, f, indent=2)

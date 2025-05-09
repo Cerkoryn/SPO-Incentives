@@ -23,7 +23,7 @@
 			subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
 			subtext2: 'Note that ROI calculations may differ slightly from live data.',
 			legend: [
-				'C<sub>0</sub> - Saturation Cap (constant)',
+				'C<sub>0</sub> - Saturation Cap',
 				'S  - Total Supply',
 				'R  - Reserve',
 				'z<sub>0</sub> - Relative pool saturation size (1/k)'

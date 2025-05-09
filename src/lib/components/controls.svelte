@@ -22,7 +22,11 @@
 
 	function resetDefaults() {
 		// Default values as on initial page load
-		sliderParams.set({ k: 500, a0: 0.3, L: 2, L2: 20 });
+		sliderParams.set(
+			$saturationMode === 'exponential'
+				? { k: 500, a0: 0.3, L: 12, L2: 20 }
+				: { k: 500, a0: 0.3, L: 2, L2: 20 }
+		);
 		rho.set(0.003);
 		tau.set(0.2);
 	}

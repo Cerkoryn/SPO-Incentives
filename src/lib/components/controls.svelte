@@ -6,7 +6,9 @@
 		saturationMode,
 		customPool,
 		zoomEnabled,
-		rewardsMode
+		rewardsMode,
+		rho,
+		tau
 	} from '$lib/stores/store';
 
 	function applyModeDefaults(mode: SaturationMode) {
@@ -22,6 +24,62 @@
 </script>
 
 <div class="slider-controls">
+	<!-- ρ (monetary expansion rate) slider -->
+	<div class="slider-control">
+		<div class="label-row">
+			<label for="rho-slider">Rho:</label>
+			<input
+				type="number"
+				min="0"
+				max="0.005"
+				step="0.0001"
+				value={$rho}
+				on:input={(e) => {
+					const v = parseFloat((e.target as HTMLInputElement).value);
+					if (!isNaN(v)) rho.set(Math.min(0.01, Math.max(0, v)));
+				}}
+				class="value-input wide-input"
+			/>
+			<span class="hint-text">min: 0, max: 0.005</span>
+		</div>
+		<input
+			id="rho-slider"
+			type="range"
+			min="0"
+			max="0.005"
+			step="0.0001"
+			value={$rho}
+			on:input={(e) => rho.set(parseFloat((e.target as HTMLInputElement).value))}
+		/>
+	</div>
+	<!-- τ (treasury cut fraction) slider -->
+	<div class="slider-control">
+		<div class="label-row">
+			<label for="tau-slider">Tau:</label>
+			<input
+				type="number"
+				min="0"
+				max="0.3"
+				step="0.01"
+				value={$tau}
+				on:input={(e) => {
+					const v = parseFloat((e.target as HTMLInputElement).value);
+					if (!isNaN(v)) tau.set(Math.min(1, Math.max(0, v)));
+				}}
+				class="value-input"
+			/>
+			<span class="hint-text">min: 0, max: 0.3</span>
+		</div>
+		<input
+			id="tau-slider"
+			type="range"
+			min="0"
+			max="0.3"
+			step="0.01"
+			value={$tau}
+			on:input={(e) => tau.set(parseFloat((e.target as HTMLInputElement).value))}
+		/>
+	</div>
 	<div class="slider-control">
 		<div class="label-row">
 			<label for="k-slider">k:</label>
@@ -56,7 +114,7 @@
 
 	<div class="slider-control">
 		<div class="label-row">
-			<label for="a0-slider">a0:</label>
+			<label for="a0-slider">a<sub>0</sub>:</label>
 			<input
 				type="number"
 				min="0"
@@ -353,6 +411,10 @@
 	/* Widen custom inputs to show up to 10-digit values */
 	.custom-pool-inputs .value-input {
 		width: 12ch;
+	}
+	/* Wider input for Rho slider to fit extra decimals */
+	.value-input.wide-input {
+		width: 8ch;
 	}
 	/* Error text next to custom pool toggle */
 	.error-text {

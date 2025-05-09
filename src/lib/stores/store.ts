@@ -53,3 +53,6 @@ export const saturationMode = writable<SaturationMode>('current');
 export const zoomEnabled = writable<boolean>(false);
 export type RewardsMode = 'current' | 'full';
 export const rewardsMode = writable<RewardsMode>('current');
+// Reactive monetary expansion and treasury cut parameters
+export const rho = writable<number>(0.003);
+export const tau = writable<number>(0.2);

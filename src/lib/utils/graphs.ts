@@ -1,5 +1,5 @@
 import poolData from '../data/pools.json';
-import { ADA_TOTAL_SUPPLY, ADA_RESERVES, ADA_CIRCULATING, REWARDS_POT } from './constants';
+import { ADA_CIRCULATING, ADA_RESERVES } from './constants';
 import { satCapFns, type Env } from '$lib/utils/types';
 import type { SaturationMode, RewardsMode } from '$lib/stores/store';
 
@@ -29,7 +29,7 @@ export function getSaturationCapLinear(
 	maxX: number,
 	stepSizeX: number
 ): { x: number; y: number }[] {
-	const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
+	const baseCap = ADA_CIRCULATING / k;
 	const points = [];
 	for (let x = 0; x <= maxX; x += stepSizeX) {
 		points.push({ x, y: baseCap + L * x });
@@ -44,7 +44,7 @@ export function getSaturationCapExpSaturation(
 	maxX: number,
 	stepSizeX: number
 ): { x: number; y: number }[] {
-	const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
+	const baseCap = ADA_CIRCULATING / k;
 	const F = 10_000_000; // constant to map bump to our y-values (stake ranges)
 	const points: { x: number; y: number }[] = [];
 
@@ -69,7 +69,9 @@ export function getRewards(
 	L: number,
 	L2: number,
 	saturationMode: SaturationMode,
-	rewardsMode: RewardsMode
+	rewardsMode: RewardsMode,
+	rho: number,
+	tau: number
 ): number {
 	// Convert absolute ADA values to relative fractions
 	const sigma = poolStake / ADA_CIRCULATING; // σ
@@ -85,8 +87,11 @@ export function getRewards(
 	const inner = sigmaP - (sP * (z0 - sigmaP)) / z0;
 	const f = sigmaP + sP * a0 * (inner / z0);
 
+	// compute treasury cut and rewards pot based on rho and tau
+	const treasuryCut = rho * ADA_RESERVES * tau;
+	const rewardsPot = rho * ADA_RESERVES - treasuryCut;
 	// pool reward share: current vs full rewards modes
-	const rewardPerEpoch = rewardsMode === 'current' ? (REWARDS_POT / (1 + a0)) * f : REWARDS_POT * f;
+	const rewardPerEpoch = rewardsMode === 'current' ? (rewardsPot / (1 + a0)) * f : rewardsPot * f;
 	const roiEpoch = rewardPerEpoch / poolStake; // per-ADA
 	return roiEpoch * 73 * 100; // annualised %
 }

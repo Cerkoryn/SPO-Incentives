@@ -14,7 +14,9 @@
 		saturationMode,
 		customPool,
 		zoomEnabled,
-		rewardsMode
+		rewardsMode,
+		rho,
+		tau
 	} from '$lib/stores/store';
 	import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from '$lib/utils/constants';
 	import { get } from 'svelte/store';
@@ -98,9 +100,9 @@
 
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
-		const maxROI = 6.5; // 5% cap
+		const maxROI = 10; // Largest value we can get
 		const minR = 1; // smallest bubble
-		const maxR = 25; // largest bubble
+		const maxR = 32; // largest bubble
 
 		// normalize to [0…1]
 		const t = Math.max(0, Math.min((roi - minROI) / (maxROI - minROI), 1));
@@ -161,10 +163,12 @@
 		const isZoomOn = get(zoomEnabled);
 		const mode = get(saturationMode);
 		const rMode = get(rewardsMode);
+		const rhoValue = get(rho);
+		const tauValue = get(tau);
 		// Build bubble datasets: size proportional to annualized ROI
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
 			const datasetData = dataPoints.map((dp) => {
-				const roi = getRewards(dp.y, dp.x, k, a0, L, L2, mode, rMode);
+				const roi = getRewards(dp.y, dp.x, k, a0, L, L2, mode, rMode, rhoValue, tauValue);
 				return { ...dp, roi, r: getPointRadius(roi) };
 			});
 			return {
@@ -351,7 +355,9 @@
 							L,
 							L2,
 							$saturationMode,
-							$rewardsMode
+							$rewardsMode,
+							$rho,
+							$tau
 						);
 						return { ...pt, roi, r: getPointRadius(roi) };
 					});
@@ -370,7 +376,9 @@
 						L,
 						L2,
 						$saturationMode,
-						$rewardsMode
+						$rewardsMode,
+						$rho,
+						$tau
 					);
 					const r = getPointRadius(roi);
 					const customData = {

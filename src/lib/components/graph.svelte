@@ -404,17 +404,13 @@
 			} else if (customIdx !== -1) {
 				chart.data.datasets.splice(customIdx, 1);
 			}
+			// update axis options based on zoom toggle
+			chart.options.scales.x.max = $zoomEnabled ? 1000000 : maxX;
+			chart.options.scales.x.ticks.stepSize = $zoomEnabled ? 100000 : stepSizeX;
+			chart.options.scales.y.max = $zoomEnabled ? 80000000 : 300000000;
+			chart.options.scales.y.ticks.stepSize = $zoomEnabled ? 5000000 : 25000000;
 			chart.update();
 		}
-	}
-	// Reactive handler: update axis limits and tick sizes when zoom toggles or settings change
-	$: if (chart) {
-		const { maxX, stepSizeX } = $graphSettings;
-		chart.options.scales.x.max = $zoomEnabled ? 1000000 : maxX;
-		chart.options.scales.x.ticks.stepSize = $zoomEnabled ? 100000 : stepSizeX;
-		chart.options.scales.y.max = $zoomEnabled ? 80000000 : 300000000;
-		chart.options.scales.y.ticks.stepSize = $zoomEnabled ? 5000000 : 25000000;
-		chart.update();
 	}
 </script>
 

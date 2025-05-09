@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SliderControl from '$lib/components/SliderControl.svelte';
 	import type { SaturationMode } from '$lib/stores/store';
 	import {
 		sliderParams,
@@ -34,194 +35,72 @@
 
 <!-- Reset button resets all sliders to initial defaults -->
 <button type="button" on:click={resetDefaults} class="reset-button">Reset Defaults</button>
+
 <div class="slider-controls">
-	<!-- ρ (monetary expansion rate) slider -->
-	<div class="slider-control">
-		<div class="label-row">
-			<label for="rho-slider">Rho:</label>
-			<input
-				type="number"
-				min="0"
-				max="0.005"
-				step="0.0001"
-				value={$rho}
-				on:input={(e) => {
-					const v = parseFloat((e.target as HTMLInputElement).value);
-					if (!isNaN(v)) rho.set(Math.min(0.01, Math.max(0, v)));
-				}}
-				class="value-input wide-input"
-			/>
-			<span class="hint-text">min: 0, max: 0.005</span>
-		</div>
-		<input
-			id="rho-slider"
-			type="range"
-			min="0"
-			max="0.005"
-			step="0.0001"
-			value={$rho}
-			on:input={(e) => rho.set(parseFloat((e.target as HTMLInputElement).value))}
-		/>
-	</div>
-	<!-- τ (treasury cut fraction) slider -->
-	<div class="slider-control">
-		<div class="label-row">
-			<label for="tau-slider">Tau:</label>
-			<input
-				type="number"
-				min="0"
-				max="0.3"
-				step="0.01"
-				value={$tau}
-				on:input={(e) => {
-					const v = parseFloat((e.target as HTMLInputElement).value);
-					if (!isNaN(v)) tau.set(Math.min(1, Math.max(0, v)));
-				}}
-				class="value-input"
-			/>
-			<span class="hint-text">min: 0, max: 0.3</span>
-		</div>
-		<input
-			id="tau-slider"
-			type="range"
-			min="0"
-			max="0.3"
-			step="0.01"
-			value={$tau}
-			on:input={(e) => tau.set(parseFloat((e.target as HTMLInputElement).value))}
-		/>
-	</div>
-	<div class="slider-control">
-		<div class="label-row">
-			<label for="k-slider">k:</label>
-			<input
-				type="number"
-				min="1"
-				max="2000"
-				step="1"
-				value={$sliderParams.k}
-				on:input={(e) => {
-					const v = parseInt((e.target as HTMLInputElement).value, 10);
-					if (!isNaN(v)) sliderParams.update((s) => ({ ...s, k: Math.min(2000, Math.max(1, v)) }));
-				}}
-				class="value-input"
-			/>
-			<span class="hint-text">min: 1, max: 2000</span>
-		</div>
-		<input
-			id="k-slider"
-			type="range"
-			min="1"
-			max="2000"
-			step="1"
-			value={$sliderParams.k}
-			on:input={(e) =>
-				sliderParams.update((s) => ({
-					...s,
-					k: parseInt((e.target as HTMLInputElement).value, 10)
-				}))}
-		/>
-	</div>
-
-	<div class="slider-control">
-		<div class="label-row">
-			<label for="a0-slider">a<sub>0</sub>:</label>
-			<input
-				type="number"
-				min="0"
-				max="1"
-				step="0.01"
-				value={$sliderParams.a0}
-				on:input={(e) => {
-					const v = parseFloat((e.target as HTMLInputElement).value);
-					if (!isNaN(v)) sliderParams.update((s) => ({ ...s, a0: Math.min(1, Math.max(0, v)) }));
-				}}
-				class="value-input"
-			/>
-			<span class="hint-text">min: 0, max: 1</span>
-		</div>
-		<input
-			id="a0-slider"
-			type="range"
-			min="0"
-			max="1"
-			step="0.01"
-			value={$sliderParams.a0}
-			on:input={(e) =>
-				sliderParams.update((s) => ({
-					...s,
-					a0: parseFloat((e.target as HTMLInputElement).value)
-				}))}
-		/>
-	</div>
-
+	<SliderControl
+		id="rho-slider"
+		label="Rho:"
+		value={$rho}
+		min={0}
+		max={0.005}
+		step={0.0001}
+		hint="min: 0, max: 0.005"
+		wide={true}
+		on:change={({ detail }) => rho.set(detail)}
+	/>
+	<SliderControl
+		id="tau-slider"
+		label="Tau:"
+		value={$tau}
+		min={0}
+		max={0.3}
+		step={0.01}
+		hint="min: 0, max: 0.3"
+		on:change={({ detail }) => tau.set(detail)}
+	/>
+	<SliderControl
+		id="k-slider"
+		label="k:"
+		value={$sliderParams.k}
+		min={1}
+		max={2000}
+		step={1}
+		hint="min: 1, max: 2000"
+		on:change={({ detail }) => sliderParams.update((s) => ({ ...s, k: detail }))}
+	/>
+	<SliderControl
+		id="a0-slider"
+		label="a<sub>0</sub>:"
+		value={$sliderParams.a0}
+		min={0}
+		max={1}
+		step={0.01}
+		hint="min: 0, max: 1"
+		on:change={({ detail }) => sliderParams.update((s) => ({ ...s, a0: detail }))}
+	/>
 	{#if $saturationMode === 'linear' || $saturationMode === 'exponential'}
-		<div class="slider-control">
-			<div class="label-row">
-				<label for="L-slider">L:</label>
-				<input
-					type="number"
-					min="0"
-					max="50"
-					step="0.1"
-					value={$sliderParams.L}
-					on:input={(e) => {
-						const v = parseFloat((e.target as HTMLInputElement).value);
-						if (!isNaN(v)) sliderParams.update((s) => ({ ...s, L: Math.min(100, Math.max(0, v)) }));
-					}}
-					class="value-input"
-				/>
-				<span class="hint-text">min: 0, max: 50</span>
-			</div>
-			<input
-				id="L-slider"
-				type="range"
-				min="0"
-				max="50"
-				step="0.1"
-				value={$sliderParams.L}
-				on:input={(e) =>
-					sliderParams.update((s) => ({
-						...s,
-						L: parseFloat((e.target as HTMLInputElement).value)
-					}))}
-			/>
-		</div>
+		<SliderControl
+			id="L-slider"
+			label="L:"
+			value={$sliderParams.L}
+			min={0}
+			max={50}
+			step={0.1}
+			hint="min: 0, max: 50"
+			on:change={({ detail }) => sliderParams.update((s) => ({ ...s, L: detail }))}
+		/>
 	{/if}
-
 	{#if $saturationMode === 'exponential'}
-		<div class="slider-control">
-			<div class="label-row">
-				<label for="L2-slider">L2:</label>
-				<input
-					type="number"
-					min="1"
-					max="100"
-					step="1"
-					value={$sliderParams.L2}
-					on:input={(e) => {
-						const v = parseInt((e.target as HTMLInputElement).value, 10);
-						if (!isNaN(v))
-							sliderParams.update((s) => ({ ...s, L2: Math.min(100, Math.max(0, v)) }));
-					}}
-					class="value-input"
-				/>
-				<span class="hint-text">min: 1, max: 100</span>
-			</div>
-			<input
-				id="L2-slider"
-				type="range"
-				min="1"
-				max="100"
-				step="1"
-				value={$sliderParams.L2}
-				on:input={(e) =>
-					sliderParams.update((s) => ({
-						...s,
-						L2: parseInt((e.target as HTMLInputElement).value, 10)
-					}))}
-			/>
-		</div>
+		<SliderControl
+			id="L2-slider"
+			label="L2:"
+			value={$sliderParams.L2}
+			min={1}
+			max={100}
+			step={1}
+			hint="min: 1, max: 100"
+			on:change={({ detail }) => sliderParams.update((s) => ({ ...s, L2: detail }))}
+		/>
 	{/if}
 </div>
 
@@ -370,15 +249,6 @@
 		gap: 1rem;
 	}
 
-	.slider-control {
-		display: flex;
-		flex-direction: column;
-	}
-	.label-row {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
 	/* Reset Defaults button */
 	.reset-button {
 		margin-bottom: 1rem;
@@ -437,10 +307,7 @@
 	.custom-pool-inputs .value-input {
 		width: 12ch;
 	}
-	/* Wider input for Rho slider to fit extra decimals */
-	.value-input.wide-input {
-		width: 8ch;
-	}
+
 	/* Error text next to custom pool toggle */
 	.error-text {
 		color: #d97706;

@@ -13,16 +13,23 @@
 
 	function applyModeDefaults(mode: SaturationMode) {
 		saturationMode.set(mode);
-		if (mode === 'current') {
-			sliderParams.set({ k: 500, a0: 0.3, L: 0, L2: 1 });
-		} else if (mode === 'linear') {
-			sliderParams.set({ k: 1000, a0: 0.1, L: 2, L2: 1 });
+		if (mode === 'linear') {
+			sliderParams.update((s) => ({ ...s, L: 2 }));
 		} else if (mode === 'exponential') {
-			sliderParams.set({ k: 1000, a0: 0.2, L: 12, L2: 20 });
+			sliderParams.update((s) => ({ ...s, L: 12, L2: 20 }));
 		}
+	}
+
+	function resetDefaults() {
+		// Default values as on initial page load
+		sliderParams.set({ k: 500, a0: 0.3, L: 2, L2: 20 });
+		rho.set(0.003);
+		tau.set(0.2);
 	}
 </script>
 
+<!-- Reset button resets all sliders to initial defaults -->
+<button type="button" on:click={resetDefaults} class="reset-button">Reset Defaults</button>
 <div class="slider-controls">
 	<!-- ρ (monetary expansion rate) slider -->
 	<div class="slider-control">
@@ -368,6 +375,20 @@
 		align-items: center;
 		gap: 0.5rem;
 	}
+	/* Reset Defaults button */
+	.reset-button {
+		margin-bottom: 1rem;
+		padding: 0.5rem 1rem;
+		background-color: #f3f4f6;
+		border: 1px solid #d1d5db;
+		border-radius: 0.25rem;
+		cursor: pointer;
+		font-size: 0.875rem;
+	}
+	.reset-button:hover {
+		background-color: #e5e7eb;
+	}
+
 	/* Global styling for numeric inputs */
 	.value-input {
 		width: 4rem;

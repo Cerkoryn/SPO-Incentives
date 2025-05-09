@@ -1,7 +1,7 @@
 import poolData from '../data/pools.json';
 import { ADA_TOTAL_SUPPLY, ADA_RESERVES, ADA_CIRCULATING, REWARDS_POT } from './constants';
 import { satCapFns, type Env } from '$lib/utils/types';
-import type { SaturationMode } from '$lib/stores/store';
+import type { SaturationMode, RewardsMode } from '$lib/stores/store';
 
 export interface Pool {
 	pool_id_bech32: string;
@@ -58,7 +58,8 @@ export function getRewards(
 	a0: number,
 	L: number,
 	L2: number,
-	saturationMode: SaturationMode
+	saturationMode: SaturationMode,
+	rewardsMode: RewardsMode
 ): number {
 	// Convert absolute ADA values to relative fractions
 	const sigma = poolStake / ADA_CIRCULATING; // σ
@@ -74,7 +75,8 @@ export function getRewards(
 	const inner = sigmaP - (sP * (z0 - sigmaP)) / z0;
 	const f = sigmaP + sP * a0 * (inner / z0);
 
-	const rewardPerEpoch = (REWARDS_POT / (1 + a0)) * f; // pool reward share
+	// pool reward share: current vs full rewards modes
+	const rewardPerEpoch = rewardsMode === 'current' ? (REWARDS_POT / (1 + a0)) * f : REWARDS_POT * f;
 	const roiEpoch = rewardPerEpoch / poolStake; // per-ADA
 	return roiEpoch * 73 * 100; // annualised %
 }

@@ -5,7 +5,8 @@
 		graphCheckboxes,
 		saturationMode,
 		customPool,
-		zoomEnabled
+		zoomEnabled,
+		rewardsMode
 	} from '$lib/stores/store';
 
 	function applyModeDefaults(mode: SaturationMode) {
@@ -221,6 +222,31 @@
 	</div>
 {/if}
 
+<!-- Radio Buttons for selecting the rewards mode -->
+<div class="rewards-mode-toggle">
+	<span>Rewards:</span>
+	<label>
+		<input
+			type="radio"
+			name="rewards-mode"
+			value="current"
+			on:change={() => rewardsMode.set('current')}
+			checked={$rewardsMode === 'current'}
+		/>
+		Current
+	</label>
+	<label>
+		<input
+			type="radio"
+			name="rewards-mode"
+			value="full"
+			on:change={() => rewardsMode.set('full')}
+			checked={$rewardsMode === 'full'}
+		/>
+		Full
+	</label>
+</div>
+
 <!-- Radio Buttons for selecting the saturation function with default presets -->
 <div class="saturation-mode-toggle">
 	<span>Formula:</span>
@@ -307,6 +333,12 @@
 	}
 
 	.saturation-mode-toggle {
+		margin-top: 1rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	.rewards-mode-toggle {
 		margin-top: 1rem;
 		display: flex;
 		align-items: center;

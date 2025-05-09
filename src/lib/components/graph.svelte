@@ -13,7 +13,8 @@
 		graphSettings,
 		saturationMode,
 		customPool,
-		zoomEnabled
+		zoomEnabled,
+		rewardsMode
 	} from '$lib/stores/store';
 	import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from '$lib/utils/constants';
 	import { get } from 'svelte/store';
@@ -97,7 +98,7 @@
 
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
-		const maxROI = 3.37; // 5% cap
+		const maxROI = 6.5; // 5% cap
 		const minR = 1; // smallest bubble
 		const maxR = 15; // largest bubble
 
@@ -159,10 +160,11 @@
 		const { maxX, stepSizeX } = get(graphSettings);
 		const isZoomOn = get(zoomEnabled);
 		const mode = get(saturationMode);
+		const rMode = get(rewardsMode);
 		// Build bubble datasets: size proportional to annualized ROI
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
 			const datasetData = dataPoints.map((dp) => {
-				const roi = getRewards(dp.y, dp.x, k, a0, L, L2, mode);
+				const roi = getRewards(dp.y, dp.x, k, a0, L, L2, mode, rMode);
 				return { ...dp, roi, r: getPointRadius(roi) };
 			});
 			return {
@@ -341,7 +343,16 @@
 			chart.data.datasets.forEach((ds) => {
 				if (ds.type === 'bubble') {
 					ds.data = (ds.data as any[]).map((pt) => {
-						const roi = getRewards(pt.y, pt.x, k, $sliderParams.a0, L, L2, $saturationMode);
+						const roi = getRewards(
+							pt.y,
+							pt.x,
+							k,
+							$sliderParams.a0,
+							L,
+							L2,
+							$saturationMode,
+							$rewardsMode
+						);
 						return { ...pt, roi, r: getPointRadius(roi) };
 					});
 				}
@@ -351,7 +362,16 @@
 			if ($graphCheckboxes.custom) {
 				const { pledge, stake } = $customPool;
 				if (!isNaN(pledge) && !isNaN(stake)) {
-					const roi = getRewards(stake, pledge, k, $sliderParams.a0, L, L2, $saturationMode);
+					const roi = getRewards(
+						stake,
+						pledge,
+						k,
+						$sliderParams.a0,
+						L,
+						L2,
+						$saturationMode,
+						$rewardsMode
+					);
 					const r = getPointRadius(roi);
 					const customData = {
 						x: pledge,

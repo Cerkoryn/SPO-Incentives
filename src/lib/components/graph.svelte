@@ -34,9 +34,11 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 		// normalize to [0…1]
 		const t = Math.max(0, Math.min((roi - minROI) / (maxROI - minROI), 1));
 		return minR + t * (maxR - minR);
-	}
+        }
+
 
 	let canvas: HTMLCanvasElement;
+	let container: HTMLDivElement;
 	let chart: Chart;
 
 	// Define colors for pool groups: MPO, sSPO, plus Custom Pool
@@ -48,6 +50,14 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 
 	onMount(() => {
 		createChart();
+		// watch for container size changes to resize chart
+		const ro = new ResizeObserver(() => {
+			if (chart) chart.resize();
+		});
+		if (container) ro.observe(container);
+		return () => {
+			ro.disconnect();
+		};
 	});
 
 	function createChart() {
@@ -138,8 +148,10 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 			data: {
 				datasets: [...scatterDatasets, lineDataset]
 			},
-			options: {
-				animation: { duration: 0 },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 0 },
 				scales: {
 					x: {
 						type: 'linear',
@@ -300,18 +312,24 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 			} else if (customIdx !== -1) {
 				chart.data.datasets.splice(customIdx, 1);
 			}
-			// update axis options based on zoom toggle
-			chart.options.scales.x.max = $zoomEnabled ? 1000000 : maxX;
-			chart.options.scales.x.ticks.stepSize = $zoomEnabled ? 100000 : stepSizeX;
-			chart.options.scales.y.max = $zoomEnabled ? 80000000 : 300000000;
-			chart.options.scales.y.ticks.stepSize = $zoomEnabled ? 5000000 : 25000000;
-			chart.update();
+        // finalize data updates without re-rendering axes
+        chart.update('none');
 		}
 	}
+  // Reactive block for axis and zoom updates
+  $: if (chart && $graphSettings) {
+    const { maxX, stepSizeX } = $graphSettings;
+    // adjust axis limits and ticks based on zoom toggle
+    chart.options.scales.x.max = $zoomEnabled ? 1000000 : maxX;
+    chart.options.scales.x.ticks.stepSize = $zoomEnabled ? 100000 : stepSizeX;
+    chart.options.scales.y.max = $zoomEnabled ? 80000000 : 300000000;
+    chart.options.scales.y.ticks.stepSize = $zoomEnabled ? 5000000 : 25000000;
+    chart.update();
+  }
 </script>
 
-<div class="relative">
-	<canvas bind:this={canvas} width="600" height="300" class="w-full h-auto border border-gray-300"></canvas>
+<div bind:this={container} class="relative flex-1">
+<canvas bind:this={canvas} class="w-full h-full border border-gray-300"></canvas>
 	<div id="chartjs-tooltip" class="chartjs-tooltip fixed pointer-events-none bg-black bg-opacity-70 text-white rounded px-2 py-1 text-xs whitespace-nowrap transition-opacity duration-100"></div>
 </div>
 

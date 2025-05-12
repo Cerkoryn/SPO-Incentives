@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Chart, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
+import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 	import {
 		pools,
 		getSaturationCapLinear,
@@ -23,80 +24,6 @@
 
 	Chart.register(...registerables);
 
-	// Custom external tooltip handler to allow rich text and styling
-	function externalTooltipHandler(context: any) {
-		const { chart, tooltip } = context;
-		const tooltipEl = chart.canvas.parentNode.querySelector('#chartjs-tooltip');
-		if (!tooltipEl) return;
-		// Hide if no tooltip
-		if (tooltip.opacity === 0) {
-			tooltipEl.style.opacity = '0';
-			return;
-		}
-		// Clear existing content
-		tooltipEl.innerHTML = '';
-		// Add title lines
-		tooltip.title.forEach((line) => {
-			const el = document.createElement('div');
-			el.classList.add('tooltip-title');
-			el.textContent = line;
-			tooltipEl.appendChild(el);
-		});
-		// Add body items with colored box only on the 'Ticker' line
-		if (tooltip.dataPoints && tooltip.labelColors) {
-			tooltip.dataPoints.forEach((dp: any, i: number) => {
-				const lines = tooltip.body[i]?.lines || [];
-				const bgColor = tooltip.labelColors[i]?.backgroundColor || 'transparent';
-				lines.forEach((line: string, j: number) => {
-					const wrapper = document.createElement('div');
-					wrapper.classList.add('tooltip-item');
-					// prepend colored box only for first line (Ticker); transparent otherwise
-					const box = document.createElement('span');
-					box.classList.add('tooltip-box');
-					box.style.backgroundColor = j === 0 ? bgColor : 'transparent';
-					wrapper.appendChild(box);
-					// text content
-					const text = document.createElement('span');
-					if (line === 'Stake cannot be lower than pledge') {
-						text.classList.add('warning-text');
-						text.textContent = '⚠ ' + line;
-					} else {
-						text.textContent = line;
-					}
-					wrapper.appendChild(text);
-					tooltipEl.appendChild(wrapper);
-				});
-			});
-		}
-		// Display tooltip at caret position, flipping to stay within viewport
-		const { caretX, caretY } = tooltip;
-		tooltipEl.style.opacity = '1';
-		// Get canvas position on page
-		const canvasRect = chart.canvas.getBoundingClientRect();
-		// Calculate page coordinates for tooltip
-		let x = canvasRect.left + window.pageXOffset + caretX;
-		let y = canvasRect.top + window.pageYOffset + caretY;
-		// Measure tooltip size
-		const tooltipWidth = tooltipEl.offsetWidth;
-		const tooltipHeight = tooltipEl.offsetHeight;
-		// Flip horizontally if overflowing viewport
-		if (x + tooltipWidth > window.pageXOffset + window.innerWidth) {
-			x -= tooltipWidth;
-		}
-		if (x < window.pageXOffset) {
-			x = window.pageXOffset;
-		}
-		// Flip vertically if overflowing viewport bottom
-		if (y + tooltipHeight > window.pageYOffset + window.innerHeight) {
-			y -= tooltipHeight;
-		}
-		if (y < window.pageYOffset) {
-			y = window.pageYOffset;
-		}
-		// Position tooltip using fixed coordinates
-		tooltipEl.style.left = x + 'px';
-		tooltipEl.style.top = y + 'px';
-	}
 
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
@@ -279,39 +206,8 @@
 				}
 			}
 		});
-		// Enable dragging only on the custom pool bubble
-		let isDragging = false;
-		let dragDatasetIndex: number;
-		let dragDataIndex: number;
-		canvas.addEventListener('mousedown', (e: MouseEvent) => {
-			const pts = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
-			if (pts.length) {
-				const el = pts[0];
-				if (chart.data.datasets[el.datasetIndex].label === 'Custom Pool') {
-					isDragging = true;
-					dragDatasetIndex = el.datasetIndex;
-					dragDataIndex = el.index;
-				}
-			}
-		});
-		canvas.addEventListener('mousemove', (e: MouseEvent) => {
-			if (!isDragging) return;
-			// Calculate nearest whole number values for custom pool
-			const rawX = chart.scales.x.getValueForPixel(e.offsetX);
-			const rawY = chart.scales.y.getValueForPixel(e.offsetY);
-			// Enforce positive values greater than 0
-			const pledgeVal = Math.max(0, Math.round(rawX));
-			const stakeVal = Math.max(0, Math.round(rawY));
-			const ds = chart.data.datasets[dragDatasetIndex];
-			const point: any = (ds.data as any[])[dragDataIndex];
-			point.x = pledgeVal;
-			point.y = stakeVal;
-			customPool.set({ pledge: pledgeVal, stake: stakeVal });
-			chart.update('none');
-		});
-		canvas.addEventListener('mouseup', () => {
-			isDragging = false;
-		});
+			// Setup custom pool drag handlers
+			enableCustomPoolDrag(chart, canvas);
 	}
 
 	// Update reactive block to listen to changes in both slider parameters and graph settings.

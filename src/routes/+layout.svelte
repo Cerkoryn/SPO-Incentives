@@ -5,7 +5,7 @@
   import { onMount } from 'svelte';
   let showSliders = false;
   let width = 0;
-  const STATIC_THRESHOLD = 1680; // px: min width to show static sidebar
+  const STATIC_THRESHOLD = 1800; // px: min width to show static sidebar
   $: isStatic = width >= STATIC_THRESHOLD;
   onMount(() => {
     width = window.innerWidth;
@@ -28,7 +28,7 @@
       </main>
     </div>
   {:else}
-    <div class="relative flex flex-1 overflow-x-hidden">
+    <div class="relative flex flex-1 overflow-x-auto">
       <main class="flex-1 p-4">
         <Graph />
         <slot />

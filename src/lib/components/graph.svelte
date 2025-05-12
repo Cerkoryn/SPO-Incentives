@@ -9,7 +9,7 @@
 		getRewards
 	} from '$lib/utils/graphs';
 	import {
-		graphCheckboxes,
+		showCustomPool,
 		sliderParams,
 		graphSettings,
 		saturationMode,
@@ -87,7 +87,7 @@
 			});
 		});
 		// Include custom pool if toggled
-		if ($graphCheckboxes.custom) {
+		if ($showCustomPool) {
 			const { pledge, stake } = $customPool;
 			if (!isNaN(pledge) && !isNaN(stake)) {
 				const groupKey = 'Custom Pool';
@@ -235,7 +235,7 @@
 		$sliderParams &&
 		$graphSettings &&
 		$saturationMode &&
-		$graphCheckboxes &&
+		$showCustomPool !== undefined &&
 		$customPool
 	) {
 		const idx = chart.data.datasets.findIndex((ds) => ds.label === 'Saturation Cap');
@@ -281,7 +281,7 @@
 			});
 			// Handle custom pool dataset presence and updates
 			const customIdx = chart.data.datasets.findIndex((ds) => ds.label === 'Custom Pool');
-			if ($graphCheckboxes.custom) {
+			if ($showCustomPool) {
 				const { pledge, stake } = $customPool;
 				if (!isNaN(pledge) && !isNaN(stake)) {
 					const roi = getRewards(

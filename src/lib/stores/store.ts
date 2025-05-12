@@ -14,22 +14,8 @@ export const sliderParams = writable<SliderParameters>({
 	L2: 1
 });
 
-export interface GraphCheckboxes {
-	[key: string]: boolean;
-	copper: boolean;
-	eden: boolean;
-	blade: boolean;
-	cag: boolean;
-	custom: boolean;
-}
-
-export const graphCheckboxes = writable<GraphCheckboxes>({
-	copper: true,
-	eden: true,
-	blade: true,
-	cag: true,
-	custom: false
-});
+// Toggle to show/hide the custom pool on the graph
+export const showCustomPool = writable<boolean>(false);
 
 export interface GraphSettings {
 	maxX: number;

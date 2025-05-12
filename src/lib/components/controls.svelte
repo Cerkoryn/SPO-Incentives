@@ -3,7 +3,7 @@
 	import type { SaturationMode } from '$lib/stores/store';
 	import {
 		sliderParams,
-		graphCheckboxes,
+		showCustomPool,
 		saturationMode,
 		customPool,
 		zoomEnabled,
@@ -122,10 +122,10 @@
 			<input
 				type="checkbox"
 				id="custom-checkbox"
-				checked={$graphCheckboxes.custom}
+				checked={$showCustomPool}
 				on:change={(e) => {
 					const checked = (e.target as HTMLInputElement).checked;
-					graphCheckboxes.update((s) => ({ ...s, custom: checked }));
+					showCustomPool.set(checked);
 					if (checked) {
 						customPool.set({
 							pledge: CUSTOM_POOL_DEFAULT_PLEDGE,
@@ -136,12 +136,12 @@
 			/>
 			Show Custom Pool
 		</label>
-		{#if $graphCheckboxes.custom && $customPool.stake < $customPool.pledge}
+		{#if $showCustomPool && $customPool.stake < $customPool.pledge}
 			<span class="ml-2 text-xs text-amber-600">⚠ Stake cannot be lower than pledge</span>
 		{/if}
 	</div>
 </div>
-{#if $graphCheckboxes.custom}
+{#if $showCustomPool}
 	<div class="mt-4 flex flex-col gap-2">
 		<div class="flex flex-wrap items-center gap-2">
 			<label for="custom-pledge">Pledge:</label>

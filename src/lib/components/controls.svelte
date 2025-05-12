@@ -11,6 +11,12 @@
 		rho,
 		tau
 	} from '$lib/stores/store';
+	import {
+		CUSTOM_POOL_DEFAULT_PLEDGE,
+		CUSTOM_POOL_DEFAULT_STAKE,
+		CUSTOM_POOL_PLEDGE_STEP,
+		CUSTOM_POOL_STAKE_STEP
+	} from '$lib/utils/constants';
 
 	function applyModeDefaults(mode: SaturationMode) {
 		saturationMode.set(mode);
@@ -34,7 +40,12 @@
 </script>
 
 <!-- Reset button resets all sliders to initial defaults -->
-<button type="button" on:click={resetDefaults} class="mb-4 px-4 py-2 bg-gray-100 border border-gray-300 rounded text-sm cursor-pointer hover:bg-gray-200">Reset Defaults</button>
+<button
+	type="button"
+	on:click={resetDefaults}
+	class="mb-4 cursor-pointer rounded border border-gray-300 bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200"
+	>Reset Defaults</button
+>
 
 <div class="flex flex-col gap-4">
 	<SliderControl
@@ -106,7 +117,7 @@
 
 <!-- Checkbox controls for selecting graph points -->
 <div class="mt-4 flex flex-wrap gap-4">
-    <div class="flex items-center">
+	<div class="flex items-center">
 		<label for="custom-checkbox">
 			<input
 				type="checkbox"
@@ -116,58 +127,61 @@
 					const checked = (e.target as HTMLInputElement).checked;
 					graphCheckboxes.update((s) => ({ ...s, custom: checked }));
 					if (checked) {
-						customPool.set({ pledge: 35000000, stake: 200000000 });
+						customPool.set({
+							pledge: CUSTOM_POOL_DEFAULT_PLEDGE,
+							stake: CUSTOM_POOL_DEFAULT_STAKE
+						});
 					}
 				}}
 			/>
 			Show Custom Pool
 		</label>
 		{#if $graphCheckboxes.custom && $customPool.stake < $customPool.pledge}
-            <span class="text-xs text-amber-600 ml-2">⚠ Stake cannot be lower than pledge</span>
+			<span class="ml-2 text-xs text-amber-600">⚠ Stake cannot be lower than pledge</span>
 		{/if}
 	</div>
 </div>
 {#if $graphCheckboxes.custom}
-  <div class="mt-4 flex flex-col gap-2">
-    <div class="flex flex-wrap items-center gap-2">
-      <label for="custom-pledge">Pledge:</label>
-      <input
-        type="number"
-        id="custom-pledge"
-        min="0"
-        step="10000"
-        value={$customPool.pledge}
-        on:input={(e) => {
-          const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
-          const v = parseInt(raw, 10);
-          if (!isNaN(v)) {
-            const pledgeVal = Math.max(1, v);
-            customPool.update((c) => ({ ...c, pledge: pledgeVal }));
-          }
-        }}
-        class="w-[12ch] bg-white"
-      />
-    </div>
-    <div class="flex flex-wrap items-center gap-2">
-      <label for="custom-stake">Stake:</label>
-      <input
-        type="number"
-        id="custom-stake"
-        min="0"
-        step="1000000"
-        value={$customPool.stake}
-        on:input={(e) => {
-          const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
-          const v = parseInt(raw, 10);
-          if (!isNaN(v)) {
-            const stakeVal = Math.max(1, v);
-            customPool.update((c) => ({ ...c, stake: stakeVal }));
-          }
-        }}
-        class="w-[12ch] bg-white"
-      />
-    </div>
-  </div>
+	<div class="mt-4 flex flex-col gap-2">
+		<div class="flex flex-wrap items-center gap-2">
+			<label for="custom-pledge">Pledge:</label>
+			<input
+				type="number"
+				id="custom-pledge"
+				min="0"
+				step={CUSTOM_POOL_PLEDGE_STEP}
+				value={$customPool.pledge}
+				on:input={(e) => {
+					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+					const v = parseInt(raw, 10);
+					if (!isNaN(v)) {
+						const pledgeVal = Math.max(1, v);
+						customPool.update((c) => ({ ...c, pledge: pledgeVal }));
+					}
+				}}
+				class="w-[12ch] bg-white"
+			/>
+		</div>
+		<div class="flex flex-wrap items-center gap-2">
+			<label for="custom-stake">Stake:</label>
+			<input
+				type="number"
+				id="custom-stake"
+				min="0"
+				step={CUSTOM_POOL_STAKE_STEP}
+				value={$customPool.stake}
+				on:input={(e) => {
+					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+					const v = parseInt(raw, 10);
+					if (!isNaN(v)) {
+						const stakeVal = Math.max(1, v);
+						customPool.update((c) => ({ ...c, stake: stakeVal }));
+					}
+				}}
+				class="w-[12ch] bg-white"
+			/>
+		</div>
+	</div>
 {/if}
 
 <!-- Radio Buttons for selecting the rewards mode -->
@@ -241,4 +255,3 @@
 		Toggle Zoom
 	</label>
 </div>
-

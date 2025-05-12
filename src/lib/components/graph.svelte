@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-import { Chart, registerables } from 'chart.js';
-import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
+	import { Chart, registerables } from 'chart.js';
+	import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 	import {
 		pools,
 		getSaturationCapLinear,
@@ -20,10 +20,18 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 		tau
 	} from '$lib/stores/store';
 	import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from '$lib/utils/constants';
+	import {
+		GRAPH_X_ZOOM_INITIAL_MAX,
+		GRAPH_X_ZOOM_REACTIVE_MAX,
+		GRAPH_X_ZOOM_STEP,
+		GRAPH_Y_SCALE_DEFAULT_MAX,
+		GRAPH_Y_ZOOM_MAX,
+		GRAPH_Y_SCALE_DEFAULT_STEP,
+		GRAPH_Y_ZOOM_STEP
+	} from '$lib/utils/constants';
 	import { get } from 'svelte/store';
 
 	Chart.register(...registerables);
-
 
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
@@ -34,8 +42,7 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 		// normalize to [0…1]
 		const t = Math.max(0, Math.min((roi - minROI) / (maxROI - minROI), 1));
 		return minR + t * (maxR - minR);
-        }
-
+	}
 
 	let canvas: HTMLCanvasElement;
 	let container: HTMLDivElement;
@@ -148,10 +155,10 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 			data: {
 				datasets: [...scatterDatasets, lineDataset]
 			},
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: 0 },
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				animation: { duration: 0 },
 				scales: {
 					x: {
 						type: 'linear',
@@ -161,7 +168,7 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 							text: 'Pledge'
 						},
 						min: 0,
-						max: isZoomOn ? 5000000 : maxX,
+						max: isZoomOn ? GRAPH_X_ZOOM_INITIAL_MAX : maxX,
 						ticks: {
 							stepSize: stepSizeX,
 							callback: function (value) {
@@ -175,9 +182,9 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 							text: 'Stake'
 						},
 						min: 0,
-						max: isZoomOn ? 80000000 : 300000000,
+						max: isZoomOn ? GRAPH_Y_ZOOM_MAX : GRAPH_Y_SCALE_DEFAULT_MAX,
 						ticks: {
-							stepSize: 25000000,
+							stepSize: GRAPH_Y_SCALE_DEFAULT_STEP,
 							callback: function (value) {
 								return new Intl.NumberFormat('en-US').format(Number(value));
 							}
@@ -218,8 +225,8 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 				}
 			}
 		});
-			// Setup custom pool drag handlers
-			enableCustomPoolDrag(chart, canvas);
+		// Setup custom pool drag handlers
+		enableCustomPoolDrag(chart, canvas);
 	}
 
 	// Update reactive block to listen to changes in both slider parameters and graph settings.
@@ -312,25 +319,30 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 			} else if (customIdx !== -1) {
 				chart.data.datasets.splice(customIdx, 1);
 			}
-        // finalize data updates without re-rendering axes
-        chart.update('none');
+			// finalize data updates without re-rendering axes
+			chart.update('none');
 		}
 	}
-  // Reactive block for axis and zoom updates
-  $: if (chart && $graphSettings) {
-    const { maxX, stepSizeX } = $graphSettings;
-    // adjust axis limits and ticks based on zoom toggle
-    chart.options.scales.x.max = $zoomEnabled ? 1000000 : maxX;
-    chart.options.scales.x.ticks.stepSize = $zoomEnabled ? 100000 : stepSizeX;
-    chart.options.scales.y.max = $zoomEnabled ? 80000000 : 300000000;
-    chart.options.scales.y.ticks.stepSize = $zoomEnabled ? 5000000 : 25000000;
-    chart.update();
-  }
+	// Reactive block for axis and zoom updates
+	$: if (chart && $graphSettings) {
+		const { maxX, stepSizeX } = $graphSettings;
+		// adjust axis limits and ticks based on zoom toggle
+		chart.options.scales.x.max = $zoomEnabled ? GRAPH_X_ZOOM_REACTIVE_MAX : maxX;
+		chart.options.scales.x.ticks.stepSize = $zoomEnabled ? GRAPH_X_ZOOM_STEP : stepSizeX;
+		chart.options.scales.y.max = $zoomEnabled ? GRAPH_Y_ZOOM_MAX : GRAPH_Y_SCALE_DEFAULT_MAX;
+		chart.options.scales.y.ticks.stepSize = $zoomEnabled
+			? GRAPH_Y_ZOOM_STEP
+			: GRAPH_Y_SCALE_DEFAULT_STEP;
+		chart.update();
+	}
 </script>
 
-<div bind:this={container} class="relative flex-1">
-<canvas bind:this={canvas} class="w-full h-full border border-gray-300"></canvas>
-	<div id="chartjs-tooltip" class="chartjs-tooltip fixed pointer-events-none bg-black bg-opacity-70 text-white rounded px-2 py-1 text-xs whitespace-nowrap transition-opacity duration-100"></div>
+<div bind:this={container} class="relative h-175 w-full">
+	<canvas bind:this={canvas} class="h-full w-full border border-gray-300"></canvas>
+	<div
+		id="chartjs-tooltip"
+		class="chartjs-tooltip bg-opacity-70 pointer-events-none fixed rounded bg-black px-2 py-1 text-xs whitespace-nowrap text-white transition-opacity duration-100"
+	></div>
 </div>
 
 <style>

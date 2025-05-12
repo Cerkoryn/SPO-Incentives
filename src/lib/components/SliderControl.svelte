@@ -31,7 +31,7 @@
 </script>
 
 <div class="flex flex-col">
-  <div class="flex flex-wrap items-center gap-2">
+	<div class="flex flex-wrap items-center gap-2">
 		<label for={id}>{@html label}</label>
 		<input
 			type="number"
@@ -41,12 +41,11 @@
 			{step}
 			{value}
 			on:input={onNumberInput}
-class={wide ? 'bg-white w-[8ch]' : 'bg-white w-16'}
+			class={wide ? 'w-[8ch] bg-white' : 'w-16 bg-white'}
 		/>
-{#if hint}
-        <span class="text-xs text-gray-400">{hint}</span>
+		{#if hint}
+			<span class="text-xs text-gray-400">{hint}</span>
 		{/if}
 	</div>
-<input {id} type="range" {min} {max} {step} {value} on:input={onRangeInput} class="w-full mt-2" />
+	<input {id} type="range" {min} {max} {step} {value} on:input={onRangeInput} class="mt-2 w-full" />
 </div>
-

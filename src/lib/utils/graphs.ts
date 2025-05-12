@@ -64,20 +64,20 @@ export function getSaturationCapExpSaturation(
 }
 
 export const satCapFns: Record<SaturationMode, (pledge: number, env: Env) => number> = {
-   /** Existing formula: (circ / k) */
-   current: (_pledge, { k, ADA_CIRCULATING }) => ADA_CIRCULATING / k,
+	/** Existing formula: (circ / k) */
+	current: (_pledge, { k, ADA_CIRCULATING }) => ADA_CIRCULATING / k,
 
-   /** Linear: (circ / k) + L · pledge */
-   linear: (pledge, { k, L, ADA_CIRCULATING }) => ADA_CIRCULATING / k + L * pledge,
+	/** Linear: (circ / k) + L · pledge */
+	linear: (pledge, { k, L, ADA_CIRCULATING }) => ADA_CIRCULATING / k + L * pledge,
 
-   /** Exponential: (circ / k) + sc·L·(1 − e^(−pledge/sc)) */
-   exponential: (pledge, { k, L, L2, ADA_CIRCULATING }) => {
-       const baseCap = ADA_CIRCULATING / k;
-       const F = 10_000_000;
-       const { maxX } = get(graphSettings);
-       const τ = (L2 / 100) * maxX;
-       return baseCap + F * L * (1 - Math.exp(-pledge / τ));
-   }
+	/** Exponential: (circ / k) + sc·L·(1 − e^(−pledge/sc)) */
+	exponential: (pledge, { k, L, L2, ADA_CIRCULATING }) => {
+		const baseCap = ADA_CIRCULATING / k;
+		const F = 10_000_000;
+		const { maxX } = get(graphSettings);
+		const τ = (L2 / 100) * maxX;
+		return baseCap + F * L * (1 - Math.exp(-pledge / τ));
+	}
 };
 
 export function getRewards(

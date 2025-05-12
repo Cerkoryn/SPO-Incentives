@@ -34,9 +34,9 @@
 </script>
 
 <!-- Reset button resets all sliders to initial defaults -->
-<button type="button" on:click={resetDefaults} class="reset-button">Reset Defaults</button>
+<button type="button" on:click={resetDefaults} class="mb-4 px-4 py-2 bg-gray-100 border border-gray-300 rounded text-sm cursor-pointer hover:bg-gray-200">Reset Defaults</button>
 
-<div class="slider-controls">
+<div class="flex flex-col gap-4">
 	<SliderControl
 		id="rho-slider"
 		label="Rho:"
@@ -105,8 +105,8 @@
 </div>
 
 <!-- Checkbox controls for selecting graph points -->
-<div class="checkbox-controls">
-	<div class="checkbox-control">
+<div class="mt-4 flex flex-wrap gap-4">
+    <div class="flex items-center">
 		<label for="custom-checkbox">
 			<input
 				type="checkbox"
@@ -123,12 +123,12 @@
 			Show Custom Pool
 		</label>
 		{#if $graphCheckboxes.custom && $customPool.stake < $customPool.pledge}
-			<span class="hint-text error-text">⚠ Stake cannot be lower than pledge</span>
+            <span class="text-xs text-amber-600 ml-2">⚠ Stake cannot be lower than pledge</span>
 		{/if}
 	</div>
 </div>
 {#if $graphCheckboxes.custom}
-	<div class="custom-pool-inputs">
+        <div class="mt-4 flex flex-col gap-2">
 		<div class="label-row">
 			<label for="custom-pledge">Pledge:</label>
 			<input
@@ -145,7 +145,7 @@
 						customPool.update((c) => ({ ...c, pledge: pledgeVal }));
 					}
 				}}
-				class="value-input"
+            class="w-[12ch] bg-white"
 			/>
 		</div>
 		<div class="label-row">
@@ -164,14 +164,14 @@
 						customPool.update((c) => ({ ...c, stake: stakeVal }));
 					}
 				}}
-				class="value-input"
+            class="w-[12ch] bg-white"
 			/>
 		</div>
 	</div>
 {/if}
 
 <!-- Radio Buttons for selecting the rewards mode -->
-<div class="rewards-mode-toggle">
+<div class="mt-4 flex items-center gap-4">
 	<span>Rewards:</span>
 	<label>
 		<input
@@ -196,7 +196,7 @@
 </div>
 
 <!-- Radio Buttons for selecting the saturation function with default presets -->
-<div class="saturation-mode-toggle">
+<div class="mt-4 flex items-center gap-4">
 	<span>Formula:</span>
 	<label>
 		<input
@@ -230,7 +230,7 @@
 	</label>
 </div>
 <br />
-<div class="checkbox-control">
+<div class="flex items-center">
 	<label for="toggle-zoom-checkbox">
 		<input
 			type="checkbox"
@@ -242,75 +242,3 @@
 	</label>
 </div>
 
-<style>
-	.slider-controls {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	/* Reset Defaults button */
-	.reset-button {
-		margin-bottom: 1rem;
-		padding: 0.5rem 1rem;
-		background-color: #f3f4f6;
-		border: 1px solid #d1d5db;
-		border-radius: 0.25rem;
-		cursor: pointer;
-		font-size: 0.875rem;
-	}
-	.reset-button:hover {
-		background-color: #e5e7eb;
-	}
-
-	/* Global styling for numeric inputs */
-	.value-input {
-		width: 4rem;
-		background-color: white;
-	}
-	.hint-text {
-		font-size: 0.65rem;
-		color: #aaa;
-	}
-
-	.checkbox-controls {
-		margin-top: 1rem;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-	}
-
-	.checkbox-control {
-		display: flex;
-		align-items: center;
-	}
-
-	.saturation-mode-toggle {
-		margin-top: 1rem;
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-	.rewards-mode-toggle {
-		margin-top: 1rem;
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-	.custom-pool-inputs {
-		margin-top: 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-	/* Widen custom inputs to show up to 10-digit values */
-	.custom-pool-inputs .value-input {
-		width: 12ch;
-	}
-
-	/* Error text next to custom pool toggle */
-	.error-text {
-		color: #d97706;
-		margin-left: 0.5rem;
-	}
-</style>

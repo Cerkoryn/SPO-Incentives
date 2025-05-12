@@ -19,7 +19,7 @@
 <div class="flex min-h-screen flex-col">
 	{#if isStatic}
 		<div class="flex flex-1">
-			<aside class="w-96 overflow-y-auto bg-gray-100 p-4">
+			<aside class="w-100 overflow-y-auto bg-gray-100 p-4">
 				<Controls />
 			</aside>
 			<main class="flex-1 p-4">

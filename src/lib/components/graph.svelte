@@ -112,7 +112,7 @@
 		// Build bubble datasets: size proportional to annualized ROI
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
 			const datasetData = dataPoints.map((dp) => {
-				const roi = getRewards(dp.y, dp.x, k, a0, L, L2, mode, rMode, rhoValue, tauValue);
+				const roi = getRewards(dp.y, dp.x, k, a0, L, L2, maxX, mode, rMode, rhoValue, tauValue);
 				return { ...dp, roi, r: getPointRadius(roi) };
 			});
 			return {
@@ -269,6 +269,7 @@
 							$sliderParams.a0,
 							L,
 							L2,
+							maxX,
 							$saturationMode,
 							$rewardsMode,
 							$rho,
@@ -290,6 +291,7 @@
 						$sliderParams.a0,
 						L,
 						L2,
+						maxX,
 						$saturationMode,
 						$rewardsMode,
 						$rho,

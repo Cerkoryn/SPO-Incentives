@@ -1,7 +1,5 @@
 import poolData from '../data/pools.json';
 import { ADA_CIRCULATING, ADA_RESERVES } from './constants';
-import { graphSettings } from '$lib/stores/store';
-import { get } from 'svelte/store';
 import type { Env } from '$lib/utils/types';
 import type { SaturationMode, RewardsMode } from '$lib/stores/store';
 
@@ -63,22 +61,22 @@ export function getSaturationCapExpSaturation(
 	return points;
 }
 
-export const satCapFns: Record<SaturationMode, (pledge: number, env: Env) => number> = {
-	/** Existing formula: (circ / k) */
-	current: (_pledge, { k, ADA_CIRCULATING }) => ADA_CIRCULATING / k,
+export const satCapFns: Record<SaturationMode, (pledge: number, env: Env, maxX: number) => number> =
+	{
+		/** Existing formula: (circ / k) */
+		current: (_pledge, { k, ADA_CIRCULATING }, _maxX) => ADA_CIRCULATING / k,
 
-	/** Linear: (circ / k) + L · pledge */
-	linear: (pledge, { k, L, ADA_CIRCULATING }) => ADA_CIRCULATING / k + L * pledge,
+		/** Linear: (circ / k) + L · pledge */
+		linear: (pledge, { k, L, ADA_CIRCULATING }, _maxX) => ADA_CIRCULATING / k + L * pledge,
 
-	/** Exponential: (circ / k) + sc·L·(1 − e^(−pledge/sc)) */
-	exponential: (pledge, { k, L, L2, ADA_CIRCULATING }) => {
-		const baseCap = ADA_CIRCULATING / k;
-		const F = 10_000_000;
-		const { maxX } = get(graphSettings);
-		const τ = (L2 / 100) * maxX;
-		return baseCap + F * L * (1 - Math.exp(-pledge / τ));
-	}
-};
+		/** Exponential: (circ / k) + sc·L·(1 − e^(−pledge/sc)) */
+		exponential: (pledge, { k, L, L2, ADA_CIRCULATING }, maxX) => {
+			const baseCap = ADA_CIRCULATING / k;
+			const F = 10_000_000;
+			const τ = (L2 / 100) * maxX;
+			return baseCap + F * L * (1 - Math.exp(-pledge / τ));
+		}
+	};
 
 export function getRewards(
 	poolStake: number,
@@ -87,6 +85,7 @@ export function getRewards(
 	a0: number,
 	L: number,
 	L2: number,
+	maxX: number,
 	saturationMode: SaturationMode,
 	rewardsMode: RewardsMode,
 	rho: number,
@@ -97,7 +96,7 @@ export function getRewards(
 	const s = poolPledge / ADA_CIRCULATING; // s
 
 	const env: Env = { k: k, L: L, L2: L2, ADA_CIRCULATING }; // We need to determine saturation cap here
-	const satCap = satCapFns[saturationMode](poolPledge, env); // Switch between the three saturation modes to determine formula
+	const satCap = satCapFns[saturationMode](poolPledge, env, maxX); // Pass maxX explicitly for exponential mode
 	const z0 = satCap / ADA_CIRCULATING; // Use the calculated value for z0 going forward
 
 	const sigmaP = Math.min(sigma, z0); // σ′

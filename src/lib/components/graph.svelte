@@ -310,20 +310,12 @@ import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
 	}
 </script>
 
-<div class="chart-container">
-	<canvas bind:this={canvas} width="600" height="300"></canvas>
-	<div id="chartjs-tooltip" class="chartjs-tooltip"></div>
+<div class="relative">
+	<canvas bind:this={canvas} width="600" height="300" class="w-full h-auto border border-gray-300"></canvas>
+	<div id="chartjs-tooltip" class="chartjs-tooltip fixed pointer-events-none bg-black bg-opacity-70 text-white rounded px-2 py-1 text-xs whitespace-nowrap transition-opacity duration-100"></div>
 </div>
 
 <style>
-	canvas {
-		width: 100%;
-		height: auto;
-		border: 1px solid #ccc;
-	}
-	.chart-container {
-		position: relative;
-	}
 	/* Tooltip container fixed to viewport for overflow handling */
 	:global(.chartjs-tooltip) {
 		opacity: 0;

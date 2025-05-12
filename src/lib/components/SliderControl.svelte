@@ -30,8 +30,8 @@
 	}
 </script>
 
-<div class="slider-control">
-	<div class="label-row">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
 		<label for={id}>{@html label}</label>
 		<input
 			type="number"
@@ -41,34 +41,12 @@
 			{step}
 			{value}
 			on:input={onNumberInput}
-			class={`value-input ${wide ? 'wide-input' : ''}`}
+class={wide ? 'bg-white w-[8ch]' : 'bg-white w-16'}
 		/>
-		{#if hint}
-			<span class="hint-text">{hint}</span>
+{#if hint}
+        <span class="text-xs text-gray-400">{hint}</span>
 		{/if}
 	</div>
-	<input {id} type="range" {min} {max} {step} {value} on:input={onRangeInput} />
+<input {id} type="range" {min} {max} {step} {value} on:input={onRangeInput} class="w-full mt-2" />
 </div>
 
-<style>
-	.slider-control {
-		display: flex;
-		flex-direction: column;
-	}
-	.label-row {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	.value-input {
-		width: 4rem;
-		background-color: white;
-	}
-	.value-input.wide-input {
-		width: 8ch;
-	}
-	.hint-text {
-		font-size: 0.65rem;
-		color: #aaa;
-	}
-</style>

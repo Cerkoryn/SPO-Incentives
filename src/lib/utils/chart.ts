@@ -48,25 +48,27 @@ export function externalTooltipHandler(context: any) {
 			});
 		});
 	}
-	// Position tooltip at caret, flipping to stay within viewport
+	// Position tooltip at caret, flipping to stay within viewport (position: fixed)
 	const { caretX, caretY } = tooltip;
 	tooltipEl.style.opacity = '1';
 	const canvasRect = chart.canvas.getBoundingClientRect();
-	let x = canvasRect.left + window.pageXOffset + caretX;
-	let y = canvasRect.top + window.pageYOffset + caretY;
+	// Compute position relative to viewport
+	let x = canvasRect.left + caretX;
+	let y = canvasRect.top + caretY;
 	const tooltipWidth = tooltipEl.offsetWidth;
 	const tooltipHeight = tooltipEl.offsetHeight;
-	if (x + tooltipWidth > window.pageXOffset + window.innerWidth) {
+	// Flip if overflowing viewport
+	if (x + tooltipWidth > window.innerWidth) {
 		x -= tooltipWidth;
 	}
-	if (x < window.pageXOffset) {
-		x = window.pageXOffset;
+	if (x < 0) {
+		x = 0;
 	}
-	if (y + tooltipHeight > window.pageYOffset + window.innerHeight) {
+	if (y + tooltipHeight > window.innerHeight) {
 		y -= tooltipHeight;
 	}
-	if (y < window.pageYOffset) {
-		y = window.pageYOffset;
+	if (y < 0) {
+		y = 0;
 	}
 	tooltipEl.style.left = x + 'px';
 	tooltipEl.style.top = y + 'px';

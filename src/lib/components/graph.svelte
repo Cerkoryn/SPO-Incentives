@@ -58,7 +58,7 @@
 	onMount(() => {
 		createChart();
 		// watch for container size changes to resize chart
-		const ro = new ResizeObserver(() => {
+		const ro = new ResizeObserver((entries: ResizeObserverEntry[], observer: ResizeObserver) => {
 			if (chart) chart.resize();
 		});
 		if (container) ro.observe(container);
@@ -119,7 +119,7 @@
 				label: group,
 				data: datasetData,
 				backgroundColor: groupColors[group] || 'rgba(0, 0, 0, 0.6)',
-				type: 'bubble'
+				type: 'bubble' as const
 			};
 		});
 
@@ -142,7 +142,7 @@
 		const lineDataset = {
 			label: 'Saturation Cap',
 			data: lineData,
-			type: 'line',
+			type: 'line' as const,
 			borderColor: 'red',
 			borderWidth: 2,
 			fill: false,
@@ -171,7 +171,7 @@
 						max: isZoomOn ? GRAPH_X_ZOOM_INITIAL_MAX : maxX,
 						ticks: {
 							stepSize: stepSizeX,
-							callback: function (value) {
+							callback: function (value: number | string): string {
 								return new Intl.NumberFormat('en-US').format(Number(value));
 							}
 						}
@@ -185,7 +185,7 @@
 						max: isZoomOn ? GRAPH_Y_ZOOM_MAX : GRAPH_Y_SCALE_DEFAULT_MAX,
 						ticks: {
 							stepSize: GRAPH_Y_SCALE_DEFAULT_STEP,
-							callback: function (value) {
+							callback: function (value: number | string): string {
 								return new Intl.NumberFormat('en-US').format(Number(value));
 							}
 						}
@@ -196,7 +196,7 @@
 						enabled: false,
 						external: externalTooltipHandler,
 						callbacks: {
-							label: function (context) {
+							label: function (context: any): string[] {
 								const { ticker, name, x, y, roi } = context.raw as {
 									ticker: string;
 									name: string;
@@ -238,7 +238,7 @@
 		$showCustomPool !== undefined &&
 		$customPool
 	) {
-		const idx = chart.data.datasets.findIndex((ds) => ds.label === 'Saturation Cap');
+		const idx = chart.data.datasets.findIndex((ds: any) => ds.label === 'Saturation Cap');
 		if (idx !== -1) {
 			const { k, L, L2 } = $sliderParams;
 			const { maxX, stepSizeX } = $graphSettings;
@@ -259,9 +259,9 @@
 			chart.data.datasets[idx].data = updatedLine;
 
 			// update bubble radii as before…
-			chart.data.datasets.forEach((ds) => {
+			chart.data.datasets.forEach((ds: any) => {
 				if (ds.type === 'bubble') {
-					ds.data = (ds.data as any[]).map((pt) => {
+					ds.data = (ds.data as any[]).map((pt: any) => {
 						const roi = getRewards(
 							pt.y,
 							pt.x,
@@ -280,7 +280,7 @@
 				}
 			});
 			// Handle custom pool dataset presence and updates
-			const customIdx = chart.data.datasets.findIndex((ds) => ds.label === 'Custom Pool');
+			const customIdx = chart.data.datasets.findIndex((ds: any) => ds.label === 'Custom Pool');
 			if ($showCustomPool) {
 				const { pledge, stake } = $customPool;
 				if (!isNaN(pledge) && !isNaN(stake)) {
@@ -311,7 +311,7 @@
 						chart.data.datasets.splice(0, 0, {
 							label: 'Custom Pool',
 							data: [customData],
-							type: 'bubble',
+							type: 'bubble' as const,
 							backgroundColor: groupColors['Custom Pool'] ?? 'rgba(255, 0, 0, 1)'
 						});
 					} else {
@@ -329,12 +329,13 @@
 	$: if (chart && $graphSettings) {
 		const { maxX, stepSizeX } = $graphSettings;
 		// adjust axis limits and ticks based on zoom toggle
-		chart.options.scales.x.max = $zoomEnabled ? GRAPH_X_ZOOM_REACTIVE_MAX : maxX;
-		chart.options.scales.x.ticks.stepSize = $zoomEnabled ? GRAPH_X_ZOOM_STEP : stepSizeX;
-		chart.options.scales.y.max = $zoomEnabled ? GRAPH_Y_ZOOM_MAX : GRAPH_Y_SCALE_DEFAULT_MAX;
-		chart.options.scales.y.ticks.stepSize = $zoomEnabled
-			? GRAPH_Y_ZOOM_STEP
-			: GRAPH_Y_SCALE_DEFAULT_STEP;
+		const scales: any = chart.options.scales as any;
+		const xScale: any = scales.x;
+		const yScale: any = scales.y;
+		xScale.max = $zoomEnabled ? GRAPH_X_ZOOM_REACTIVE_MAX : maxX;
+		xScale.ticks.stepSize = $zoomEnabled ? GRAPH_X_ZOOM_STEP : stepSizeX;
+		yScale.max = $zoomEnabled ? GRAPH_Y_ZOOM_MAX : GRAPH_Y_SCALE_DEFAULT_MAX;
+		yScale.ticks.stepSize = $zoomEnabled ? GRAPH_Y_ZOOM_STEP : GRAPH_Y_SCALE_DEFAULT_STEP;
 		chart.update();
 	}
 </script>

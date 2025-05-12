@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SliderControl from '$lib/components/SliderControl.svelte';
-	import type { SaturationMode } from '$lib/stores/store';
+	import type { SaturationMode, SliderParameters } from '$lib/stores/store';
 	import {
 		sliderParams,
 		showCustomPool,
@@ -21,9 +21,9 @@
 	function applyModeDefaults(mode: SaturationMode) {
 		saturationMode.set(mode);
 		if (mode === 'linear') {
-			sliderParams.update((s) => ({ ...s, L: 2 }));
+			sliderParams.update((s: SliderParameters) => ({ ...s, L: 2 }));
 		} else if (mode === 'exponential') {
-			sliderParams.update((s) => ({ ...s, L: 12, L2: 20 }));
+			sliderParams.update((s: SliderParameters) => ({ ...s, L: 12, L2: 20 }));
 		}
 	}
 
@@ -57,7 +57,7 @@
 		step={0.0001}
 		hint="min: 0, max: 0.005"
 		wide={true}
-		on:change={({ detail }) => rho.set(detail)}
+		on:change={({ detail }: CustomEvent<number>) => rho.set(detail)}
 	/>
 	<SliderControl
 		id="tau-slider"
@@ -67,7 +67,7 @@
 		max={0.3}
 		step={0.01}
 		hint="min: 0, max: 0.3"
-		on:change={({ detail }) => tau.set(detail)}
+		on:change={({ detail }: CustomEvent<number>) => tau.set(detail)}
 	/>
 	<SliderControl
 		id="k-slider"
@@ -77,7 +77,8 @@
 		max={2000}
 		step={1}
 		hint="min: 1, max: 2000"
-		on:change={({ detail }) => sliderParams.update((s) => ({ ...s, k: detail }))}
+		on:change={({ detail }: CustomEvent<number>) =>
+			sliderParams.update((s: SliderParameters) => ({ ...s, k: detail }))}
 	/>
 	<SliderControl
 		id="a0-slider"
@@ -87,7 +88,8 @@
 		max={1}
 		step={0.01}
 		hint="min: 0, max: 1"
-		on:change={({ detail }) => sliderParams.update((s) => ({ ...s, a0: detail }))}
+		on:change={({ detail }: CustomEvent<number>) =>
+			sliderParams.update((s: SliderParameters) => ({ ...s, a0: detail }))}
 	/>
 	{#if $saturationMode === 'linear' || $saturationMode === 'exponential'}
 		<SliderControl
@@ -98,7 +100,8 @@
 			max={50}
 			step={0.1}
 			hint="min: 0, max: 50"
-			on:change={({ detail }) => sliderParams.update((s) => ({ ...s, L: detail }))}
+			on:change={({ detail }: CustomEvent<number>) =>
+				sliderParams.update((s: SliderParameters) => ({ ...s, L: detail }))}
 		/>
 	{/if}
 	{#if $saturationMode === 'exponential'}
@@ -110,7 +113,8 @@
 			max={100}
 			step={1}
 			hint="min: 1, max: 100"
-			on:change={({ detail }) => sliderParams.update((s) => ({ ...s, L2: detail }))}
+			on:change={({ detail }: CustomEvent<number>) =>
+				sliderParams.update((s: SliderParameters) => ({ ...s, L2: detail }))}
 		/>
 	{/if}
 </div>
@@ -123,7 +127,7 @@
 				type="checkbox"
 				id="custom-checkbox"
 				checked={$showCustomPool}
-				on:change={(e) => {
+				on:change={(e: Event) => {
 					const checked = (e.target as HTMLInputElement).checked;
 					showCustomPool.set(checked);
 					if (checked) {
@@ -151,7 +155,7 @@
 				min="0"
 				step={CUSTOM_POOL_PLEDGE_STEP}
 				value={$customPool.pledge}
-				on:input={(e) => {
+				on:input={(e: Event) => {
 					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
 					const v = parseInt(raw, 10);
 					if (!isNaN(v)) {
@@ -170,7 +174,7 @@
 				min="0"
 				step={CUSTOM_POOL_STAKE_STEP}
 				value={$customPool.stake}
-				on:input={(e) => {
+				on:input={(e: Event) => {
 					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
 					const v = parseInt(raw, 10);
 					if (!isNaN(v)) {
@@ -250,7 +254,7 @@
 			type="checkbox"
 			id="toggle-zoom-checkbox"
 			checked={$zoomEnabled}
-			on:change={(e) => zoomEnabled.set((e.target as HTMLInputElement).checked)}
+			on:change={(e: Event) => zoomEnabled.set((e.target as HTMLInputElement).checked)}
 		/>
 		Toggle Zoom
 	</label>

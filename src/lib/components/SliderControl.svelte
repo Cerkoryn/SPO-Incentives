@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher<{ change: number }>();
 	// Props
 	export let id: string;
 	export let label: string;
@@ -10,6 +8,7 @@
 	export let step: number;
 	export let hint: string = '';
 	export let wide: boolean = false;
+	export let onChange: (value: number) => void = () => {};
 
 	function onNumberInput(e: Event) {
 		const raw = (e.target as HTMLInputElement).value;
@@ -17,7 +16,7 @@
 		if (!isNaN(v)) {
 			// clamp to [min, max]
 			const nv = Math.min(max, Math.max(min, v));
-			dispatch('change', nv);
+			onChange(nv);
 		}
 	}
 
@@ -25,7 +24,7 @@
 		const raw = (e.target as HTMLInputElement).value;
 		const v = parseFloat(raw);
 		if (!isNaN(v)) {
-			dispatch('change', v);
+			onChange(v);
 		}
 	}
 </script>

@@ -44,7 +44,7 @@
 	type="button"
 	on:click={resetDefaults}
 	class="mb-4 cursor-pointer rounded border border-gray-300 bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200"
-	>Reset Defaults</button
+	>Reset Sliders</button
 >
 
 <div class="flex flex-col gap-4">
@@ -57,7 +57,7 @@
 		step={0.0001}
 		hint="min: 0, max: 0.005"
 		wide={true}
-		on:change={({ detail }: CustomEvent<number>) => rho.set(detail)}
+		onChange={(value: number) => rho.set(value)}
 	/>
 	<SliderControl
 		id="tau-slider"
@@ -67,7 +67,7 @@
 		max={0.3}
 		step={0.01}
 		hint="min: 0, max: 0.3"
-		on:change={({ detail }: CustomEvent<number>) => tau.set(detail)}
+		onChange={(value: number) => tau.set(value)}
 	/>
 	<SliderControl
 		id="k-slider"
@@ -77,8 +77,7 @@
 		max={2000}
 		step={1}
 		hint="min: 1, max: 2000"
-		on:change={({ detail }: CustomEvent<number>) =>
-			sliderParams.update((s: SliderParameters) => ({ ...s, k: detail }))}
+		onChange={(value: number) => sliderParams.update((s: SliderParameters) => ({ ...s, k: value }))}
 	/>
 	<SliderControl
 		id="a0-slider"
@@ -88,8 +87,8 @@
 		max={1}
 		step={0.01}
 		hint="min: 0, max: 1"
-		on:change={({ detail }: CustomEvent<number>) =>
-			sliderParams.update((s: SliderParameters) => ({ ...s, a0: detail }))}
+		onChange={(value: number) =>
+			sliderParams.update((s: SliderParameters) => ({ ...s, a0: value }))}
 	/>
 	{#if $saturationMode === 'linear' || $saturationMode === 'exponential'}
 		<SliderControl
@@ -100,8 +99,8 @@
 			max={50}
 			step={0.1}
 			hint="min: 0, max: 50"
-			on:change={({ detail }: CustomEvent<number>) =>
-				sliderParams.update((s: SliderParameters) => ({ ...s, L: detail }))}
+			onChange={(value: number) =>
+				sliderParams.update((s: SliderParameters) => ({ ...s, L: value }))}
 		/>
 	{/if}
 	{#if $saturationMode === 'exponential'}
@@ -113,8 +112,8 @@
 			max={100}
 			step={1}
 			hint="min: 1, max: 100"
-			on:change={({ detail }: CustomEvent<number>) =>
-				sliderParams.update((s: SliderParameters) => ({ ...s, L2: detail }))}
+			onChange={(value: number) =>
+				sliderParams.update((s: SliderParameters) => ({ ...s, L2: value }))}
 		/>
 	{/if}
 </div>

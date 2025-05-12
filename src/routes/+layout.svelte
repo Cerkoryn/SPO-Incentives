@@ -43,7 +43,7 @@
 			</div>
 			{#if showSliders}
 				<aside
-					class="fixed inset-0 z-50 max-h-screen w-full max-w-full overflow-x-hidden overflow-y-auto bg-gray-100 p-4"
+					class="fixed inset-0 top-16 z-50 max-h-screen w-full max-w-full overflow-x-hidden overflow-y-auto bg-gray-100 p-4"
 				>
 					<Controls />
 				</aside>

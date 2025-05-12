@@ -128,46 +128,46 @@
 	</div>
 </div>
 {#if $graphCheckboxes.custom}
-        <div class="mt-4 flex flex-col gap-2">
-		<div class="label-row">
-			<label for="custom-pledge">Pledge:</label>
-			<input
-				type="number"
-				id="custom-pledge"
-				min="0"
-				step="10000"
-				value={$customPool.pledge}
-				on:input={(e) => {
-					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
-					const v = parseInt(raw, 10);
-					if (!isNaN(v)) {
-						const pledgeVal = Math.max(1, v);
-						customPool.update((c) => ({ ...c, pledge: pledgeVal }));
-					}
-				}}
-            class="w-[12ch] bg-white"
-			/>
-		</div>
-		<div class="label-row">
-			<label for="custom-stake">Stake:</label>
-			<input
-				type="number"
-				id="custom-stake"
-				min="0"
-				step="1000000"
-				value={$customPool.stake}
-				on:input={(e) => {
-					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
-					const v = parseInt(raw, 10);
-					if (!isNaN(v)) {
-						const stakeVal = Math.max(1, v);
-						customPool.update((c) => ({ ...c, stake: stakeVal }));
-					}
-				}}
-            class="w-[12ch] bg-white"
-			/>
-		</div>
-	</div>
+  <div class="mt-4 flex flex-col gap-2">
+    <div class="flex flex-wrap items-center gap-2">
+      <label for="custom-pledge">Pledge:</label>
+      <input
+        type="number"
+        id="custom-pledge"
+        min="0"
+        step="10000"
+        value={$customPool.pledge}
+        on:input={(e) => {
+          const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+          const v = parseInt(raw, 10);
+          if (!isNaN(v)) {
+            const pledgeVal = Math.max(1, v);
+            customPool.update((c) => ({ ...c, pledge: pledgeVal }));
+          }
+        }}
+        class="w-[12ch] bg-white"
+      />
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <label for="custom-stake">Stake:</label>
+      <input
+        type="number"
+        id="custom-stake"
+        min="0"
+        step="1000000"
+        value={$customPool.stake}
+        on:input={(e) => {
+          const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+          const v = parseInt(raw, 10);
+          if (!isNaN(v)) {
+            const stakeVal = Math.max(1, v);
+            customPool.update((c) => ({ ...c, stake: stakeVal }));
+          }
+        }}
+        class="w-[12ch] bg-white"
+      />
+    </div>
+  </div>
 {/if}
 
 <!-- Radio Buttons for selecting the rewards mode -->

@@ -31,7 +31,7 @@
 </script>
 
 <div class="flex flex-col">
-<div class="flex items-center gap-2">
+  <div class="flex flex-wrap items-center gap-2">
 		<label for={id}>{@html label}</label>
 		<input
 			type="number"

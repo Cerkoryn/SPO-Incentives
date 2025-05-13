@@ -126,34 +126,87 @@
 		// pull these out so we use them in all three modes
 		const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 
-		// pick exactly the right data for each mode
-		let lineData: { x: number; y: number }[];
+		// pick exactly the right datasets for each mode
+		let lineDatasets: any[];
 		if (mode === 'current') {
-			lineData = [
-				{ x: 0, y: baseCap },
-				{ x: maxX, y: baseCap }
+			lineDatasets = [
+				{
+					label: 'Saturation Cap',
+					data: [
+						{ x: 0, y: baseCap },
+						{ x: maxX, y: baseCap }
+					],
+					type: 'line' as const,
+					borderColor: 'red',
+					borderWidth: 2,
+					fill: false,
+					pointRadius: 0,
+					showLine: true
+				}
 			];
 		} else if (mode === 'linear') {
-			lineData = getSaturationCapLinear(k, L, maxX, stepSizeX);
+			lineDatasets = [
+				{
+					label: 'Saturation Cap',
+					data: getSaturationCapLinear(k, L, maxX, stepSizeX),
+					type: 'line' as const,
+					borderColor: 'red',
+					borderWidth: 2,
+					fill: false,
+					pointRadius: 0,
+					showLine: true
+				}
+			];
+		} else if (mode === 'cip-50') {
+			const dottedData: { x: number; y: number }[] = [];
+			for (let x = 0; x <= maxX; x += stepSizeX) {
+				dottedData.push({ x, y: L * x });
+			}
+			lineDatasets = [
+				{
+					label: 'Saturation Cap (soft)',
+					data: dottedData,
+					type: 'line' as const,
+					borderColor: 'red',
+					borderWidth: 2,
+					borderDash: [5, 5],
+					fill: false,
+					pointRadius: 0,
+					showLine: true
+				},
+				{
+					label: 'Saturation Cap',
+					data: [
+						{ x: 0, y: baseCap },
+						{ x: maxX, y: baseCap }
+					],
+					type: 'line' as const,
+					borderColor: 'red',
+					borderWidth: 2,
+					fill: false,
+					pointRadius: 0,
+					showLine: true
+				}
+			];
 		} else {
-			lineData = getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX);
+			lineDatasets = [
+				{
+					label: 'Saturation Cap',
+					data: getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX),
+					type: 'line' as const,
+					borderColor: 'red',
+					borderWidth: 2,
+					fill: false,
+					pointRadius: 0,
+					showLine: true
+				}
+			];
 		}
-
-		const lineDataset = {
-			label: 'Saturation Cap',
-			data: lineData,
-			type: 'line' as const,
-			borderColor: 'red',
-			borderWidth: 2,
-			fill: false,
-			pointRadius: 0,
-			showLine: true
-		};
 
 		chart = new Chart(ctx, {
 			type: 'scatter',
 			data: {
-				datasets: [...scatterDatasets, lineDataset]
+				datasets: [...scatterDatasets, ...lineDatasets]
 			},
 			options: {
 				responsive: true,
@@ -229,64 +282,128 @@
 		enableCustomPoolDrag(chart, canvas);
 	}
 
-	// Update reactive block to listen to changes in both slider parameters and graph settings.
+	// Update reactive block: recalc all datasets on param changes
 	$: if (
 		chart &&
 		$sliderParams &&
 		$graphSettings &&
-		$saturationMode &&
+		$saturationMode !== undefined &&
 		$showCustomPool !== undefined &&
 		$customPool
 	) {
-		const idx = chart.data.datasets.findIndex((ds: any) => ds.label === 'Saturation Cap');
-		if (idx !== -1) {
-			const { k, L, L2 } = $sliderParams;
-			const { maxX, stepSizeX } = $graphSettings;
+		const { k, L, L2 } = $sliderParams;
+		const { maxX, stepSizeX } = $graphSettings;
+		const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 
-			let updatedLine: { x: number; y: number }[];
-			const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
-			if ($saturationMode === 'current') {
-				updatedLine = [
-					{ x: 0, y: base },
-					{ x: maxX, y: base }
-				];
-			} else if ($saturationMode === 'linear') {
-				updatedLine = getSaturationCapLinear(k, L, maxX, stepSizeX);
-			} else {
-				updatedLine = getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX);
-			}
-
-			chart.data.datasets[idx].data = updatedLine;
-
-			// update bubble radii as before…
-			chart.data.datasets.forEach((ds: any) => {
-				if (ds.type === 'bubble') {
-					ds.data = (ds.data as any[]).map((pt: any) => {
-						const roi = getRewards(
-							pt.y,
-							pt.x,
-							k,
-							$sliderParams.a0,
-							L,
-							L2,
-							maxX,
-							$saturationMode,
-							$rewardsMode,
-							$rho,
-							$tau
-						);
-						return { ...pt, roi, r: getPointRadius(roi) };
+		// Ensure correct line datasets (dashed soft cap + flat cap) based on mode
+		{
+			const isCip50 = $saturationMode === 'cip-50';
+			const datasets = chart.data.datasets;
+			// find dashed (soft) line index: type line with borderDash
+			const dashedIdx = datasets.findIndex(
+				(ds) => ds.type === 'line' && Array.isArray((ds as any).borderDash)
+			);
+			// find flat cap line index: type line without borderDash
+			const flatIdx = datasets.findIndex(
+				(ds) => ds.type === 'line' && !Array.isArray((ds as any).borderDash)
+			);
+			if (isCip50) {
+				// add soft (dotted) cap if missing
+				if (dashedIdx === -1) {
+					const dotted: { x: number; y: number }[] = [];
+					for (let x = 0; x <= maxX; x += stepSizeX) {
+						dotted.push({ x, y: L * x });
+					}
+					datasets.push({
+						label: 'Saturation Cap (soft)',
+						data: dotted,
+						type: 'line' as const,
+						borderColor: 'red',
+						borderWidth: 2,
+						borderDash: [5, 5],
+						fill: false,
+						pointRadius: 0,
+						showLine: true
 					});
 				}
-			});
-			// Handle custom pool dataset presence and updates
-			const customIdx = chart.data.datasets.findIndex((ds: any) => ds.label === 'Custom Pool');
-			if ($showCustomPool) {
-				const { pledge, stake } = $customPool;
-				if (!isNaN(pledge) && !isNaN(stake)) {
+				// add flat cap if missing
+				if (flatIdx === -1) {
+					datasets.push({
+						label: 'Saturation Cap',
+						data: [
+							{ x: 0, y: base },
+							{ x: maxX, y: base }
+						],
+						type: 'line' as const,
+						borderColor: 'red',
+						borderWidth: 2,
+						fill: false,
+						pointRadius: 0,
+						showLine: true
+					});
+				}
+			} else {
+				// remove soft cap line if present
+				if (dashedIdx !== -1) datasets.splice(dashedIdx, 1);
+				// keep only one flat cap line
+				const lineIndices = datasets
+					.map((ds, i) => ({ ds, i }))
+					.filter(({ ds }) => ds.type === 'line')
+					.map(({ i }) => i);
+				for (let j = lineIndices.length - 1; j > 0; j--) {
+					datasets.splice(lineIndices[j], 1);
+				}
+				// ensure label of remaining line is correct
+				const onlyIdx = datasets.findIndex((ds) => ds.type === 'line');
+				if (onlyIdx !== -1) {
+					datasets[onlyIdx].label = 'Saturation Cap';
+					delete (datasets[onlyIdx] as any).borderDash;
+				}
+			}
+		}
+		// Update line datasets
+		chart.data.datasets.forEach((ds: any) => {
+			if (ds.type === 'line') {
+				let newData: { x: number; y: number }[] | undefined;
+				if ($saturationMode === 'current') {
+					// constant 1/k cap
+					newData = [
+						{ x: 0, y: base },
+						{ x: maxX, y: base }
+					];
+				} else if ($saturationMode === 'linear') {
+					newData = getSaturationCapLinear(k, L, maxX, stepSizeX);
+				} else if ($saturationMode === 'exponential') {
+					newData = getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX);
+				} else if ($saturationMode === 'cip-50') {
+					if ((ds as any).borderDash) {
+						// dotted soft cap line
+						const dotted: { x: number; y: number }[] = [];
+						for (let x = 0; x <= maxX; x += stepSizeX) {
+							dotted.push({ x, y: L * x });
+						}
+						newData = dotted;
+					} else {
+						// flat saturation cap line
+						newData = [
+							{ x: 0, y: base },
+							{ x: maxX, y: base }
+						];
+					}
+				}
+				if (newData) {
+					ds.data = newData;
+				}
+			}
+		});
+
+		// Update bubble radii
+		chart.data.datasets.forEach((ds: any) => {
+			if (ds.type === 'bubble') {
+				ds.data = (ds.data as any[]).map((pt: any) => {
 					const roi = getRewards(
-						stake,
-						pledge,
+						pt.y,
+						pt.x,
 						k,
 						$sliderParams.a0,
 						L,
@@ -297,33 +414,56 @@
 						$rho,
 						$tau
 					);
-					const r = getPointRadius(roi);
-					const customData = {
-						x: pledge,
-						y: stake,
-						ticker: 'CUSTOM',
-						name: 'Custom Pool',
-						group: 'Custom Pool',
-						roi,
-						r
-					};
-					if (customIdx === -1) {
-						chart.data.datasets.splice(0, 0, {
-							label: 'Custom Pool',
-							data: [customData],
-							type: 'bubble' as const,
-							backgroundColor: groupColors['Custom Pool'] ?? 'rgba(255, 0, 0, 1)'
-						});
-					} else {
-						(chart.data.datasets[customIdx].data as any[]) = [customData];
-					}
-				}
-			} else if (customIdx !== -1) {
-				chart.data.datasets.splice(customIdx, 1);
+					return { ...pt, roi, r: getPointRadius(roi) };
+				});
 			}
-			// finalize data updates without re-rendering axes
-			chart.update('none');
+		});
+
+		// Handle custom pool dataset
+		const customIdx = chart.data.datasets.findIndex((ds: any) => ds.label === 'Custom Pool');
+		if ($showCustomPool) {
+			const { pledge, stake } = $customPool;
+			if (!isNaN(pledge) && !isNaN(stake)) {
+				const roi = getRewards(
+					stake,
+					pledge,
+					k,
+					$sliderParams.a0,
+					L,
+					L2,
+					maxX,
+					$saturationMode,
+					$rewardsMode,
+					$rho,
+					$tau
+				);
+				const rVal = getPointRadius(roi);
+				const customData = {
+					x: pledge,
+					y: stake,
+					ticker: 'CUSTOM',
+					name: 'Custom Pool',
+					group: 'Custom Pool',
+					roi,
+					r: rVal
+				};
+				if (customIdx === -1) {
+					chart.data.datasets.unshift({
+						label: 'Custom Pool',
+						data: [customData],
+						type: 'bubble' as const,
+						backgroundColor: groupColors['Custom Pool']
+					});
+				} else {
+					(chart.data.datasets[customIdx].data as any[]) = [customData];
+				}
+			}
+		} else if (customIdx !== -1) {
+			chart.data.datasets.splice(customIdx, 1);
 		}
+
+		// Commit updates
+		chart.update('none');
 	}
 	// Reactive block for axis and zoom updates
 	$: if (chart && $graphSettings) {

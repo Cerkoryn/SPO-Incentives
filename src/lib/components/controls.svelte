@@ -24,16 +24,20 @@
 			sliderParams.update((s: SliderParameters) => ({ ...s, L: 2 }));
 		} else if (mode === 'exponential') {
 			sliderParams.update((s: SliderParameters) => ({ ...s, L: 12, L2: 20 }));
+		} else if (mode === 'cip-50') {
+			sliderParams.update((s: SliderParameters) => ({ ...s, L: 1 }));
 		}
 	}
 
 	function resetDefaults() {
 		// Default values as on initial page load
-		sliderParams.set(
-			$saturationMode === 'exponential'
-				? { k: 500, a0: 0.3, L: 12, L2: 20 }
-				: { k: 500, a0: 0.3, L: 2, L2: 20 }
-		);
+		if ($saturationMode === 'exponential') {
+			sliderParams.set({ k: 500, a0: 0.3, L: 12, L2: 20 });
+		} else if ($saturationMode === 'cip-50') {
+			sliderParams.set({ k: 500, a0: 0.3, L: 1, L2: 20 });
+		} else {
+			sliderParams.set({ k: 500, a0: 0.3, L: 2, L2: 20 });
+		}
 		rho.set(0.003);
 		tau.set(0.2);
 	}
@@ -90,15 +94,15 @@
 		onChange={(value: number) =>
 			sliderParams.update((s: SliderParameters) => ({ ...s, a0: value }))}
 	/>
-	{#if $saturationMode === 'linear' || $saturationMode === 'exponential'}
+	{#if $saturationMode === 'linear' || $saturationMode === 'exponential' || $saturationMode === 'cip-50'}
 		<SliderControl
 			id="L-slider"
-			label="L:"
+			label="L"
 			value={$sliderParams.L}
-			min={0}
+			min={$saturationMode === 'cip-50' ? 0.1 : 0}
 			max={50}
 			step={0.1}
-			hint="min: 0, max: 50"
+			hint={$saturationMode === 'cip-50' ? 'min: 0.1, max: 50' : 'min: 0, max: 50'}
 			onChange={(value: number) =>
 				sliderParams.update((s: SliderParameters) => ({ ...s, L: value }))}
 		/>
@@ -244,6 +248,16 @@
 			checked={$saturationMode === 'exponential'}
 		/>
 		Exponential
+	</label>
+	<label>
+		<input
+			type="radio"
+			name="saturation-mode"
+			value="cip-50"
+			on:change={() => applyModeDefaults('cip-50')}
+			checked={$saturationMode === 'cip-50'}
+		/>
+		CIP-50
 	</label>
 </div>
 <br />

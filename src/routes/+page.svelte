@@ -5,7 +5,8 @@
 	const imageMap: Record<SaturationMode, string> = {
 		current: '/Current.png',
 		linear: '/Linear.png',
-		exponential: '/Exponential.png'
+		exponential: '/Exponential.png',
+		'cip-50': 'CIP-50.png'
 	};
 
 	interface ModeData {
@@ -55,6 +56,20 @@
 				'L  - Pledge Leverage (new)',
 				'L2 - Pledge Curve Sharpness (new)'
 			]
+		},
+		'cip-50': {
+			title:
+				'This is a formula based on <a href="https://github.com/michael-liesenfelt/CIPs/blob/CIP-Liesenfelt-Shelleys_Voltaire_decentralization_update/CIP-0050/README.md" class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">CIP-50</a> for saturation cap on Cardano.',
+			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
+			subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+			subtext2: 'Note that ROI calculations may differ slightly from live data.',
+			legend: [
+				'p  - Pool Pledge',
+				'R  - Reserve',
+				'&sigma;  - Pool Stake',
+				'L  - Pledge Leverage (new)',
+				'k  - Target Number of Pools'
+			]
 		}
 	};
 
@@ -63,7 +78,7 @@
 
 <div class="grid auto-cols-max grid-flow-col gap-8">
 	<div class="flex flex-col gap-0.5 leading-tight">
-		<h1 class="m-0">{data.title}</h1>
+		<h1 class="m-0">{@html data.title}</h1>
 		<p class="m-0">{data.subtitle}</p>
 		<p class="m-0">{data.subtext}</p>
 		<br />

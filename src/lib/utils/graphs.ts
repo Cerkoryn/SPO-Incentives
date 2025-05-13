@@ -75,6 +75,13 @@ export const satCapFns: Record<SaturationMode, (pledge: number, env: Env, maxX: 
 			const F = 10_000_000;
 			const τ = (L2 / 100) * maxX;
 			return baseCap + F * L * (1 - Math.exp(-pledge / τ));
+		},
+		/** CIP-50: saturation cap is the lesser of L·pledge or ADA_CIRCULATING/k, with L clamped to min 0.1 */
+		'cip-50': (pledge, { k, L, ADA_CIRCULATING }, _maxX) => {
+			const effL = L < 0.1 ? 0.1 : L;
+			const cap1 = effL * pledge;
+			const cap2 = ADA_CIRCULATING / k;
+			return Math.min(cap1, cap2);
 		}
 	};
 

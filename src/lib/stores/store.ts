@@ -34,7 +34,7 @@ export interface CustomPool {
 }
 export const customPool = writable<CustomPool>({ pledge: 0, stake: 0 });
 
-export type SaturationMode = 'current' | 'linear' | 'exponential';
+export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50';
 export const saturationMode = writable<SaturationMode>('current');
 export const zoomEnabled = writable<boolean>(false);
 export type RewardsMode = 'current' | 'full';

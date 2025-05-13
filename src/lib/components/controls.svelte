@@ -217,9 +217,9 @@
 </div>
 
 <!-- Radio Buttons for selecting the saturation function with default presets -->
-<div class="mt-4 flex items-center gap-4">
-	<span>Formula:</span>
-	<label>
+<div class="mt-4 grid grid-cols-[auto_auto_auto_auto] items-center gap-x-2 gap-y-2">
+	<span class="col-start-1 row-start-1">Formula:</span>
+	<label class="col-start-2 row-start-1">
 		<input
 			type="radio"
 			name="saturation-mode"
@@ -229,7 +229,7 @@
 		/>
 		Current
 	</label>
-	<label>
+	<label class="col-start-3 row-start-1">
 		<input
 			type="radio"
 			name="saturation-mode"
@@ -239,7 +239,7 @@
 		/>
 		Linear
 	</label>
-	<label>
+	<label class="col-start-4 row-start-1">
 		<input
 			type="radio"
 			name="saturation-mode"
@@ -249,7 +249,7 @@
 		/>
 		Exponential
 	</label>
-	<label>
+	<label class="col-start-2 row-start-2">
 		<input
 			type="radio"
 			name="saturation-mode"
@@ -260,7 +260,6 @@
 		CIP-50
 	</label>
 </div>
-<br />
 <div class="flex items-center">
 	<label for="toggle-zoom-checkbox">
 		<input

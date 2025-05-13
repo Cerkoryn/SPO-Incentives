@@ -25,7 +25,7 @@
 		} else if (mode === 'exponential') {
 			sliderParams.update((s: SliderParameters) => ({ ...s, L: 12, L2: 20 }));
 		} else if (mode === 'cip-50') {
-			sliderParams.update((s: SliderParameters) => ({ ...s, L: 1 }));
+			sliderParams.update((s: SliderParameters) => ({ ...s, L: 10 }));
 		}
 	}
 
@@ -34,7 +34,7 @@
 		if ($saturationMode === 'exponential') {
 			sliderParams.set({ k: 500, a0: 0.3, L: 12, L2: 20 });
 		} else if ($saturationMode === 'cip-50') {
-			sliderParams.set({ k: 500, a0: 0.3, L: 1, L2: 20 });
+			sliderParams.set({ k: 500, a0: 0.3, L: 10, L2: 20 });
 		} else {
 			sliderParams.set({ k: 500, a0: 0.3, L: 2, L2: 20 });
 		}

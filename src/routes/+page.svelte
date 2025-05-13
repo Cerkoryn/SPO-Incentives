@@ -65,7 +65,7 @@
 			subtext2: 'Note that ROI calculations may differ slightly from live data.',
 			legend: [
 				'p  - Pool Pledge',
-				'R  - Reserve',
+				'R  - Rewards',
 				'&sigma;  - Pool Stake',
 				'L  - Pledge Leverage (new)',
 				'k  - Target Number of Pools'

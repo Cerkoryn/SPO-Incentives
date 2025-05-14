@@ -1,5 +1,5 @@
 import poolData from '../data/pools.json';
-import { ADA_CIRCULATING, ADA_RESERVES } from './constants';
+import { ADA_CIRCULATING, ADA_RESERVES, ADA_TOTAL_STAKED } from './constants';
 import type { Env } from '$lib/utils/types';
 import type { SaturationMode, RewardsMode, SliderParameters } from '$lib/stores/store';
 
@@ -95,25 +95,22 @@ export function getRewards(
 	saturationMode: SaturationMode,
 	rewardsMode: RewardsMode
 ): number {
-	// Convert absolute ADA values to relative fractions
 	const { k, a0, L, L2, crossover, curveRoot, rho, tau } = params;
-	const sigma = poolStake / ADA_CIRCULATING; // σ
-	// pledge fraction s, special CIP-7 adaptation
-	let s: number;
+	const supply = rewardsMode === 'current' ? ADA_CIRCULATING : ADA_TOTAL_STAKED;
+
+	const sigma = poolStake / supply; // σ
+	let s: number = poolPledge / supply;
+
 	if (saturationMode === 'cip-7') {
-		// CIP-7: effective crossover factor = ADA_CIRCULATING / (k * crossover)
-		const effCrossover = ADA_CIRCULATING / (k * crossover);
-		// s = pledge^(1/curveRoot) * effCrossover^((curveRoot - 1)/curveRoot) / total supply
+		const effCrossover = supply / (k * crossover);
 		s =
 			(Math.pow(poolPledge, 1 / curveRoot) * Math.pow(effCrossover, (curveRoot - 1) / curveRoot)) /
-			ADA_CIRCULATING;
-	} else {
-		s = poolPledge / ADA_CIRCULATING; // default pledge fraction
+			supply;
 	}
 
-	const env: Env = { k, L, L2, ADA_CIRCULATING };
+	const env: Env = { k, L, L2, ADA_CIRCULATING }; // sat-cap stays absolute
 	const satCap = satCapFns[saturationMode](poolPledge, env, maxX);
-	const z0 = satCap / ADA_CIRCULATING; // Use the calculated value for z0 going forward
+	const z0 = satCap / supply;
 
 	const sigmaP = Math.min(sigma, z0); // σ′
 	const sP = Math.min(s, z0); // s′
@@ -121,11 +118,12 @@ export function getRewards(
 	const inner = sigmaP - (sP * (z0 - sigmaP)) / z0;
 	const f = sigmaP + sP * a0 * (inner / z0);
 
-	// compute treasury cut and rewards pot based on rho and tau
 	const treasuryCut = rho * ADA_RESERVES * tau;
 	const rewardsPot = rho * ADA_RESERVES - treasuryCut;
-	// pool reward share: current vs full rewards modes
-	const rewardPerEpoch = rewardsMode === 'current' ? (rewardsPot / (1 + a0)) * f : rewardsPot * f;
+
+	const divisor = rewardsMode === 'max' ? 1 : 1 + a0;
+	const rewardPerEpoch = (rewardsPot / divisor) * f;
+
 	const roiEpoch = rewardPerEpoch / poolStake; // per-ADA
 	return roiEpoch * 73 * 100; // annualised %
 }

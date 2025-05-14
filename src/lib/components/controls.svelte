@@ -279,6 +279,16 @@
 		/>
 		Full
 	</label>
+	<label>
+		<input
+			type="radio"
+			name="rewards-mode"
+			value="max"
+			on:change={() => rewardsMode.set('max')}
+			checked={$rewardsMode === 'max'}
+		/>
+		Max
+	</label>
 </div>
 
 <!-- Radio Buttons for selecting the saturation function with default presets -->

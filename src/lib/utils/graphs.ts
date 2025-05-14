@@ -13,7 +13,7 @@ export interface Pool {
 
 export const pools: Pool[] = poolData
 	.map((pool) => {
-		const active_stake = Math.max(pool.active_stake, pool.pledge);
+		const active_stake = pool.active_stake;
 		const pledge = pool.active_stake < pool.pledge ? pool.active_stake : pool.pledge;
 		return {
 			...pool,

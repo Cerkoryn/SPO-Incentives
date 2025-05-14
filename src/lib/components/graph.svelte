@@ -158,8 +158,12 @@
 				}
 			];
 		} else if (mode === 'cip-50') {
+			// Soft saturation cap: dotted y = L * x
+			// Use axis bounds when zoomed, otherwise full graphSettings range
+			const effectiveMaxX = isZoomOn ? GRAPH_X_ZOOM_INITIAL_MAX : maxX;
+			const effectiveStepX = isZoomOn ? GRAPH_X_ZOOM_STEP : stepSizeX;
 			const dottedData: { x: number; y: number }[] = [];
-			for (let x = 0; x <= maxX; x += stepSizeX) {
+			for (let x = 0; x <= effectiveMaxX; x += effectiveStepX) {
 				dottedData.push({ x, y: L * x });
 			}
 			lineDatasets = [
@@ -178,7 +182,7 @@
 					label: 'Saturation Cap',
 					data: [
 						{ x: 0, y: baseCap },
-						{ x: maxX, y: baseCap }
+						{ x: effectiveMaxX, y: baseCap }
 					],
 					type: 'line' as const,
 					borderColor: 'red',
@@ -294,6 +298,10 @@
 		const { k, L, L2 } = $sliderParams;
 		const { maxX, stepSizeX } = $graphSettings;
 		const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
+		// Determine sampling based on zoom state
+		const isZoomOn = $zoomEnabled;
+		const axisMaxX = isZoomOn ? GRAPH_X_ZOOM_REACTIVE_MAX : maxX;
+		const axisStepX = isZoomOn ? GRAPH_X_ZOOM_STEP : stepSizeX;
 
 		// Ensure correct line datasets (dashed soft cap + flat cap) based on mode
 		{
@@ -377,9 +385,9 @@
 					newData = getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX);
 				} else if ($saturationMode === 'cip-50') {
 					if ((ds as any).borderDash) {
-						// dotted soft cap line
+						// dotted soft cap line with zoom-aware sampling
 						const dotted: { x: number; y: number }[] = [];
-						for (let x = 0; x <= maxX; x += stepSizeX) {
+						for (let x = 0; x <= axisMaxX; x += axisStepX) {
 							dotted.push({ x, y: L * x });
 						}
 						newData = dotted;
@@ -387,7 +395,7 @@
 						// flat saturation cap line
 						newData = [
 							{ x: 0, y: base },
-							{ x: maxX, y: base }
+							{ x: axisMaxX, y: base }
 						];
 					}
 				}

@@ -99,10 +99,10 @@
 			id="L-slider"
 			label="L"
 			value={$sliderParams.L}
-			min={$saturationMode === 'cip-50' ? 0.1 : 0}
-			max={50}
-			step={0.1}
-			hint={$saturationMode === 'cip-50' ? 'min: 0.1, max: 50' : 'min: 0, max: 50'}
+			min={$saturationMode === 'cip-50' ? 1 : 0}
+			max={$saturationMode === 'cip-50' ? 10000 : 50}
+			step={$saturationMode === 'cip-50' ? 1 : 0.1}
+			hint={$saturationMode === 'cip-50' ? 'min: 1, max: 10000' : 'min: 0, max: 50'}
 			onChange={(value: number) =>
 				sliderParams.update((s: SliderParameters) => ({ ...s, L: value }))}
 		/>

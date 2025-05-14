@@ -1,7 +1,7 @@
 import poolData from '../data/pools.json';
 import { ADA_CIRCULATING, ADA_RESERVES } from './constants';
 import type { Env } from '$lib/utils/types';
-import type { SaturationMode, RewardsMode } from '$lib/stores/store';
+import type { SaturationMode, RewardsMode, SliderParameters } from '$lib/stores/store';
 
 export interface Pool {
 	pool_id_bech32: string;
@@ -82,28 +82,37 @@ export const satCapFns: Record<SaturationMode, (pledge: number, env: Env, maxX: 
 			const cap1 = effL * pledge;
 			const cap2 = ADA_CIRCULATING / k;
 			return Math.min(cap1, cap2);
-		}
+		},
+		/** CIP-7: use modified pledge fraction with crossover and curve root, cap same as current */
+		'cip-7': (_pledge, { k, ADA_CIRCULATING }, _maxX) => ADA_CIRCULATING / k
 	};
 
 export function getRewards(
 	poolStake: number,
 	poolPledge: number,
-	k: number,
-	a0: number,
-	L: number,
-	L2: number,
+	params: SliderParameters,
 	maxX: number,
 	saturationMode: SaturationMode,
-	rewardsMode: RewardsMode,
-	rho: number,
-	tau: number
+	rewardsMode: RewardsMode
 ): number {
 	// Convert absolute ADA values to relative fractions
+	const { k, a0, L, L2, crossover, curveRoot, rho, tau } = params;
 	const sigma = poolStake / ADA_CIRCULATING; // σ
-	const s = poolPledge / ADA_CIRCULATING; // s
+	// pledge fraction s, special CIP-7 adaptation
+	let s: number;
+	if (saturationMode === 'cip-7') {
+		// CIP-7: effective crossover factor = ADA_CIRCULATING / (k * crossover)
+		const effCrossover = ADA_CIRCULATING / (k * crossover);
+		// s = pledge^(1/curveRoot) * effCrossover^((curveRoot - 1)/curveRoot) / total supply
+		s =
+			(Math.pow(poolPledge, 1 / curveRoot) * Math.pow(effCrossover, (curveRoot - 1) / curveRoot)) /
+			ADA_CIRCULATING;
+	} else {
+		s = poolPledge / ADA_CIRCULATING; // default pledge fraction
+	}
 
-	const env: Env = { k: k, L: L, L2: L2, ADA_CIRCULATING }; // We need to determine saturation cap here
-	const satCap = satCapFns[saturationMode](poolPledge, env, maxX); // Pass maxX explicitly for exponential mode
+	const env: Env = { k, L, L2, ADA_CIRCULATING };
+	const satCap = satCapFns[saturationMode](poolPledge, env, maxX);
 	const z0 = satCap / ADA_CIRCULATING; // Use the calculated value for z0 going forward
 
 	const sigmaP = Math.min(sigma, z0); // σ′

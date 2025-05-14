@@ -15,9 +15,7 @@
 		saturationMode,
 		customPool,
 		zoomEnabled,
-		rewardsMode,
-		rho,
-		tau
+		rewardsMode
 	} from '$lib/stores/store';
 	import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from '$lib/utils/constants';
 	import {
@@ -102,17 +100,18 @@
 			}
 		}
 
-		const { k, a0, L, L2 } = get(sliderParams);
+		// Get all slider-based parameters
+		const params = get(sliderParams);
+		const { k, a0, L, L2 } = params;
 		const { maxX, stepSizeX } = get(graphSettings);
 		const isZoomOn = get(zoomEnabled);
 		const mode = get(saturationMode);
 		const rMode = get(rewardsMode);
-		const rhoValue = get(rho);
-		const tauValue = get(tau);
 		// Build bubble datasets: size proportional to annualized ROI
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
 			const datasetData = dataPoints.map((dp) => {
-				const roi = getRewards(dp.y, dp.x, k, a0, L, L2, maxX, mode, rMode, rhoValue, tauValue);
+				// Compute ROI using consolidated sliderParams
+				const roi = getRewards(dp.y, dp.x, params, maxX, mode, rMode);
 				return { ...dp, roi, r: getPointRadius(roi) };
 			});
 			return {
@@ -295,7 +294,9 @@
 		$showCustomPool !== undefined &&
 		$customPool
 	) {
-		const { k, L, L2 } = $sliderParams;
+		// Extract all parameters
+		const params = $sliderParams;
+		const { k, L, L2, crossover, curveRoot, rho, tau } = params;
 		const { maxX, stepSizeX } = $graphSettings;
 		const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 		// Determine sampling based on zoom state
@@ -406,22 +407,11 @@
 		});
 
 		// Update bubble radii
+		// Update bubble radii
 		chart.data.datasets.forEach((ds: any) => {
 			if (ds.type === 'bubble') {
 				ds.data = (ds.data as any[]).map((pt: any) => {
-					const roi = getRewards(
-						pt.y,
-						pt.x,
-						k,
-						$sliderParams.a0,
-						L,
-						L2,
-						maxX,
-						$saturationMode,
-						$rewardsMode,
-						$rho,
-						$tau
-					);
+					const roi = getRewards(pt.y, pt.x, params, maxX, $saturationMode, $rewardsMode);
 					return { ...pt, roi, r: getPointRadius(roi) };
 				});
 			}
@@ -432,19 +422,7 @@
 		if ($showCustomPool) {
 			const { pledge, stake } = $customPool;
 			if (!isNaN(pledge) && !isNaN(stake)) {
-				const roi = getRewards(
-					stake,
-					pledge,
-					k,
-					$sliderParams.a0,
-					L,
-					L2,
-					maxX,
-					$saturationMode,
-					$rewardsMode,
-					$rho,
-					$tau
-				);
+				const roi = getRewards(stake, pledge, params, maxX, $saturationMode, $rewardsMode);
 				const rVal = getPointRadius(roi);
 				const customData = {
 					x: pledge,

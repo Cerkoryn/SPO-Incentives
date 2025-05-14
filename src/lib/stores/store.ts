@@ -5,13 +5,25 @@ export interface SliderParameters {
 	a0: number;
 	L: number;
 	L2: number;
+	// CIP-7 parameters
+	crossover: number;
+	curveRoot: number;
+	// Reactive monetary expansion and treasury cut parameters
+	rho: number;
+	tau: number;
 }
 
 export const sliderParams = writable<SliderParameters>({
 	k: 500,
 	a0: 0.3,
 	L: 0,
-	L2: 1
+	L2: 1,
+	// default CIP-7 slider values
+	crossover: 8,
+	curveRoot: 3,
+	// default monetary parameters
+	rho: 0.003,
+	tau: 0.2
 });
 
 // Toggle to show/hide the custom pool on the graph
@@ -34,11 +46,9 @@ export interface CustomPool {
 }
 export const customPool = writable<CustomPool>({ pledge: 0, stake: 0 });
 
-export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50';
+export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50' | 'cip-7';
 export const saturationMode = writable<SaturationMode>('current');
 export const zoomEnabled = writable<boolean>(false);
 export type RewardsMode = 'current' | 'full';
 export const rewardsMode = writable<RewardsMode>('current');
-// Reactive monetary expansion and treasury cut parameters
-export const rho = writable<number>(0.003);
-export const tau = writable<number>(0.2);
+// Parameters for CIP-7 saturation mode

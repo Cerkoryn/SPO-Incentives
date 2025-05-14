@@ -7,9 +7,7 @@
 		saturationMode,
 		customPool,
 		zoomEnabled,
-		rewardsMode,
-		rho,
-		tau
+		rewardsMode
 	} from '$lib/stores/store';
 	import {
 		CUSTOM_POOL_DEFAULT_PLEDGE,
@@ -26,20 +24,61 @@
 			sliderParams.update((s: SliderParameters) => ({ ...s, L: 12, L2: 20 }));
 		} else if (mode === 'cip-50') {
 			sliderParams.update((s: SliderParameters) => ({ ...s, L: 2000 }));
+		} else if (mode === 'cip-7') {
+			// Set default CIP-7 slider values
+			sliderParams.update((s) => ({ ...s, crossover: 8, curveRoot: 3 }));
 		}
 	}
 
 	function resetDefaults() {
 		// Default values as on initial page load
 		if ($saturationMode === 'exponential') {
-			sliderParams.set({ k: 500, a0: 0.3, L: 12, L2: 20 });
+			sliderParams.set({
+				k: 500,
+				a0: 0.3,
+				L: 12,
+				L2: 20,
+				crossover: 8,
+				curveRoot: 3,
+				rho: 0.003,
+				tau: 0.2
+			});
 		} else if ($saturationMode === 'cip-50') {
-			sliderParams.set({ k: 500, a0: 0.3, L: 2000, L2: 20 });
+			sliderParams.set({
+				k: 500,
+				a0: 0.3,
+				L: 2000,
+				L2: 20,
+				crossover: 8,
+				curveRoot: 3,
+				rho: 0.003,
+				tau: 0.2
+			});
+		} else if ($saturationMode === 'cip-7') {
+			// Default settings for CIP-7 mode
+			sliderParams.set({
+				k: 500,
+				a0: 0.3,
+				L: 2,
+				L2: 20,
+				crossover: 8,
+				curveRoot: 3,
+				rho: 0.003,
+				tau: 0.2
+			});
 		} else {
-			sliderParams.set({ k: 500, a0: 0.3, L: 2, L2: 20 });
+			sliderParams.set({
+				k: 500,
+				a0: 0.3,
+				L: 2,
+				L2: 20,
+				crossover: 8,
+				curveRoot: 3,
+				rho: 0.003,
+				tau: 0.2
+			});
 		}
-		rho.set(0.003);
-		tau.set(0.2);
+		// Note: rho and tau are now part of sliderParams
 	}
 </script>
 
@@ -55,23 +94,25 @@
 	<SliderControl
 		id="rho-slider"
 		label="Rho:"
-		value={$rho}
+		value={$sliderParams.rho}
 		min={0}
 		max={0.005}
 		step={0.0001}
 		hint="min: 0, max: 0.005"
 		wide={true}
-		onChange={(value: number) => rho.set(value)}
+		onChange={(value: number) =>
+			sliderParams.update((s: SliderParameters) => ({ ...s, rho: value }))}
 	/>
 	<SliderControl
 		id="tau-slider"
 		label="Tau:"
-		value={$tau}
+		value={$sliderParams.tau}
 		min={0}
 		max={0.3}
 		step={0.01}
 		hint="min: 0, max: 0.3"
-		onChange={(value: number) => tau.set(value)}
+		onChange={(value: number) =>
+			sliderParams.update((s: SliderParameters) => ({ ...s, tau: value }))}
 	/>
 	<SliderControl
 		id="k-slider"
@@ -118,6 +159,30 @@
 			hint="min: 1, max: 100"
 			onChange={(value: number) =>
 				sliderParams.update((s: SliderParameters) => ({ ...s, L2: value }))}
+		/>
+	{/if}
+	{#if $saturationMode === 'cip-7'}
+		<SliderControl
+			id="crossover-slider"
+			label="Crossover Factor:"
+			value={$sliderParams.crossover}
+			min={1}
+			max={20}
+			step={1}
+			hint="min: 1, max: 20"
+			onChange={(value: number) =>
+				sliderParams.update((s: SliderParameters) => ({ ...s, crossover: value }))}
+		/>
+		<SliderControl
+			id="curve-root-slider"
+			label="Curve Root:"
+			value={$sliderParams.curveRoot}
+			min={1}
+			max={20}
+			step={1}
+			hint="min: 1, max: 20"
+			onChange={(value: number) =>
+				sliderParams.update((s: SliderParameters) => ({ ...s, curveRoot: value }))}
 		/>
 	{/if}
 </div>
@@ -258,6 +323,16 @@
 			checked={$saturationMode === 'cip-50'}
 		/>
 		CIP-50
+	</label>
+	<label class="col-start-3 row-start-2">
+		<input
+			type="radio"
+			name="saturation-mode"
+			value="cip-7"
+			on:change={() => applyModeDefaults('cip-7')}
+			checked={$saturationMode === 'cip-7'}
+		/>
+		CIP-7
 	</label>
 </div>
 <div class="flex items-center">

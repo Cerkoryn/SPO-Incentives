@@ -2,8 +2,6 @@ export const ADA_TOTAL_SUPPLY = 45000000000;
 export const ADA_RESERVES = 7251344361;
 export const ADA_CIRCULATING = ADA_TOTAL_SUPPLY - ADA_RESERVES;
 export const ADA_TREASURY = 1730343069;
-export const STAKED_RATIO = 0.6;
-export const ADA_TOTAL_STAKED = ADA_CIRCULATING * STAKED_RATIO;
 
 // Graph zoom and scale constants
 export const GRAPH_X_ZOOM_INITIAL_MAX = 5000000;

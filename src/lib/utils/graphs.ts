@@ -1,5 +1,7 @@
 import poolData from '../data/pools.json';
-import { ADA_CIRCULATING, ADA_RESERVES, ADA_TOTAL_STAKED } from './constants';
+import { ADA_CIRCULATING, ADA_RESERVES } from './constants';
+import { adaTotalStaked } from '$lib/stores/store';
+import { get } from 'svelte/store';
 import type { Env } from '$lib/utils/types';
 import type { SaturationMode, RewardsMode, SliderParameters } from '$lib/stores/store';
 
@@ -96,7 +98,7 @@ export function getRewards(
 	rewardsMode: RewardsMode
 ): number {
 	const { k, a0, L, L2, crossover, curveRoot, rho, tau } = params;
-	const supply = rewardsMode === 'current' ? ADA_CIRCULATING : ADA_TOTAL_STAKED;
+	const supply = rewardsMode === 'current' ? ADA_CIRCULATING : get(adaTotalStaked);
 
 	const sigma = poolStake / supply; // σ
 	let s: number = poolPledge / supply;

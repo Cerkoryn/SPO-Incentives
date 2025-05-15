@@ -44,7 +44,8 @@
 				crossover: 8,
 				curveRoot: 3,
 				rho: 0.003,
-				tau: 0.2
+				tau: 0.2,
+				stakedRatio: 0.6
 			});
 		} else if ($saturationMode === 'cip-50') {
 			sliderParams.set({
@@ -55,7 +56,8 @@
 				crossover: 8,
 				curveRoot: 3,
 				rho: 0.003,
-				tau: 0.2
+				tau: 0.2,
+				stakedRatio: 0.6
 			});
 		} else if ($saturationMode === 'cip-7') {
 			// Default settings for CIP-7 mode
@@ -67,7 +69,8 @@
 				crossover: 8,
 				curveRoot: 3,
 				rho: 0.003,
-				tau: 0.2
+				tau: 0.2,
+				stakedRatio: 0.6
 			});
 		} else {
 			sliderParams.set({
@@ -78,7 +81,8 @@
 				crossover: 8,
 				curveRoot: 3,
 				rho: 0.003,
-				tau: 0.2
+				tau: 0.2,
+				stakedRatio: 0.6
 			});
 		}
 		// Note: rho and tau are now part of sliderParams
@@ -106,6 +110,18 @@
 		wide={true}
 		onChange={(value: number) =>
 			sliderParams.update((s: SliderParameters) => ({ ...s, rho: value }))}
+	/>
+	<SliderControl
+		id="staked-ratio-slider"
+		label="Staked Ratio:"
+		value={$sliderParams.stakedRatio}
+		min={0}
+		max={1}
+		step={0.01}
+		hint="min: 0, max: 1"
+		wide={true}
+		onChange={(value: number) =>
+			sliderParams.update((s: SliderParameters) => ({ ...s, stakedRatio: value }))}
 	/>
 	<SliderControl
 		id="tau-slider"

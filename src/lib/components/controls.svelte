@@ -15,6 +15,9 @@
 		CUSTOM_POOL_PLEDGE_STEP,
 		CUSTOM_POOL_STAKE_STEP
 	} from '$lib/utils/constants';
+	// Import descriptions for auxiliary controls tooltips
+	import descriptions from '$lib/slider-descriptions.json' assert { type: 'json' };
+	const desc: Record<string, string> = descriptions;
 
 	function applyModeDefaults(mode: SaturationMode) {
 		saturationMode.set(mode);
@@ -87,8 +90,9 @@
 	type="button"
 	on:click={resetDefaults}
 	class="mb-4 cursor-pointer rounded border border-gray-300 bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200"
-	>Reset Sliders</button
 >
+	Reset Sliders
+</button>
 
 <div class="flex flex-col gap-4">
 	<SliderControl
@@ -207,6 +211,10 @@
 				}}
 			/>
 			Show Custom Pool
+			<span
+				class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+				title={desc.show_custom_pool}>?</span
+			>
 		</label>
 		{#if $showCustomPool && $customPool.stake < $customPool.pledge}
 			<span class="ml-2 text-xs text-amber-600">⚠ Stake cannot be lower than pledge</span>
@@ -216,7 +224,13 @@
 {#if $showCustomPool}
 	<div class="mt-4 flex flex-col gap-2">
 		<div class="flex flex-wrap items-center gap-2">
-			<label for="custom-pledge">Pledge:</label>
+			<label for="custom-pledge"
+				>Pledge:
+				<span
+					class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+					title={desc.custom_pledge}>?</span
+				>
+			</label>
 			<input
 				type="number"
 				id="custom-pledge"
@@ -235,7 +249,13 @@
 			/>
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
-			<label for="custom-stake">Stake:</label>
+			<label for="custom-stake"
+				>Stake:
+				<span
+					class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+					title={desc.custom_stake}>?</span
+				>
+			</label>
 			<input
 				type="number"
 				id="custom-stake"
@@ -259,7 +279,7 @@
 <!-- Radio Buttons for selecting the rewards mode -->
 <div class="mt-4 flex items-center gap-4">
 	<span>Rewards:</span>
-	<label>
+	<label class="flex items-center gap-1">
 		<input
 			type="radio"
 			name="rewards-mode"
@@ -269,7 +289,7 @@
 		/>
 		Current
 	</label>
-	<label>
+	<label class="flex items-center gap-1">
 		<input
 			type="radio"
 			name="rewards-mode"
@@ -279,7 +299,7 @@
 		/>
 		Full
 	</label>
-	<label>
+	<label class="flex items-center gap-1">
 		<input
 			type="radio"
 			name="rewards-mode"
@@ -289,6 +309,11 @@
 		/>
 		Max
 	</label>
+	<!-- Combined info bubble for rewards modes -->
+	<span
+		class="ml-1 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+		title={desc.rewards}>?</span
+	>
 </div>
 
 <!-- Radio Buttons for selecting the saturation function with default presets -->
@@ -344,6 +369,11 @@
 		/>
 		CIP-7
 	</label>
+	<!-- Combined info bubble for saturation formulas -->
+	<span
+		class="col-start-4 row-start-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+		title={desc.formula}>?</span
+	>
 </div>
 <div class="flex items-center">
 	<label for="toggle-zoom-checkbox">
@@ -354,5 +384,9 @@
 			on:change={(e: Event) => zoomEnabled.set((e.target as HTMLInputElement).checked)}
 		/>
 		Toggle Zoom
+		<span
+			class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+			title={desc.toggle_zoom}>?</span
+		>
 	</label>
 </div>

@@ -112,18 +112,6 @@
 			sliderParams.update((s: SliderParameters) => ({ ...s, rho: value }))}
 	/>
 	<SliderControl
-		id="staked-ratio-slider"
-		label="Staked Ratio:"
-		value={$sliderParams.stakedRatio}
-		min={0}
-		max={1}
-		step={0.01}
-		hint="min: 0, max: 1"
-		wide={true}
-		onChange={(value: number) =>
-			sliderParams.update((s: SliderParameters) => ({ ...s, stakedRatio: value }))}
-	/>
-	<SliderControl
 		id="tau-slider"
 		label="Tau:"
 		value={$sliderParams.tau}
@@ -133,6 +121,19 @@
 		hint="min: 0, max: 0.3"
 		onChange={(value: number) =>
 			sliderParams.update((s: SliderParameters) => ({ ...s, tau: value }))}
+	/>
+	<SliderControl
+		id="staked-ratio-slider"
+		label="Staked Ratio"
+		unit="%"
+		value={Math.round($sliderParams.stakedRatio * 100)}
+		min={30}
+		max={100}
+		step={1}
+		hint="min: 30%, max: 100%"
+		wide={true}
+		onChange={(value: number) =>
+			sliderParams.update((s: SliderParameters) => ({ ...s, stakedRatio: value / 100 }))}
 	/>
 	<SliderControl
 		id="k-slider"

@@ -12,6 +12,7 @@
 	export let min: number;
 	export let max: number;
 	export let step: number;
+	export let unit: string = '';
 	export let hint: string = '';
 	export let wide: boolean = false;
 	export let onChange: (value: number) => void = () => {};
@@ -71,6 +72,9 @@
 				on:input={onNumberInput}
 				class={wide ? 'w-[8ch] bg-white' : 'w-16 bg-white'}
 			/>
+			{#if unit}
+				<span class="text-sm text-gray-600">{unit}</span>
+			{/if}
 			{#if hint}
 				<span class="text-xs text-gray-400">{hint}</span>
 			{/if}

@@ -22,7 +22,7 @@
 		current: {
 			title: 'This is using the current formula for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
-			subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+			subtext: 'Bubble size represents pool ROI.',
 			subtext2: 'Note that ROI calculations may differ slightly from live data.',
 			legend: [
 				'C<sub>0</sub> - Saturation Cap',
@@ -34,7 +34,7 @@
 		linear: {
 			title: 'This is a hypothetical linear formula for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
-			subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+			subtext: 'Bubble size represents pool ROI.',
 			subtext2: 'Note that ROI calculations may differ slightly from live data.',
 			legend: [
 				'p  - Pool Pledge',
@@ -47,7 +47,7 @@
 		exponential: {
 			title: 'This is a hypothetical exponential formula for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
-			subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+			subtext: 'Bubble size represents pool ROI.',
 			subtext2: 'Note that ROI calculations may differ slightly from live data.',
 			legend: [
 				'p  - Pool Pledge',
@@ -62,7 +62,7 @@
 			title:
 				'This is a formula based on <a href="https://cips.cardano.org/cip/CIP-0050" class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">CIP-50</a> for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
-			subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+			subtext: 'Bubble size represents pool ROI.',
 			subtext2: 'Note that ROI calculations may differ slightly from live data.',
 			legend: [
 				'p  - Pool Pledge',
@@ -76,7 +76,7 @@
 			title:
 				'This is a formula based on <a href="https://cips.cardano.org/cip/CIP-7" class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">CIP-7</a> for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
-			subtext: 'Bubble size represents pool ROI. You can also drag the custom pool around.',
+			subtext: 'Bubble size represents pool ROI.',
 			subtext2: 'Note that ROI calculations may differ slightly from live data.',
 			legend: [
 				's  - Total Pool Pledge',

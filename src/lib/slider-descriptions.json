@@ -1,0 +1,23 @@
+{
+  "rho": "Adjustable parameter that controls the monetary expansion on Cardano. Raising it means more ADA is emitted from the reserves, increasing both rewards and inflation. Lowering it will decrease rewards and inflation.",
+  "tau": "Adjustable parameter that controls the rate of tax that is used to grow the Treasury. The treasury tax is applied before the reward calculation and distribution, so the whole epoch reward pot is taxed first. Raising it means more ADA will go to the Treasury while decreasing the ADA distributed to delegators as rewards. Lowering it means more ADA from the rewards pot will go to delegators as rewards and the Treasury would grow at a lower rate.",
+  "k": "Adjustable parameter that creates a soft cap on the total stake in a pool that would receive optimal rewards. This number is often referred to as the saturation level. Raising K means the saturation level is lowered thereby incentivizing delegators in oversaturated pools to move their stake to one that is not oversaturated, thus encouraging wider decentralization of the Cardano network. Decreasing K means the saturation level is raised allowing one pool to control more ADA.",
+  "a0": "Adjustable parameter that gives additional rewards to pools that have more pledge. Increasing a0 will reward pools that have more pledge and penalize pools that have less pledge. The effects of these changes are only noticeable for higher pledged pools near the saturation limit.",
+  "L": "Pledge Leverage parameter that allows a pool to exceed the saturation cap if they have enough pledge based on a factor of L.",
+  "L2": "Pledge Curve Sharpness (or Pledge Cap) parameter that limits the extent to which a pool can exceed the saturation cap based on a factor of L2.",
+  "crossover": "Parameter for CIP-7 formula that adjusts the crossover factor for saturation cap calculations.",
+  "curveRoot": "Parameter for CIP-7 formula that adjusts the curve root for saturation cap calculations.",
+  "rewards_current": "Placeholder: Displays the current rewards calculation based on the selected parameters. [Add more details later]",
+  "rewards_full": "Placeholder: Shows the full rewards potential without any deductions. [Add more details later]",
+  "rewards_max": "Placeholder: Represents the maximum possible rewards under ideal conditions. [Add more details later]",
+  "formula_current": "Placeholder: Uses the current Cardano saturation formula for reward calculations. [Add more details later]",
+  "formula_linear": "Introduces a Pledge Leverage parameter, allowing a pool to exceed the saturation cap based on a factor of L.",
+  "formula_exponential": "Introduces Pledge Leverage and Pledge Curve Sharpness parameters, allowing a pool to exceed the saturation cap based on L but not exceed a cap based on L2.",
+  "formula_cip-50": "Formula based on CIP-50 for saturation cap on Cardano.",
+  "formula_cip-7": "Formula based on CIP-7 for saturation cap on Cardano.",
+  "toggle_zoom": "Enables or disables zooming in or out of the graph view.",
+  "show_custom_pool": "Toggles the visibility of a custom pool with user-defined pledge and stake values.",
+  "custom_pledge": "Sets the pledge amount for the custom pool, representing the operator's committed stake.",
+  "custom_stake": "Sets the total stake amount for the custom pool, including delegated stake.",
+  "reset_sliders": "Resets all sliders to their default values based on the current saturation mode."
+}

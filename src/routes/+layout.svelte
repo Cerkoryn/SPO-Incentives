@@ -135,16 +135,15 @@
 <div class="box-border flex min-h-screen flex-col">
 	<main class="flex max-w-full flex-1 flex-col gap-4 p-2 sm:p-4">
 		<div class="flex flex-col gap-4">
-			<div class="w-full max-w-full">
+			<div class="relative w-full max-w-full">
 				<Graph />
-			</div>
-			<div class="flex justify-start">
 				<button
-					class="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-					aria-label={showPopup ? 'Hide parameter sliders' : 'Show parameter sliders'}
+					class="absolute bottom-2 left-2 z-10 transform rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+					style="transform-origin: bottom left; transform: scale(0.6);"
+					aria-label={showPopup ? 'Hide Controls' : 'Show Controls'}
 					on:click={togglePopup}
 				>
-					{showPopup ? 'Hide Sliders' : 'Show Sliders'}
+					{showPopup ? 'Hide Controls' : 'Show Controls'}
 				</button>
 			</div>
 			<slot />

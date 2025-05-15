@@ -23,7 +23,7 @@
 			title: 'This is using the current formula for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
 			subtext: 'Bubble size represents pool ROI.',
-			subtext2: 'Note that ROI calculations may differ slightly from live data.',
+			subtext2: 'Note that ROI calculations will differ slightly from live data.',
 			legend: [
 				'C<sub>0</sub> - Saturation Cap',
 				'S  - Total Supply',
@@ -35,7 +35,7 @@
 			title: 'This is a hypothetical linear formula for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
 			subtext: 'Bubble size represents pool ROI.',
-			subtext2: 'Note that ROI calculations may differ slightly from live data.',
+			subtext2: 'Note that ROI calculations will differ slightly from live data.',
 			legend: [
 				'p  - Pool Pledge',
 				'S  - Total Supply',
@@ -48,7 +48,7 @@
 			title: 'This is a hypothetical exponential formula for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
 			subtext: 'Bubble size represents pool ROI.',
-			subtext2: 'Note that ROI calculations may differ slightly from live data.',
+			subtext2: 'Note that ROI calculations will differ slightly from live data.',
 			legend: [
 				'p  - Pool Pledge',
 				'S  - Total Supply',
@@ -63,7 +63,7 @@
 				'This is a formula based on <a href="https://cips.cardano.org/cip/CIP-0050" class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">CIP-50</a> for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
 			subtext: 'Bubble size represents pool ROI.',
-			subtext2: 'Note that ROI calculations may differ slightly from live data.',
+			subtext2: 'Note that ROI calculations will differ slightly from live data.',
 			legend: [
 				'p  - Pool Pledge',
 				'R  - Rewards',
@@ -77,7 +77,7 @@
 				'This is a formula based on <a href="https://cips.cardano.org/cip/CIP-7" class="text-blue-600 underline" target="_blank" rel="noopener noreferrer">CIP-7</a> for saturation cap on Cardano.',
 			subtitle: 'Experiment with the sliders to visualize the effects of parameter changes.',
 			subtext: 'Bubble size represents pool ROI.',
-			subtext2: 'Note that ROI calculations may differ slightly from live data.',
+			subtext2: 'Note that ROI calculations will differ slightly from live data.',
 			legend: [
 				's  - Total Pool Pledge',
 				"s'  - Eligible Pool Pledge ",
@@ -93,7 +93,7 @@
 	$: data = modeData[$saturationMode];
 </script>
 
-<div class="box-border flex max-w-full flex-col gap-4 p-4 md:flex-row md:gap-8">
+<div class="box-border grid grid-cols-1 gap-4 p-4 sm:grid-cols-4 sm:gap-8">
 	<div class="flex min-w-0 flex-col gap-2 leading-tight">
 		<h1 class="m-0 text-lg font-bold">{@html data.title}</h1>
 		<p class="m-0 text-sm">{data.subtitle}</p>
@@ -101,71 +101,73 @@
 		<p class="m-0 mt-2 text-sm">{data.subtext2}</p>
 	</div>
 
+	<!-- Image next -->
+	<div class="flex min-w-0 items-center justify-center">
+		<img
+			src={imageMap[$saturationMode]}
+			alt="Formula for {$saturationMode} saturation cap"
+			class="h-auto max-w-full"
+		/>
+	</div>
+
+	<!-- Legend next -->
 	<div class="flex min-w-0 flex-col gap-1 leading-tight">
 		<h2 class="m-0 text-sm font-bold underline">Legend</h2>
 		{#each data.legend as entry}
 			<p class="m-0 text-sm">{@html entry}</p>
 		{/each}
 	</div>
-
-	<div class="flex items-center justify-center">
-		<img
-			src={imageMap[$saturationMode]}
-			alt="Formula for {$saturationMode} saturation cap"
-			class="h-auto max-w-full"
-		/>
-		<div class="flex min-w-0 flex-col items-center gap-1 pl-4 text-center leading-tight">
-			<p class="m-0 text-sm">Brought to you by the community driven SPO Incentives Working Group</p>
-			<p class="m-0 text-sm">Want to join the discussion? Contact one of our community members:</p>
-			<p class="m-0 text-sm">
-				<a
-					href="https://x.com/Cerkoryn"
-					class="text-blue-600 underline"
-					target="_blank"
-					rel="noopener noreferrer">Cerkoryn</a
-				>
-			</p>
-			<p class="m-0 text-sm">
-				<a
-					href="https://x.com/rabbitholepools"
-					class="text-blue-600 underline"
-					target="_blank"
-					rel="noopener noreferrer">rabbitholepools</a
-				>
-			</p>
-			<p class="m-0 text-sm">
-				<a
-					href="https://x.com/earncoinpool"
-					class="text-blue-600 underline"
-					target="_blank"
-					rel="noopener noreferrer">earncoinpool</a
-				>
-			</p>
-			<p class="m-0 text-sm">
-				<a
-					href="https://x.com/KpunToN00b"
-					class="text-blue-600 underline"
-					target="_blank"
-					rel="noopener noreferrer">KpunToN00b</a
-				>
-			</p>
-			<p class="m-0 text-sm">
-				<a
-					href="https://x.com/Star_Forge_Pool"
-					class="text-blue-600 underline"
-					target="_blank"
-					rel="noopener noreferrer">Star_Forge_Pool</a
-				>
-			</p>
-			<p class="m-0 text-sm">
-				<a
-					href="https://x.com/BBHMM_Stake"
-					class="text-blue-600 underline"
-					target="_blank"
-					rel="noopener noreferrer">BBHMM_Stake</a
-				>
-			</p>
-		</div>
+	<div class="flex min-w-0 flex-col items-center gap-1 text-center leading-tight">
+		<p class="m-0 text-sm">Brought to you by the community driven SPO Incentives Working Group</p>
+		<p class="m-0 text-sm">Want to join the discussion? Contact one of our community members:</p>
+		<p class="m-0 text-sm">
+			<a
+				href="https://x.com/Cerkoryn"
+				class="text-blue-600 underline"
+				target="_blank"
+				rel="noopener noreferrer">Cerkoryn</a
+			>
+		</p>
+		<p class="m-0 text-sm">
+			<a
+				href="https://x.com/rabbitholepools"
+				class="text-blue-600 underline"
+				target="_blank"
+				rel="noopener noreferrer">rabbitholepools</a
+			>
+		</p>
+		<p class="m-0 text-sm">
+			<a
+				href="https://x.com/earncoinpool"
+				class="text-blue-600 underline"
+				target="_blank"
+				rel="noopener noreferrer">earncoinpool</a
+			>
+		</p>
+		<p class="m-0 text-sm">
+			<a
+				href="https://x.com/KpunToN00b"
+				class="text-blue-600 underline"
+				target="_blank"
+				rel="noopener noreferrer">KpunToN00b</a
+			>
+		</p>
+		<p class="m-0 text-sm">
+			<a
+				href="https://x.com/Star_Forge_Pool"
+				class="text-blue-600 underline"
+				target="_blank"
+				rel="noopener noreferrer">Star_Forge_Pool</a
+			>
+		</p>
+		<p class="m-0 text-sm">
+			<a
+				href="https://x.com/BBHMM_Stake"
+				class="text-blue-600 underline"
+				target="_blank"
+				rel="noopener noreferrer">BBHMM_Stake</a
+			>
+		</p>
 	</div>
 </div>
 

@@ -114,6 +114,58 @@
 			alt="Formula for {$saturationMode} saturation cap"
 			class="h-auto max-w-full"
 		/>
+		<div class="flex min-w-0 flex-col items-center gap-1 pl-4 text-center leading-tight">
+			<p class="m-0 text-sm">Brought to you by the community driven SPO Incentives Working Group</p>
+			<p class="m-0 text-sm">Want to join the discussion? Contact one of our community members:</p>
+			<p class="m-0 text-sm">
+				<a
+					href="https://x.com/Cerkoryn"
+					class="text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">Cerkoryn</a
+				>
+			</p>
+			<p class="m-0 text-sm">
+				<a
+					href="https://x.com/rabbitholepools"
+					class="text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">rabbitholepools</a
+				>
+			</p>
+			<p class="m-0 text-sm">
+				<a
+					href="https://x.com/earncoinpool"
+					class="text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">earncoinpool</a
+				>
+			</p>
+			<p class="m-0 text-sm">
+				<a
+					href="https://x.com/KpunToN00b"
+					class="text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">KpunToN00b</a
+				>
+			</p>
+			<p class="m-0 text-sm">
+				<a
+					href="https://x.com/Star_Forge_Pool"
+					class="text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">Star_Forge_Pool</a
+				>
+			</p>
+			<p class="m-0 text-sm">
+				<a
+					href="https://x.com/BBHMM_Stake"
+					class="text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">BBHMM_Stake</a
+				>
+			</p>
+		</div>
 	</div>
 </div>
 

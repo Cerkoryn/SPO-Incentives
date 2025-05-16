@@ -1,4 +1,5 @@
 <script lang="ts">
+	// --- Imports ------------------------------------------------------
 	import { onMount } from 'svelte';
 	import { Chart, registerables } from 'chart.js';
 	import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
@@ -17,8 +18,9 @@
 		zoomEnabled,
 		rewardsMode
 	} from '$lib/stores/store';
-	import { ADA_TOTAL_SUPPLY, ADA_RESERVES } from '$lib/utils/constants';
 	import {
+		ADA_TOTAL_SUPPLY,
+		ADA_RESERVES,
 		GRAPH_X_ZOOM_INITIAL_MAX,
 		GRAPH_X_ZOOM_REACTIVE_MAX,
 		GRAPH_X_ZOOM_STEP,
@@ -29,53 +31,50 @@
 	} from '$lib/utils/constants';
 	import { get } from 'svelte/store';
 
+	// Register Chart.js components
 	Chart.register(...registerables);
 
+	// --- Utility Functions -------------------------------------------
+	/** Map ROI value [0…10+] to bubble radius */
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
-		const maxROI = 10; // Largest value we can get
-		const minR = 1; // smallest bubble
-		const maxR = 32; // largest bubble
-
-		// normalize to [0…1]
+		const maxROI = 10;
+		const minR = 1;
+		const maxR = 32;
 		const t = Math.max(0, Math.min((roi - minROI) / (maxROI - minROI), 1));
 		return minR + t * (maxR - minR);
 	}
 
+	// --- Component State --------------------------------------------
 	let canvas: HTMLCanvasElement;
 	let container: HTMLDivElement;
 	let chart: Chart;
 
-	// Define colors for pool groups: MPO, sSPO, plus Custom Pool
+	// --- Color Palette ----------------------------------------------
 	const groupColors: Record<string, string> = {
 		sSPO: 'rgba(75, 192, 75, 0.6)',
 		MPO: 'rgba(255, 140, 60, 0.6)',
 		'Custom Pool': 'rgba(255, 0, 0, 1)'
 	};
 
+	// --- Lifecycle Hook: Initialize Chart ---------------------------
 	onMount(() => {
 		createChart();
-		// watch for container size changes to resize chart
-		const ro = new ResizeObserver((entries: ResizeObserverEntry[], observer: ResizeObserver) => {
-			if (chart) chart.resize();
-		});
+		const ro = new ResizeObserver(() => chart?.resize());
 		if (container) ro.observe(container);
-		return () => {
-			ro.disconnect();
-		};
+		return () => ro.disconnect();
 	});
 
+	// --- Chart Initialization ---------------------------------------
 	function createChart() {
 		if (!canvas) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
-		// Group all pools by their group name (all non-custom pools displayed)
+		// Group pools by category
 		const groups: Record<string, any[]> = {};
 		pools.forEach((pool) => {
-			if (!groups[pool.group]) {
-				groups[pool.group] = [];
-			}
+			groups[pool.group] ||= [];
 			groups[pool.group].push({
 				x: pool.pledge,
 				y: pool.active_stake,
@@ -84,48 +83,42 @@
 				group: pool.group
 			});
 		});
-		// Include custom pool if toggled
+		// Add custom pool if enabled
 		if ($showCustomPool) {
 			const { pledge, stake } = $customPool;
 			if (!isNaN(pledge) && !isNaN(stake)) {
-				const groupKey = 'Custom Pool';
-				if (!groups[groupKey]) groups[groupKey] = [];
-				groups[groupKey].push({
-					x: pledge,
-					y: stake,
-					ticker: 'CUSTOM',
-					name: 'Custom Pool',
-					group: groupKey
-				});
+				const key = 'Custom Pool';
+				groups[key] ||= [];
+				groups[key].push({ x: pledge, y: stake, ticker: 'CUSTOM', name: key, group: key });
 			}
 		}
 
-		// Get all slider-based parameters
+		// Extract current settings
 		const params = get(sliderParams);
 		const { k, a0, L, L2 } = params;
 		const { maxX, stepSizeX } = get(graphSettings);
 		const isZoomOn = get(zoomEnabled);
 		const mode = get(saturationMode);
 		const rMode = get(rewardsMode);
-		// Build bubble datasets: size proportional to annualized ROI
+
+		// Build scatter (bubble) datasets
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
-			const datasetData = dataPoints.map((dp) => {
-				// Compute ROI using consolidated sliderParams
+			const data = dataPoints.map((dp) => {
 				const roi = getRewards(dp.y, dp.x, params, maxX, mode, rMode);
 				return { ...dp, roi, r: getPointRadius(roi) };
 			});
 			return {
 				label: group,
-				data: datasetData,
-				backgroundColor: groupColors[group] || 'rgba(0, 0, 0, 0.6)',
+				data,
+				backgroundColor: groupColors[group] || 'rgba(0,0,0,0.6)',
 				type: 'bubble' as const
 			};
 		});
 
-		// pull these out so we use them in all three modes
+		// Base saturation cap level: (total supply - reserves) / k
 		const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 
-		// pick exactly the right datasets for each mode
+		// Build line datasets based on selected mode
 		let lineDatasets: any[];
 		if (mode === 'current') {
 			lineDatasets = [
@@ -157,8 +150,7 @@
 				}
 			];
 		} else if (mode === 'cip-50') {
-			// Soft saturation cap: dotted y = L * x
-			// Use axis bounds when zoomed, otherwise full graphSettings range
+			// CIP-50: soft cap (dotted) then flat cap line
 			const effectiveMaxX = isZoomOn ? GRAPH_X_ZOOM_INITIAL_MAX : maxX;
 			const effectiveStepX = isZoomOn ? GRAPH_X_ZOOM_STEP : stepSizeX;
 			const dottedData: { x: number; y: number }[] = [];
@@ -281,11 +273,11 @@
 				}
 			}
 		});
-		// Setup custom pool drag handlers
+		// Attach drag handler for custom pool bubble
 		enableCustomPoolDrag(chart, canvas);
 	}
 
-	// Update reactive block: recalc all datasets on param changes
+	// --- Reactive Updates: refresh chart on store changes  -----------
 	$: if (
 		chart &&
 		$sliderParams &&

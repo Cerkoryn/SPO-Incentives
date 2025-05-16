@@ -1,3 +1,4 @@
+// --- Imports ------------------------------------------------------
 import poolData from '../data/pools.json';
 import { ADA_CIRCULATING, ADA_RESERVES } from './constants';
 import { adaTotalStaked } from '$lib/stores/store';
@@ -5,6 +6,8 @@ import { get } from 'svelte/store';
 import type { Env } from '$lib/utils/types';
 import type { SaturationMode, RewardsMode, SliderParameters } from '$lib/stores/store';
 
+// --- Data Types --------------------------------------------------
+/** Basic pool data with pledge and active stake values */
 export interface Pool {
 	pool_id_bech32: string;
 	ticker: string;
@@ -13,18 +16,22 @@ export interface Pool {
 	group: string;
 }
 
+/**
+ * Processed list of pools with normalized pledge (min of pledge and active stake)
+ * and filtered to include only pools with positive active stake.
+ */
 export const pools: Pool[] = poolData
-	.map((pool) => {
-		const active_stake = pool.active_stake;
-		const pledge = pool.active_stake < pool.pledge ? pool.active_stake : pool.pledge;
-		return {
-			...pool,
-			active_stake,
-			pledge
-		};
-	})
+	.map((pool) => ({
+		...pool,
+		active_stake: pool.active_stake,
+		pledge: Math.min(pool.active_stake, pool.pledge)
+	}))
 	.filter((pool) => pool.active_stake > 0);
 
+// --- Saturation Cap Generators ------------------------------------
+/**
+ * Linear saturation cap: (circulating supply / k) + L * pledge
+ */
 export function getSaturationCapLinear(
 	k: number,
 	L: number,
@@ -32,13 +39,17 @@ export function getSaturationCapLinear(
 	stepSizeX: number
 ): { x: number; y: number }[] {
 	const baseCap = ADA_CIRCULATING / k;
-	const points = [];
+	const points: { x: number; y: number }[] = [];
 	for (let x = 0; x <= maxX; x += stepSizeX) {
 		points.push({ x, y: baseCap + L * x });
 	}
 	return points;
 }
 
+/**
+ * Exponential saturation cap with soft start:
+ * base + F · L · (1 − exp(−pledge / τ)), where τ = (L2 / 100) * maxX
+ */
 export function getSaturationCapExpSaturation(
 	k: number,
 	L: number,
@@ -47,48 +58,39 @@ export function getSaturationCapExpSaturation(
 	stepSizeX: number
 ): { x: number; y: number }[] {
 	const baseCap = ADA_CIRCULATING / k;
-	const F = 10_000_000; // constant to map bump to our y-values (stake ranges)
-	const points: { x: number; y: number }[] = [];
-
-	// map L2 to values roughly corresponding to our x-values (pledge ranges)
+	const F = 10_000_000;
 	const τ = (L2 / 100) * maxX;
-
+	const points: { x: number; y: number }[] = [];
 	for (let x = 0; x <= maxX; x += stepSizeX / 8) {
-		// Denominator here just to change resolution of jagged edges in chart
 		const normalized = 1 - Math.exp(-x / τ);
-		const bump = F * L * normalized;
-		points.push({ x, y: baseCap + bump });
+		points.push({ x, y: baseCap + F * L * normalized });
 	}
-
 	return points;
 }
 
+// --- Saturation Cap Functions -------------------------------------
+/** Functions to compute saturation cap per mode */
 export const satCapFns: Record<SaturationMode, (pledge: number, env: Env, maxX: number) => number> =
 	{
-		/** Existing formula: (circ / k) */
-		current: (_pledge, { k, ADA_CIRCULATING }, _maxX) => ADA_CIRCULATING / k,
-
-		/** Linear: (circ / k) + L · pledge */
-		linear: (pledge, { k, L, ADA_CIRCULATING }, _maxX) => ADA_CIRCULATING / k + L * pledge,
-
-		/** Exponential: (circ / k) + sc·L·(1 − e^(−pledge/sc)) */
+		current: (_pledge, { k, ADA_CIRCULATING }) => ADA_CIRCULATING / k,
+		linear: (pledge, { k, L, ADA_CIRCULATING }) => ADA_CIRCULATING / k + L * pledge,
 		exponential: (pledge, { k, L, L2, ADA_CIRCULATING }, maxX) => {
 			const baseCap = ADA_CIRCULATING / k;
-			const F = 10_000_000;
 			const τ = (L2 / 100) * maxX;
-			return baseCap + F * L * (1 - Math.exp(-pledge / τ));
+			return baseCap + 10_000_000 * L * (1 - Math.exp(-pledge / τ));
 		},
-		/** CIP-50: saturation cap is the lesser of L·pledge or ADA_CIRCULATING/k, with L clamped to min 0.1 */
-		'cip-50': (pledge, { k, L, ADA_CIRCULATING }, _maxX) => {
-			const effL = L < 0.1 ? 0.1 : L;
-			const cap1 = effL * pledge;
-			const cap2 = ADA_CIRCULATING / k;
-			return Math.min(cap1, cap2);
+		'cip-50': (pledge, { k, L, ADA_CIRCULATING }) => {
+			const effL = Math.max(L, 0.1);
+			return Math.min(effL * pledge, ADA_CIRCULATING / k);
 		},
-		/** CIP-7: use modified pledge fraction with crossover and curve root, cap same as current */
-		'cip-7': (_pledge, { k, ADA_CIRCULATING }, _maxX) => ADA_CIRCULATING / k
+		'cip-7': (_pledge, { k, ADA_CIRCULATING }) => ADA_CIRCULATING / k
 	};
 
+// --- Rewards Calculation ------------------------------------------
+/**
+ * Compute annualized ROI for a given pool, based on stake, pledge,
+ * current slider parameters, saturation mode, and rewards mode.
+ */
 export function getRewards(
 	poolStake: number,
 	poolPledge: number,
@@ -98,11 +100,12 @@ export function getRewards(
 	rewardsMode: RewardsMode
 ): number {
 	const { k, a0, L, L2, crossover, curveRoot, rho, tau } = params;
+	// Determine supply base for rewards
 	const supply = rewardsMode === 'current' ? ADA_CIRCULATING : get(adaTotalStaked);
 
-	const sigma = poolStake / supply; // σ
-	let s: number = poolPledge / supply;
-
+	// Relative stake and pledge fractions
+	const sigma = poolStake / supply;
+	let s = poolPledge / supply;
 	if (saturationMode === 'cip-7') {
 		const effCrossover = supply / (k * crossover);
 		s =
@@ -110,22 +113,25 @@ export function getRewards(
 			supply;
 	}
 
-	const env: Env = { k, L, L2, ADA_CIRCULATING }; // sat-cap stays absolute
-	const satCap = satCapFns[saturationMode](poolPledge, env, maxX);
+	// Compute saturation cap (absolute) and its fraction
+	const capEnv: Env = { k, L, L2, ADA_CIRCULATING };
+	const satCap = satCapFns[saturationMode](poolPledge, capEnv, maxX);
 	const z0 = satCap / supply;
 
-	const sigmaP = Math.min(sigma, z0); // σ′
-	const sP = Math.min(s, z0); // s′
+	// Adjusted contributions
+	const sigmaP = Math.min(sigma, z0);
+	const sP = Math.min(s, z0);
 
+	// Pool performance factor
 	const inner = sigmaP - (sP * (z0 - sigmaP)) / z0;
 	const f = sigmaP + sP * a0 * (inner / z0);
 
-	const treasuryCut = rho * ADA_RESERVES * tau;
-	const rewardsPot = rho * ADA_RESERVES - treasuryCut;
-
+	// Rewards pot after treasury cut
+	const rewardsPot = rho * ADA_RESERVES * (1 - tau);
 	const divisor = rewardsMode === 'max' ? 1 : 1 + a0;
 	const rewardPerEpoch = (rewardsPot / divisor) * f;
 
-	const roiEpoch = rewardPerEpoch / poolStake; // per-ADA
-	return roiEpoch * 73 * 100; // annualised %
+	// Annualized ROI percentage
+	const roiEpoch = rewardPerEpoch / poolStake;
+	return roiEpoch * 73 * 100;
 }

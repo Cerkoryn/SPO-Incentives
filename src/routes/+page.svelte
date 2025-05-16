@@ -101,7 +101,6 @@
 		<p class="m-0 mt-2 text-sm">{data.subtext2}</p>
 	</div>
 
-	<!-- Image next -->
 	<div class="flex min-w-0 items-center justify-center">
 		<img
 			src={imageMap[$saturationMode]}
@@ -110,7 +109,6 @@
 		/>
 	</div>
 
-	<!-- Legend next -->
 	<div class="flex min-w-0 flex-col gap-1 leading-tight">
 		<h2 class="m-0 text-sm font-bold underline">Legend</h2>
 		{#each data.legend as entry}

@@ -1,114 +1,94 @@
-import type { Chart } from 'chart.js';
+// --- Imports ------------------------------------------------------
+import type { Chart, TooltipModel } from 'chart.js';
 import { customPool } from '$lib/stores/store';
 
+// --- Tooltip Handling --------------------------------------------
 /**
- * External tooltip handler for Chart.js allowing custom HTML tooltips.
+ * Render a custom HTML tooltip for Chart.js and position it within the viewport.
  */
-export function externalTooltipHandler(context: any) {
-	const { chart, tooltip } = context;
-	const tooltipEl = chart.canvas.parentNode.querySelector('#chartjs-tooltip');
-	if (!tooltipEl) return;
-	// Hide if no tooltip
-	if (tooltip.opacity === 0) {
-		tooltipEl.style.opacity = '0';
+export function externalTooltipHandler({
+	chart,
+	tooltip
+}: {
+	chart: any;
+	tooltip: TooltipModel<'scatter'>;
+}) {
+	const tooltipEl = chart.canvas.parentNode.querySelector('#chartjs-tooltip') as HTMLElement;
+	if (!tooltipEl || tooltip.opacity === 0) {
+		tooltipEl && (tooltipEl.style.opacity = '0');
 		return;
 	}
-	// Clear existing content
 	tooltipEl.innerHTML = '';
-	// Add title lines
+	// Title
 	tooltip.title.forEach((line: string) => {
 		const el = document.createElement('div');
 		el.classList.add('tooltip-title');
 		el.textContent = line;
 		tooltipEl.appendChild(el);
 	});
-	// Add body items with colored box only on the 'Ticker' line
-	if (tooltip.dataPoints && tooltip.labelColors) {
-		tooltip.dataPoints.forEach((dp: any, i: number) => {
-			const lines = tooltip.body[i]?.lines || [];
-			const bgColor = tooltip.labelColors[i]?.backgroundColor || 'transparent';
-			lines.forEach((line: string, j: number) => {
-				const wrapper = document.createElement('div');
-				wrapper.classList.add('tooltip-item');
-				// prepend colored box only for first line (Ticker); transparent otherwise
-				const box = document.createElement('span');
-				box.classList.add('tooltip-box');
-				box.style.backgroundColor = j === 0 ? bgColor : 'transparent';
-				wrapper.appendChild(box);
-				// text content
-				const text = document.createElement('span');
-				if (line === 'Stake cannot be lower than pledge') {
-					text.classList.add('warning-text');
-					text.textContent = '⚠ ' + line;
-				} else {
-					text.textContent = line;
-				}
-				wrapper.appendChild(text);
-				tooltipEl.appendChild(wrapper);
-			});
+	// Body lines
+	tooltip.dataPoints?.forEach((_, i) => {
+		const lines = tooltip.body[i]?.lines || [];
+		const rawBg = tooltip.labelColors?.[i]?.backgroundColor;
+		const bg = typeof rawBg === 'string' ? rawBg : 'transparent';
+		lines.forEach((txt: string, idx: number) => {
+			const item = document.createElement('div');
+			item.classList.add('tooltip-item');
+			const box = document.createElement('span');
+			box.classList.add('tooltip-box');
+			box.style.backgroundColor = idx === 0 ? bg : 'transparent';
+			const span = document.createElement('span');
+			if (txt === 'Stake cannot be lower than pledge') {
+				span.classList.add('warning-text');
+				txt = '⚠ ' + txt;
+			}
+			span.textContent = txt;
+			item.append(box, span);
+			tooltipEl.appendChild(item);
 		});
-	}
-	// Position tooltip at caret, flipping to stay within viewport (position: fixed)
+	});
+	// Position
 	const { caretX, caretY } = tooltip;
 	tooltipEl.style.opacity = '1';
-	const canvasRect = chart.canvas.getBoundingClientRect();
-	// Compute position relative to viewport
-	let x = canvasRect.left + caretX;
-	let y = canvasRect.top + caretY;
-	const tooltipWidth = tooltipEl.offsetWidth;
-	const tooltipHeight = tooltipEl.offsetHeight;
-	// Flip if overflowing viewport
-	if (x + tooltipWidth > window.innerWidth) {
-		x -= tooltipWidth;
-	}
-	if (x < 0) {
-		x = 0;
-	}
-	if (y + tooltipHeight > window.innerHeight) {
-		y -= tooltipHeight;
-	}
-	if (y < 0) {
-		y = 0;
-	}
+	const rect = chart.canvas.getBoundingClientRect();
+	let x = rect.left + caretX;
+	let y = rect.top + caretY;
+	const w = tooltipEl.offsetWidth;
+	const h = tooltipEl.offsetHeight;
+	if (x + w > window.innerWidth) x -= w;
+	if (x < 0) x = 0;
+	if (y + h > window.innerHeight) y -= h;
+	if (y < 0) y = 0;
 	tooltipEl.style.left = x + 'px';
 	tooltipEl.style.top = y + 'px';
 }
 
+// --- Custom Pool Dragging ----------------------------------------
 /**
- * Enable dragging for 'Custom Pool' bubble on a Chart.js chart.
+ * Make the 'Custom Pool' bubble draggable, updating its store values.
  */
 export function enableCustomPoolDrag(chart: Chart, canvas: HTMLCanvasElement) {
-	let isDragging = false;
-	let dragDatasetIndex: number;
-	let dragDataIndex: number;
-
-	canvas.addEventListener('mousedown', (e: MouseEvent) => {
+	let dragging = false;
+	let dsIdx = 0;
+	let ptIdx = 0;
+	canvas.addEventListener('mousedown', (e) => {
 		const pts = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
-		if (pts.length) {
-			const el = pts[0];
-			if (chart.data.datasets[el.datasetIndex].label === 'Custom Pool') {
-				isDragging = true;
-				dragDatasetIndex = el.datasetIndex;
-				dragDataIndex = el.index;
-			}
+		if (pts.length && chart.data.datasets[pts[0].datasetIndex].label === 'Custom Pool') {
+			dragging = true;
+			dsIdx = pts[0].datasetIndex;
+			ptIdx = pts[0].index;
 		}
 	});
-
-	canvas.addEventListener('mousemove', (e: MouseEvent) => {
-		if (!isDragging) return;
-		const rawX = (chart as any).scales.x.getValueForPixel(e.offsetX);
-		const rawY = (chart as any).scales.y.getValueForPixel(e.offsetY);
-		const pledgeVal = Math.max(0, Math.round(rawX));
-		const stakeVal = Math.max(0, Math.round(rawY));
-		const ds = chart.data.datasets[dragDatasetIndex];
-		const point: any = (ds.data as any[])[dragDataIndex];
-		point.x = pledgeVal;
-		point.y = stakeVal;
-		customPool.set({ pledge: pledgeVal, stake: stakeVal });
+	canvas.addEventListener('mousemove', (e) => {
+		if (!dragging) return;
+		const xVal = Math.max(0, Math.round((chart as any).scales.x.getValueForPixel(e.offsetX)));
+		const yVal = Math.max(0, Math.round((chart as any).scales.y.getValueForPixel(e.offsetY)));
+		const ds = chart.data.datasets[dsIdx];
+		const pt = (ds.data as any[])[ptIdx];
+		pt.x = xVal;
+		pt.y = yVal;
+		customPool.set({ pledge: xVal, stake: yVal });
 		chart.update('none');
 	});
-
-	canvas.addEventListener('mouseup', () => {
-		isDragging = false;
-	});
+	canvas.addEventListener('mouseup', () => (dragging = false));
 }

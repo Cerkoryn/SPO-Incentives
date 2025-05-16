@@ -1,62 +1,100 @@
 import { writable, derived } from 'svelte/store';
 import { ADA_CIRCULATING } from '$lib/utils/constants';
 
+// --- Types -------------------------------------------------------
+/**
+ * Parameters controlled by sliders for saturation cap and rewards calculation.
+ */
 export interface SliderParameters {
 	k: number;
 	a0: number;
 	L: number;
 	L2: number;
-	// CIP-7 parameters
-	crossover: number;
-	curveRoot: number;
-	// Reactive monetary expansion and treasury cut parameters
-	rho: number;
-	tau: number;
-	// fraction of ADA in circulation that is staked
-	stakedRatio: number;
+	crossover: number; // CIP-7 parameter
+	curveRoot: number; // CIP-7 parameter
+	rho: number; // monetary expansion rate
+	tau: number; // treasury cut ratio
+	stakedRatio: number; // fraction of ADA in circulation that is staked
 }
 
-export const sliderParams = writable<SliderParameters>({
-	k: 500,
-	a0: 0.3,
-	L: 0,
-	L2: 1,
-	// default CIP-7 slider values
-	crossover: 8,
-	curveRoot: 3,
-	// default monetary parameters
-	rho: 0.003,
-	tau: 0.2,
-	// fraction of ADA in circulation that is staked
-	stakedRatio: 0.6
-});
-
-// Toggle to show/hide the custom pool on the graph
-export const showCustomPool = writable<boolean>(false);
-
+/**
+ * Graph viewport settings: X-axis max and step size.
+ */
 export interface GraphSettings {
 	maxX: number;
 	stepSizeX: number;
 }
 
-export const graphSettings = writable<GraphSettings>({
-	maxX: 75000000,
-	stepSizeX: 5000000
-});
-
-// Store for custom pool inputs
+/**
+ * Custom pool pledge and stake inputs.
+ */
 export interface CustomPool {
 	pledge: number;
 	stake: number;
 }
+
+/**
+ * Available saturation formula modes.
+ */
+export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50' | 'cip-7';
+
+/**
+ * Available rewards distribution modes.
+ */
+export type RewardsMode = 'current' | 'full' | 'max';
+
+// --- Stores ------------------------------------------------------
+/**
+ * Reactive store for slider-controlled parameters.
+ */
+export const sliderParams = writable<SliderParameters>({
+	k: 500,
+	a0: 0.3,
+	L: 0,
+	L2: 1,
+	crossover: 8,
+	curveRoot: 3,
+	rho: 0.003,
+	tau: 0.2,
+	stakedRatio: 0.6
+});
+
+/**
+ * Graph viewport store.
+ */
+export const graphSettings = writable<GraphSettings>({
+	maxX: 75_000_000,
+	stepSizeX: 5_000_000
+});
+
+/**
+ * Toggle to show/hide the custom pool on the graph.
+ */
+export const showCustomPool = writable<boolean>(false);
+
+/**
+ * Store for custom pool inputs.
+ */
 export const customPool = writable<CustomPool>({ pledge: 0, stake: 0 });
 
-export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50' | 'cip-7';
+/**
+ * Selected saturation formula mode.
+ */
 export const saturationMode = writable<SaturationMode>('current');
+
+/**
+ * Toggle zoom for graph axes.
+ */
 export const zoomEnabled = writable<boolean>(false);
-export type RewardsMode = 'current' | 'full' | 'max';
+
+/**
+ * Selected rewards distribution mode.
+ */
 export const rewardsMode = writable<RewardsMode>('current');
-// Derived store for total ADA staked based on stakedRatio
+
+/**
+ * Derived store: total ADA staked based on circulating supply and stakedRatio.
+ */
 export const adaTotalStaked = derived(
 	sliderParams,
 	($sliderParams) => ADA_CIRCULATING * $sliderParams.stakedRatio

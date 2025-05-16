@@ -5,7 +5,8 @@
 	import Controls from '$lib/components/controls.svelte';
 	import Graph from '$lib/components/graph.svelte';
 
-	let showPopup = false; // Hidden until positioned
+	// Whether the controls popup is visible
+	let showPopup = false;
 	let isDragging = false;
 	let currentX = 0;
 	let currentY = 0;
@@ -13,37 +14,29 @@
 	let initialY = 0;
 	let collapsed = false;
 
-	// Custom debounce function
+	// Debounce utility
 	function debounce<T extends (...args: any[]) => void>(
 		func: T,
 		wait: number
 	): (...args: Parameters<T>) => void {
 		let timeout: ReturnType<typeof setTimeout> | null = null;
 		return (...args: Parameters<T>) => {
-			if (timeout !== null) {
-				clearTimeout(timeout);
-			}
+			clearTimeout(timeout!);
 			timeout = setTimeout(() => func(...args), wait);
 		};
 	}
 
+	// Position popup at top (mobile) or top-right (desktop)
 	function setInitialPosition() {
 		if (!browser) return;
 		requestAnimationFrame(() => {
 			const popup = document.querySelector('.popup') as HTMLElement;
 			const isMobile = window.innerWidth < 768;
-
 			if (popup) {
 				const { width } = popup.getBoundingClientRect();
-				if (isMobile) {
-					currentX = 0;
-					currentY = 0; // Very top for mobile
-				} else {
-					currentX = window.innerWidth - width; // Top-right, no margin
-					currentY = 0;
-				}
+				currentX = isMobile ? 0 : window.innerWidth - width;
+				currentY = 0;
 			} else {
-				// Fallback values
 				currentX = isMobile ? 0 : window.innerWidth - 512;
 				currentY = 0;
 			}
@@ -52,11 +45,10 @@
 
 	onMount(() => {
 		setInitialPosition();
-		showPopup = true; // Show after positioning
+		showPopup = true;
+		// Reposition on window resize
 		const handleResize = debounce(() => {
-			if (showPopup) {
-				setInitialPosition();
-			}
+			if (showPopup) setInitialPosition();
 		}, 100);
 		window.addEventListener('resize', handleResize);
 		return () => {

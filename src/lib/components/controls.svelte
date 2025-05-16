@@ -15,7 +15,6 @@
 		CUSTOM_POOL_PLEDGE_STEP,
 		CUSTOM_POOL_STAKE_STEP
 	} from '$lib/utils/constants';
-	// Import descriptions for auxiliary controls tooltips
 	import descriptions from '$lib/slider-descriptions.json' assert { type: 'json' };
 	const desc: Record<string, string> = descriptions;
 
@@ -28,13 +27,11 @@
 		} else if (mode === 'cip-50') {
 			sliderParams.update((s: SliderParameters) => ({ ...s, L: 2000 }));
 		} else if (mode === 'cip-7') {
-			// Set default CIP-7 slider values
 			sliderParams.update((s) => ({ ...s, crossover: 8, curveRoot: 3 }));
 		}
 	}
 
 	function resetDefaults() {
-		// Default values as on initial page load
 		if ($saturationMode === 'exponential') {
 			sliderParams.set({
 				k: 500,
@@ -60,7 +57,6 @@
 				stakedRatio: 0.6
 			});
 		} else if ($saturationMode === 'cip-7') {
-			// Default settings for CIP-7 mode
 			sliderParams.set({
 				k: 500,
 				a0: 0.3,
@@ -85,11 +81,9 @@
 				stakedRatio: 0.6
 			});
 		}
-		// Note: rho and tau are now part of sliderParams
 	}
 </script>
 
-<!-- Reset button resets all sliders to initial defaults -->
 <button
 	type="button"
 	on:click={resetDefaults}
@@ -208,7 +202,6 @@
 	{/if}
 </div>
 
-<!-- Checkbox controls for selecting graph points -->
 <div class="mt-4 flex flex-wrap gap-4">
 	<div class="flex items-center">
 		<label for="custom-checkbox">
@@ -293,7 +286,6 @@
 	</div>
 {/if}
 
-<!-- Radio Buttons for selecting the rewards mode -->
 <div class="mt-4 flex items-center gap-4">
 	<span>Rewards:</span>
 	<label class="flex items-center gap-1">
@@ -326,14 +318,12 @@
 		/>
 		Max
 	</label>
-	<!-- Combined info bubble for rewards modes -->
 	<span
 		class="ml-1 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
 		title={desc.rewards}>?</span
 	>
 </div>
 
-<!-- Radio Buttons for selecting the saturation function with default presets -->
 <div class="mt-4 grid grid-cols-[auto_auto_auto_auto] items-center gap-x-2 gap-y-2">
 	<span class="col-start-1 row-start-1">Formula:</span>
 	<label class="col-start-2 row-start-1">
@@ -386,7 +376,6 @@
 		/>
 		CIP-7
 	</label>
-	<!-- Combined info bubble for saturation formulas -->
 	<span
 		class="col-start-4 row-start-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
 		title={desc.formula}>?</span

@@ -118,54 +118,66 @@
 	<div class="flex min-w-0 flex-col items-center gap-1 text-center leading-tight">
 		<p class="m-0 text-sm">Brought to you by the community driven SPO Incentives Working Group</p>
 		<p class="m-0 text-sm">Want to join the discussion? Contact one of our community members:</p>
-		<p class="m-0 text-sm">
-			<a
-				href="https://x.com/Cerkoryn"
-				class="text-blue-600 underline"
-				target="_blank"
-				rel="noopener noreferrer">Cerkoryn</a
-			>
-		</p>
-		<p class="m-0 text-sm">
-			<a
-				href="https://x.com/rabbitholepools"
-				class="text-blue-600 underline"
-				target="_blank"
-				rel="noopener noreferrer">rabbitholepools</a
-			>
-		</p>
-		<p class="m-0 text-sm">
-			<a
-				href="https://x.com/earncoinpool"
-				class="text-blue-600 underline"
-				target="_blank"
-				rel="noopener noreferrer">earncoinpool</a
-			>
-		</p>
-		<p class="m-0 text-sm">
-			<a
-				href="https://x.com/KpunToN00b"
-				class="text-blue-600 underline"
-				target="_blank"
-				rel="noopener noreferrer">KpunToN00b</a
-			>
-		</p>
-		<p class="m-0 text-sm">
-			<a
-				href="https://x.com/Star_Forge_Pool"
-				class="text-blue-600 underline"
-				target="_blank"
-				rel="noopener noreferrer">Star_Forge_Pool</a
-			>
-		</p>
-		<p class="m-0 text-sm">
-			<a
-				href="https://x.com/BBHMM_Stake"
-				class="text-blue-600 underline"
-				target="_blank"
-				rel="noopener noreferrer">BBHMM_Stake</a
-			>
-		</p>
+		<div class="mt-2 grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+			<div class="flex items-center justify-center">
+				<a
+					href="https://github.com/Cerkoryn/SPO-Incentives"
+					aria-label="GitHub"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-gray-900"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="currentColor"
+						class="h-8 w-8"
+					>
+						<path
+							d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.594c.4.074.547-.174.547-.386 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.363-.923-.888-1.168-.888-1.168-.726-.497.055-.487.055-.487.803.056 1.226.825 1.226.825.714 1.223 1.873.87 2.33.665.072-.517.28-.87.508-1.07-1.777-.2-3.644-.888-3.644-3.955 0-.874.312-1.588.825-2.147-.083-.202-.358-1.017.078-2.12 0 0 .672-.215 2.2.82a7.637 7.637 0 012.005-.27c.68.003 1.366.093 2.005.27 1.528-1.035 2.2-.82 2.2-.82.437 1.103.162 1.918.08 2.12.515.559.823 1.273.823 2.147 0 3.073-1.87 3.753-3.65 3.95.287.247.543.735.543 1.48 0 1.07-.01 1.933-.01 2.195 0 .214.144.463.55.385A8.001 8.001 0 0016 8c0-4.42-3.58-8-8-8z"
+						/>
+					</svg>
+				</a>
+			</div>
+			<div class="flex flex-col items-center gap-1">
+				<a
+					href="https://x.com/Cerkoryn"
+					class="m-0 text-sm text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">Cerkoryn</a
+				>
+				<a
+					href="https://x.com/rabbitholepools"
+					class="m-0 text-sm text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">rabbitholepools</a
+				>
+				<a
+					href="https://x.com/earncoinpool"
+					class="m-0 text-sm text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">earncoinpool</a
+				>
+				<a
+					href="https://x.com/KpunToN00b"
+					class="m-0 text-sm text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">KpunToN00b</a
+				>
+				<a
+					href="https://x.com/Star_Forge_Pool"
+					class="m-0 text-sm text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">Star_Forge_Pool</a
+				>
+				<a
+					href="https://x.com/BBHMM_Stake"
+					class="m-0 text-sm text-blue-600 underline"
+					target="_blank"
+					rel="noopener noreferrer">BBHMM_Stake</a
+				>
+			</div>
+		</div>
 	</div>
 </div>
 

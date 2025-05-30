@@ -1,12 +1,13 @@
+<!-- Controls.svelte -->
 <script lang="ts">
 	import SliderControl from '$lib/components/SliderControl.svelte';
-	import type { SaturationMode, SliderParameters } from '$lib/stores/store';
+	import type { SaturationMode, SliderParameters, ZoomLevel } from '$lib/stores/store';
 	import {
 		sliderParams,
 		showCustomPool,
 		saturationMode,
 		customPool,
-		zoomEnabled,
+		zoomLevel,
 		rewardsMode
 	} from '$lib/stores/store';
 	import {
@@ -381,18 +382,41 @@
 		title={desc.formula}>?</span
 	>
 </div>
-<div class="flex items-center">
-	<label for="toggle-zoom-checkbox">
+
+<div class="mt-4 grid grid-cols-[auto_auto_auto_auto] items-center gap-x-2 gap-y-2">
+	<span class="col-start-1 row-start-1">Zoom:</span>
+	<label class="col-start-2 row-start-1">
 		<input
-			type="checkbox"
-			id="toggle-zoom-checkbox"
-			checked={$zoomEnabled}
-			on:change={(e: Event) => zoomEnabled.set((e.target as HTMLInputElement).checked)}
+			type="radio"
+			name="zoom-level"
+			value="off"
+			on:change={() => zoomLevel.set('off')}
+			checked={$zoomLevel === 'off'}
 		/>
-		Toggle Zoom
-		<span
-			class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
-			title={desc.toggle_zoom}>?</span
-		>
+		Off
 	</label>
+	<label class="col-start-3 row-start-1">
+		<input
+			type="radio"
+			name="zoom-level"
+			value="zoom"
+			on:change={() => zoomLevel.set('zoom')}
+			checked={$zoomLevel === 'zoom'}
+		/>
+		Zoom
+	</label>
+	<label class="col-start-4 row-start-1">
+		<input
+			type="radio"
+			name="zoom-level"
+			value="superZoom"
+			on:change={() => zoomLevel.set('superZoom')}
+			checked={$zoomLevel === 'superZoom'}
+		/>
+		Super Zoom
+	</label>
+	<span
+		class="col-start-2 row-start-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+		title={desc.toggle_zoom || 'Adjust the zoom level of the graph axes'}>?</span
+	>
 </div>

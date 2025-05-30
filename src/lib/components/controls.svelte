@@ -7,14 +7,19 @@
 		showCustomPool,
 		saturationMode,
 		customPool,
+		showCustomPool2,
+		customPool2,
 		zoomLevel,
+		graphSettings,
 		rewardsMode
 	} from '$lib/stores/store';
 	import {
-		CUSTOM_POOL_DEFAULT_PLEDGE,
-		CUSTOM_POOL_DEFAULT_STAKE,
 		CUSTOM_POOL_PLEDGE_STEP,
-		CUSTOM_POOL_STAKE_STEP
+		CUSTOM_POOL_STAKE_STEP,
+		GRAPH_X_ZOOM_INITIAL_MAX,
+		GRAPH_X_ZOOM_REACTIVE_MAX,
+		GRAPH_Y_SCALE_DEFAULT_MAX,
+		GRAPH_Y_ZOOM_MAX
 	} from '$lib/utils/constants';
 	import descriptions from '$lib/slider-descriptions.json' assert { type: 'json' };
 	const desc: Record<string, string> = descriptions;
@@ -82,6 +87,44 @@
 				stakedRatio: 0.6
 			});
 		}
+	}
+
+	// Calculate midpoint for initial pool placement based on zoom level
+	function getMidpointValues(offset: boolean = false) {
+		let maxX: number;
+		let maxY: number;
+
+		// Determine x-axis max based on zoom level
+		switch ($zoomLevel) {
+			case 'superZoom':
+				maxX = 100_000; // Hardcoded to match Chart.svelte
+				break;
+			case 'zoom':
+				maxX = GRAPH_X_ZOOM_REACTIVE_MAX; // e.g., 10,000,000
+				break;
+			default: // 'off'
+				maxX = $graphSettings.maxX; // 75,000,000
+				break;
+		}
+
+		// Determine y-axis max based on zoom level
+		maxY = $zoomLevel === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX; // 1,000,000,000 or 100,000,000
+
+		// Calculate midpoints, rounded to step sizes
+		let pledge = Math.round(maxX / 2 / CUSTOM_POOL_PLEDGE_STEP) * CUSTOM_POOL_PLEDGE_STEP;
+		let stake = Math.round(maxY / 2 / CUSTOM_POOL_STAKE_STEP) * CUSTOM_POOL_STAKE_STEP;
+
+		// Apply offset for Custom Pool 2 to avoid overlap
+		if (offset) {
+			pledge = Math.min(maxX, pledge + CUSTOM_POOL_PLEDGE_STEP); // +10,000
+			stake = Math.min(maxY, stake + CUSTOM_POOL_STAKE_STEP); // +1,000,000
+		}
+
+		// Ensure positive values
+		pledge = Math.max(1, pledge);
+		stake = Math.max(1, stake);
+
+		return { pledge, stake };
 	}
 </script>
 
@@ -204,6 +247,7 @@
 </div>
 
 <div class="mt-4 flex flex-wrap gap-4">
+	<!-- First Custom Pool -->
 	<div class="flex items-center">
 		<label for="custom-checkbox">
 			<input
@@ -214,14 +258,11 @@
 					const checked = (e.target as HTMLInputElement).checked;
 					showCustomPool.set(checked);
 					if (checked) {
-						customPool.set({
-							pledge: CUSTOM_POOL_DEFAULT_PLEDGE,
-							stake: CUSTOM_POOL_DEFAULT_STAKE
-						});
+						customPool.set(getMidpointValues(false));
 					}
 				}}
 			/>
-			Show Custom Pool
+			Show Custom Pool 1
 			<span
 				class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
 				title={desc.show_custom_pool}>?</span
@@ -231,12 +272,38 @@
 			<span class="ml-2 text-xs text-amber-600">⚠ Stake cannot be lower than pledge</span>
 		{/if}
 	</div>
+	<!-- Second Custom Pool -->
+	<div class="flex items-center">
+		<label for="custom-checkbox-2">
+			<input
+				type="checkbox"
+				id="custom-checkbox-2"
+				checked={$showCustomPool2}
+				on:change={(e: Event) => {
+					const checked = (e.target as HTMLInputElement).checked;
+					showCustomPool2.set(checked);
+					if (checked) {
+						customPool2.set(getMidpointValues(true));
+					}
+				}}
+			/>
+			Show Custom Pool 2
+			<span
+				class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+				title={desc.show_custom_pool}>?</span
+			>
+		</label>
+		{#if $showCustomPool2 && $customPool2.stake < $customPool2.pledge}
+			<span class="ml-2 text-xs text-amber-600">⚠ Stake cannot be lower than pledge</span>
+		{/if}
+	</div>
 </div>
+
 {#if $showCustomPool}
 	<div class="mt-4 flex flex-col gap-2">
 		<div class="flex flex-wrap items-center gap-2">
-			<label for="custom-pledge"
-				>Pledge:
+			<label for="custom-pledge">
+				Pool 1 Pledge:
 				<span
 					class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
 					title={desc.custom_pledge}>?</span
@@ -260,8 +327,8 @@
 			/>
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
-			<label for="custom-stake"
-				>Stake:
+			<label for="custom-stake">
+				Pool 1 Stake:
 				<span
 					class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
 					title={desc.custom_stake}>?</span
@@ -279,6 +346,61 @@
 					if (!isNaN(v)) {
 						const stakeVal = Math.max(1, v);
 						customPool.update((c) => ({ ...c, stake: stakeVal }));
+					}
+				}}
+				class="w-[12ch] bg-white"
+			/>
+		</div>
+	</div>
+{/if}
+
+{#if $showCustomPool2}
+	<div class="mt-4 flex flex-col gap-2">
+		<div class="flex flex-wrap items-center gap-2">
+			<label for="custom-pledge-2">
+				Pool 2 Pledge:
+				<span
+					class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+					title={desc.custom_pledge}>?</span
+				>
+			</label>
+			<input
+				type="number"
+				id="custom-pledge-2"
+				min="0"
+				step={CUSTOM_POOL_PLEDGE_STEP}
+				value={$customPool2.pledge}
+				on:input={(e: Event) => {
+					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+					const v = parseInt(raw, 10);
+					if (!isNaN(v)) {
+						const pledgeVal = Math.max(1, v);
+						customPool2.update((c) => ({ ...c, pledge: pledgeVal }));
+					}
+				}}
+				class="w-[12ch] bg-white"
+			/>
+		</div>
+		<div class="flex flex-wrap items-center gap-2">
+			<label for="custom-stake-2">
+				Pool 2 Stake:
+				<span
+					class="ml-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+					title={desc.custom_stake}>?</span
+				>
+			</label>
+			<input
+				type="number"
+				id="custom-stake-2"
+				min="0"
+				step={CUSTOM_POOL_STAKE_STEP}
+				value={$customPool2.stake}
+				on:input={(e: Event) => {
+					const raw = (e.target as HTMLInputElement).value.replace(/,/g, '');
+					const v = parseInt(raw, 10);
+					if (!isNaN(v)) {
+						const stakeVal = Math.max(1, v);
+						customPool2.update((c) => ({ ...c, stake: stakeVal }));
 					}
 				}}
 				class="w-[12ch] bg-white"
@@ -307,7 +429,7 @@
 			on:change={() => rewardsMode.set('full')}
 			checked={$rewardsMode === 'full'}
 		/>
-		Full
+		Current
 	</label>
 	<label class="flex items-center gap-1">
 		<input
@@ -415,8 +537,4 @@
 		/>
 		Super Zoom
 	</label>
-	<span
-		class="col-start-2 row-start-2 flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
-		title={desc.toggle_zoom || 'Adjust the zoom level of the graph axes'}>?</span
-	>
 </div>

@@ -1,6 +1,5 @@
 <!-- Chart.svelte -->
 <script lang="ts">
-	// --- Imports ------------------------------------------------------
 	import { onMount } from 'svelte';
 	import { Chart, registerables } from 'chart.js';
 	import { externalTooltipHandler, enableCustomPoolDrag } from '$lib/utils/chart';
@@ -12,10 +11,12 @@
 	} from '$lib/utils/graphs';
 	import {
 		showCustomPool,
+		showCustomPool2,
 		sliderParams,
 		graphSettings,
 		saturationMode,
 		customPool,
+		customPool2,
 		zoomLevel,
 		rewardsMode
 	} from '$lib/stores/store';
@@ -32,15 +33,11 @@
 	} from '$lib/utils/constants';
 	import { get } from 'svelte/store';
 
-	// Register Chart.js components
 	Chart.register(...registerables);
 
-	// --- Super Zoom Constants (x-axis only) --------------------------
-	const GRAPH_X_ZOOM_SUPER_MAX = 100_000; // 100K ADA for pledge axis
-	const GRAPH_X_ZOOM_SUPER_STEP = 10_000; // 10K ADA step for pledge axis
+	const GRAPH_X_ZOOM_SUPER_MAX = 100_000;
+	const GRAPH_X_ZOOM_SUPER_STEP = 10_000;
 
-	// --- Utility Functions -------------------------------------------
-	/** Map ROI value [0…10+] to bubble radius */
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
 		const maxROI = 10;
@@ -50,19 +47,17 @@
 		return minR + t * (maxR - minR);
 	}
 
-	// --- Component State --------------------------------------------
 	let canvas: HTMLCanvasElement;
 	let container: HTMLDivElement;
 	let chart: Chart;
 
-	// --- Color Palette ----------------------------------------------
 	const groupColors: Record<string, string> = {
 		sSPO: 'rgba(75, 192, 75, 0.6)',
 		MPO: 'rgba(255, 140, 60, 0.6)',
-		'Custom Pool': 'rgba(255, 0, 0, 1)'
+		'Custom Pool': 'rgba(255, 0, 0, 1)', // Red for first custom pool
+		'Custom Pool 2': 'rgba(0, 0, 255, 1)' // Blue for second custom pool
 	};
 
-	// --- Lifecycle Hook: Initialize Chart ---------------------------
 	onMount(() => {
 		createChart();
 		const ro = new ResizeObserver(() => chart?.resize());
@@ -70,13 +65,11 @@
 		return () => ro.disconnect();
 	});
 
-	// --- Chart Initialization ---------------------------------------
 	function createChart() {
 		if (!canvas) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
-		// Group pools by category
 		const groups: Record<string, any[]> = {};
 		pools.forEach((pool) => {
 			groups[pool.group] ||= [];
@@ -88,7 +81,8 @@
 				group: pool.group
 			});
 		});
-		// Add custom pool if enabled
+
+		// Add first custom pool
 		if ($showCustomPool) {
 			const { pledge, stake } = $customPool;
 			if (!isNaN(pledge) && !isNaN(stake)) {
@@ -98,7 +92,16 @@
 			}
 		}
 
-		// Extract current settings
+		// Add second custom pool
+		if ($showCustomPool2) {
+			const { pledge, stake } = $customPool2;
+			if (!isNaN(pledge) && !isNaN(stake)) {
+				const key = 'Custom Pool 2';
+				groups[key] ||= [];
+				groups[key].push({ x: pledge, y: stake, ticker: 'CUSTOM2', name: key, group: key });
+			}
+		}
+
 		const params = get(sliderParams);
 		const { k, a0, L, L2 } = params;
 		const { maxX, stepSizeX } = get(graphSettings);
@@ -106,7 +109,6 @@
 		const mode = get(saturationMode);
 		const rMode = get(rewardsMode);
 
-		// Determine axis limits and step sizes based on zoom level
 		const axisMaxX =
 			zoomState === 'superZoom'
 				? GRAPH_X_ZOOM_SUPER_MAX
@@ -122,7 +124,6 @@
 		const axisMaxY = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
 		const axisStepY = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_STEP : GRAPH_Y_ZOOM_STEP;
 
-		// Build scatter (bubble) datasets
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
 			const data = dataPoints.map((dp) => {
 				const roi = getRewards(dp.y, dp.x, params, maxX, mode, rMode);
@@ -136,10 +137,8 @@
 			};
 		});
 
-		// Base saturation cap level: (total supply - reserves) / k
 		const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 
-		// Build line datasets based on selected mode
 		let lineDatasets: any[];
 		if (mode === 'current') {
 			lineDatasets = [
@@ -283,7 +282,7 @@
 									`Pledge: ${formattedX}`,
 									`ROI: ${formattedROI}%`
 								];
-								if (name === 'Custom Pool' && y < x) {
+								if ((name === 'Custom Pool' || name === 'Custom Pool 2') && y < x) {
 									lines.push('Stake cannot be lower than pledge');
 								}
 								return lines;
@@ -293,25 +292,23 @@
 				}
 			}
 		});
-		// Attach drag handler for custom pool bubble
 		enableCustomPoolDrag(chart, canvas);
 	}
 
-	// --- Reactive Updates: refresh chart on store changes  -----------
 	$: if (
 		chart &&
 		$sliderParams &&
 		$graphSettings &&
 		$saturationMode !== undefined &&
 		$showCustomPool !== undefined &&
-		$customPool
+		$showCustomPool2 !== undefined &&
+		$customPool &&
+		$customPool2
 	) {
-		// Extract all parameters
 		const params = $sliderParams;
 		const { k, L, L2, crossover, curveRoot, rho, tau } = params;
 		const { maxX, stepSizeX } = $graphSettings;
 		const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
-		// Determine sampling based on zoom state
 		const zoomState = $zoomLevel;
 		const axisMaxX =
 			zoomState === 'superZoom'
@@ -326,7 +323,7 @@
 					? GRAPH_X_ZOOM_STEP
 					: stepSizeX;
 
-		// Ensure correct line datasets (dashed soft cap + flat cap) based on mode
+		// Update line datasets
 		{
 			const isCip50 = $saturationMode === 'cip-50';
 			const datasets = chart.data.datasets;
@@ -385,7 +382,7 @@
 				}
 			}
 		}
-		// Update line datasets
+
 		chart.data.datasets.forEach((ds: any) => {
 			if (ds.type === 'line') {
 				let newData: { x: number; y: number }[] | undefined;
@@ -418,7 +415,6 @@
 			}
 		});
 
-		// Update bubble radii
 		chart.data.datasets.forEach((ds: any) => {
 			if (ds.type === 'bubble') {
 				ds.data = (ds.data as any[]).map((pt: any) => {
@@ -428,7 +424,7 @@
 			}
 		});
 
-		// Handle custom pool dataset
+		// Handle first custom pool
 		const customIdx = chart.data.datasets.findIndex((ds: any) => ds.label === 'Custom Pool');
 		if ($showCustomPool) {
 			const { pledge, stake } = $customPool;
@@ -459,11 +455,40 @@
 			chart.data.datasets.splice(customIdx, 1);
 		}
 
-		// Commit updates
+		// Handle second custom pool
+		const customIdx2 = chart.data.datasets.findIndex((ds: any) => ds.label === 'Custom Pool 2');
+		if ($showCustomPool2) {
+			const { pledge, stake } = $customPool2;
+			if (!isNaN(pledge) && !isNaN(stake)) {
+				const roi = getRewards(stake, pledge, params, maxX, $saturationMode, $rewardsMode);
+				const rVal = getPointRadius(roi);
+				const customData = {
+					x: pledge,
+					y: stake,
+					ticker: 'CUSTOM2',
+					name: 'Custom Pool 2',
+					group: 'Custom Pool 2',
+					roi,
+					r: rVal
+				};
+				if (customIdx2 === -1) {
+					chart.data.datasets.unshift({
+						label: 'Custom Pool 2',
+						data: [customData],
+						type: 'bubble' as const,
+						backgroundColor: groupColors['Custom Pool 2']
+					});
+				} else {
+					(chart.data.datasets[customIdx2].data as any[]) = [customData];
+				}
+			}
+		} else if (customIdx2 !== -1) {
+			chart.data.datasets.splice(customIdx2, 1);
+		}
+
 		chart.update('none');
 	}
 
-	// Reactive block for axis and zoom updates
 	$: if (chart && $graphSettings) {
 		const { maxX, stepSizeX } = $graphSettings;
 		const zoomState = $zoomLevel;

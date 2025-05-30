@@ -429,7 +429,7 @@
 			on:change={() => rewardsMode.set('full')}
 			checked={$rewardsMode === 'full'}
 		/>
-		Current
+		Full
 	</label>
 	<label class="flex items-center gap-1">
 		<input

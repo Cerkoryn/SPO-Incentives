@@ -1,3 +1,4 @@
+// stores.ts
 import { writable, derived } from 'svelte/store';
 import { ADA_CIRCULATING } from '$lib/utils/constants';
 
@@ -43,6 +44,11 @@ export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50' | '
  */
 export type RewardsMode = 'current' | 'full' | 'max';
 
+/**
+ * Available zoom levels for the graph.
+ */
+export type ZoomLevel = 'off' | 'zoom' | 'superZoom';
+
 // --- Stores ------------------------------------------------------
 /**
  * Reactive store for slider-controlled parameters.
@@ -83,9 +89,9 @@ export const customPool = writable<CustomPool>({ pledge: 0, stake: 0 });
 export const saturationMode = writable<SaturationMode>('current');
 
 /**
- * Toggle zoom for graph axes.
+ * Selected zoom level for graph axes.
  */
-export const zoomEnabled = writable<boolean>(false);
+export const zoomLevel = writable<ZoomLevel>('off');
 
 /**
  * Selected rewards distribution mode.

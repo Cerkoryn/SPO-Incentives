@@ -1,3 +1,4 @@
+<!-- Chart.svelte -->
 <script lang="ts">
 	// --- Imports ------------------------------------------------------
 	import { onMount } from 'svelte';
@@ -15,7 +16,7 @@
 		graphSettings,
 		saturationMode,
 		customPool,
-		zoomEnabled,
+		zoomLevel,
 		rewardsMode
 	} from '$lib/stores/store';
 	import {
@@ -33,6 +34,10 @@
 
 	// Register Chart.js components
 	Chart.register(...registerables);
+
+	// --- Super Zoom Constants (x-axis only) --------------------------
+	const GRAPH_X_ZOOM_SUPER_MAX = 100_000; // 100K ADA for pledge axis
+	const GRAPH_X_ZOOM_SUPER_STEP = 10_000; // 10K ADA step for pledge axis
 
 	// --- Utility Functions -------------------------------------------
 	/** Map ROI value [0…10+] to bubble radius */
@@ -97,9 +102,25 @@
 		const params = get(sliderParams);
 		const { k, a0, L, L2 } = params;
 		const { maxX, stepSizeX } = get(graphSettings);
-		const isZoomOn = get(zoomEnabled);
+		const zoomState = get(zoomLevel);
 		const mode = get(saturationMode);
 		const rMode = get(rewardsMode);
+
+		// Determine axis limits and step sizes based on zoom level
+		const axisMaxX =
+			zoomState === 'superZoom'
+				? GRAPH_X_ZOOM_SUPER_MAX
+				: zoomState === 'zoom'
+					? GRAPH_X_ZOOM_INITIAL_MAX
+					: maxX;
+		const axisStepX =
+			zoomState === 'superZoom'
+				? GRAPH_X_ZOOM_SUPER_STEP
+				: zoomState === 'zoom'
+					? GRAPH_X_ZOOM_STEP
+					: stepSizeX;
+		const axisMaxY = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
+		const axisStepY = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_STEP : GRAPH_Y_ZOOM_STEP;
 
 		// Build scatter (bubble) datasets
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
@@ -126,7 +147,7 @@
 					label: 'Saturation Cap',
 					data: [
 						{ x: 0, y: baseCap },
-						{ x: maxX, y: baseCap }
+						{ x: axisMaxX, y: baseCap }
 					],
 					type: 'line' as const,
 					borderColor: 'red',
@@ -140,7 +161,7 @@
 			lineDatasets = [
 				{
 					label: 'Saturation Cap',
-					data: getSaturationCapLinear(k, L, maxX, stepSizeX),
+					data: getSaturationCapLinear(k, L, axisMaxX, axisStepX),
 					type: 'line' as const,
 					borderColor: 'red',
 					borderWidth: 2,
@@ -150,11 +171,8 @@
 				}
 			];
 		} else if (mode === 'cip-50') {
-			// CIP-50: soft cap (dotted) then flat cap line
-			const effectiveMaxX = isZoomOn ? GRAPH_X_ZOOM_INITIAL_MAX : maxX;
-			const effectiveStepX = isZoomOn ? GRAPH_X_ZOOM_STEP : stepSizeX;
 			const dottedData: { x: number; y: number }[] = [];
-			for (let x = 0; x <= effectiveMaxX; x += effectiveStepX) {
+			for (let x = 0; x <= axisMaxX; x += axisStepX) {
 				dottedData.push({ x, y: L * x });
 			}
 			lineDatasets = [
@@ -173,7 +191,7 @@
 					label: 'Saturation Cap',
 					data: [
 						{ x: 0, y: baseCap },
-						{ x: effectiveMaxX, y: baseCap }
+						{ x: axisMaxX, y: baseCap }
 					],
 					type: 'line' as const,
 					borderColor: 'red',
@@ -187,7 +205,7 @@
 			lineDatasets = [
 				{
 					label: 'Saturation Cap',
-					data: getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX),
+					data: getSaturationCapExpSaturation(k, L, L2, axisMaxX, axisStepX),
 					type: 'line' as const,
 					borderColor: 'red',
 					borderWidth: 2,
@@ -216,23 +234,25 @@
 							text: 'Pledge'
 						},
 						min: 0,
-						max: isZoomOn ? GRAPH_X_ZOOM_INITIAL_MAX : maxX,
+						max: axisMaxX,
 						ticks: {
-							stepSize: stepSizeX,
+							stepSize: axisStepX,
 							callback: function (value: number | string): string {
 								return new Intl.NumberFormat('en-US').format(Number(value));
 							}
 						}
 					},
 					y: {
+						type: 'linear',
 						title: {
 							display: true,
 							text: 'Stake'
 						},
 						min: 0,
-						max: isZoomOn ? GRAPH_Y_ZOOM_MAX : GRAPH_Y_SCALE_DEFAULT_MAX,
+						max: axisMaxY,
+						suggestedMax: axisMaxY,
 						ticks: {
-							stepSize: GRAPH_Y_SCALE_DEFAULT_STEP,
+							stepSize: axisStepY,
 							callback: function (value: number | string): string {
 								return new Intl.NumberFormat('en-US').format(Number(value));
 							}
@@ -292,27 +312,34 @@
 		const { maxX, stepSizeX } = $graphSettings;
 		const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 		// Determine sampling based on zoom state
-		const isZoomOn = $zoomEnabled;
-		const axisMaxX = isZoomOn ? GRAPH_X_ZOOM_REACTIVE_MAX : maxX;
-		const axisStepX = isZoomOn ? GRAPH_X_ZOOM_STEP : stepSizeX;
+		const zoomState = $zoomLevel;
+		const axisMaxX =
+			zoomState === 'superZoom'
+				? GRAPH_X_ZOOM_SUPER_MAX
+				: zoomState === 'zoom'
+					? GRAPH_X_ZOOM_REACTIVE_MAX
+					: maxX;
+		const axisStepX =
+			zoomState === 'superZoom'
+				? GRAPH_X_ZOOM_SUPER_STEP
+				: zoomState === 'zoom'
+					? GRAPH_X_ZOOM_STEP
+					: stepSizeX;
 
 		// Ensure correct line datasets (dashed soft cap + flat cap) based on mode
 		{
 			const isCip50 = $saturationMode === 'cip-50';
 			const datasets = chart.data.datasets;
-			// find dashed (soft) line index: type line with borderDash
 			const dashedIdx = datasets.findIndex(
 				(ds) => ds.type === 'line' && Array.isArray((ds as any).borderDash)
 			);
-			// find flat cap line index: type line without borderDash
 			const flatIdx = datasets.findIndex(
 				(ds) => ds.type === 'line' && !Array.isArray((ds as any).borderDash)
 			);
 			if (isCip50) {
-				// add soft (dotted) cap if missing
 				if (dashedIdx === -1) {
 					const dotted: { x: number; y: number }[] = [];
-					for (let x = 0; x <= maxX; x += stepSizeX) {
+					for (let x = 0; x <= axisMaxX; x += axisStepX) {
 						dotted.push({ x, y: L * x });
 					}
 					datasets.push({
@@ -327,13 +354,12 @@
 						showLine: true
 					});
 				}
-				// add flat cap if missing
 				if (flatIdx === -1) {
 					datasets.push({
 						label: 'Saturation Cap',
 						data: [
 							{ x: 0, y: base },
-							{ x: maxX, y: base }
+							{ x: axisMaxX, y: base }
 						],
 						type: 'line' as const,
 						borderColor: 'red',
@@ -344,9 +370,7 @@
 					});
 				}
 			} else {
-				// remove soft cap line if present
 				if (dashedIdx !== -1) datasets.splice(dashedIdx, 1);
-				// keep only one flat cap line
 				const lineIndices = datasets
 					.map((ds, i) => ({ ds, i }))
 					.filter(({ ds }) => ds.type === 'line')
@@ -354,7 +378,6 @@
 				for (let j = lineIndices.length - 1; j > 0; j--) {
 					datasets.splice(lineIndices[j], 1);
 				}
-				// ensure label of remaining line is correct
 				const onlyIdx = datasets.findIndex((ds) => ds.type === 'line');
 				if (onlyIdx !== -1) {
 					datasets[onlyIdx].label = 'Saturation Cap';
@@ -367,25 +390,22 @@
 			if (ds.type === 'line') {
 				let newData: { x: number; y: number }[] | undefined;
 				if ($saturationMode === 'current') {
-					// constant 1/k cap
 					newData = [
 						{ x: 0, y: base },
-						{ x: maxX, y: base }
+						{ x: axisMaxX, y: base }
 					];
 				} else if ($saturationMode === 'linear') {
-					newData = getSaturationCapLinear(k, L, maxX, stepSizeX);
+					newData = getSaturationCapLinear(k, L, axisMaxX, axisStepX);
 				} else if ($saturationMode === 'exponential') {
-					newData = getSaturationCapExpSaturation(k, L, L2, maxX, stepSizeX);
+					newData = getSaturationCapExpSaturation(k, L, L2, axisMaxX, axisStepX);
 				} else if ($saturationMode === 'cip-50') {
 					if ((ds as any).borderDash) {
-						// dotted soft cap line with zoom-aware sampling
 						const dotted: { x: number; y: number }[] = [];
 						for (let x = 0; x <= axisMaxX; x += axisStepX) {
 							dotted.push({ x, y: L * x });
 						}
 						newData = dotted;
 					} else {
-						// flat saturation cap line
 						newData = [
 							{ x: 0, y: base },
 							{ x: axisMaxX, y: base }
@@ -398,7 +418,6 @@
 			}
 		});
 
-		// Update bubble radii
 		// Update bubble radii
 		chart.data.datasets.forEach((ds: any) => {
 			if (ds.type === 'bubble') {
@@ -443,17 +462,29 @@
 		// Commit updates
 		chart.update('none');
 	}
+
 	// Reactive block for axis and zoom updates
 	$: if (chart && $graphSettings) {
 		const { maxX, stepSizeX } = $graphSettings;
-		// adjust axis limits and ticks based on zoom toggle
+		const zoomState = $zoomLevel;
 		const scales: any = chart.options.scales as any;
 		const xScale: any = scales.x;
 		const yScale: any = scales.y;
-		xScale.max = $zoomEnabled ? GRAPH_X_ZOOM_REACTIVE_MAX : maxX;
-		xScale.ticks.stepSize = $zoomEnabled ? GRAPH_X_ZOOM_STEP : stepSizeX;
-		yScale.max = $zoomEnabled ? GRAPH_Y_ZOOM_MAX : GRAPH_Y_SCALE_DEFAULT_MAX;
-		yScale.ticks.stepSize = $zoomEnabled ? GRAPH_Y_ZOOM_STEP : GRAPH_Y_SCALE_DEFAULT_STEP;
+		xScale.max =
+			zoomState === 'superZoom'
+				? GRAPH_X_ZOOM_SUPER_MAX
+				: zoomState === 'zoom'
+					? GRAPH_X_ZOOM_REACTIVE_MAX
+					: maxX;
+		xScale.ticks.stepSize =
+			zoomState === 'superZoom'
+				? GRAPH_X_ZOOM_SUPER_STEP
+				: zoomState === 'zoom'
+					? GRAPH_X_ZOOM_STEP
+					: stepSizeX;
+		yScale.max = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
+		yScale.suggestedMax = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
+		yScale.ticks.stepSize = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_STEP : GRAPH_Y_ZOOM_STEP;
 		chart.update();
 	}
 </script>
@@ -467,7 +498,6 @@
 </div>
 
 <style>
-	/* Tooltip container fixed to viewport for overflow handling */
 	:global(.chartjs-tooltip) {
 		opacity: 0;
 		pointer-events: none;

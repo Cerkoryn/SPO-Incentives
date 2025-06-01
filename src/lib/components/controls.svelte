@@ -16,8 +16,10 @@
 	import {
 		CUSTOM_POOL_PLEDGE_STEP,
 		CUSTOM_POOL_STAKE_STEP,
-		GRAPH_X_ZOOM_INITIAL_MAX,
-		GRAPH_X_ZOOM_REACTIVE_MAX,
+		GRAPH_X_ZOOM_OFF_MAX,
+		GRAPH_X_ZOOM_1X_MAX,
+		GRAPH_X_ZOOM_2X_MAX,
+		GRAPH_X_ZOOM_3X_MAX,
 		GRAPH_Y_SCALE_DEFAULT_MAX,
 		GRAPH_Y_ZOOM_MAX
 	} from '$lib/utils/constants';
@@ -96,27 +98,36 @@
 
 		// Determine x-axis max based on zoom level
 		switch ($zoomLevel) {
-			case 'superZoom':
-				maxX = 100_000; // Hardcoded to match Chart.svelte
+			case '3x':
+				maxX = GRAPH_X_ZOOM_3X_MAX; // 20,000
 				break;
-			case 'zoom':
-				maxX = GRAPH_X_ZOOM_REACTIVE_MAX; // e.g., 10,000,000
+			case '2x':
+				maxX = GRAPH_X_ZOOM_2X_MAX; // 1,000,000
 				break;
-			default: // 'off'
+			case '1x':
+				maxX = GRAPH_X_ZOOM_1X_MAX; // 10,000,000
+				break;
+			case 'off':
+			default:
 				maxX = $graphSettings.maxX; // 75,000,000
 				break;
 		}
 
 		// Determine y-axis max based on zoom level
-		maxY = $zoomLevel === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX; // 1,000,000,000 or 100,000,000
+		maxY = $zoomLevel === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
 
 		// Calculate midpoints, rounded to step sizes
 		let pledge = Math.round(maxX / 2 / CUSTOM_POOL_PLEDGE_STEP) * CUSTOM_POOL_PLEDGE_STEP;
 		let stake = Math.round(maxY / 2 / CUSTOM_POOL_STAKE_STEP) * CUSTOM_POOL_STAKE_STEP;
 
+		// For 3x zoom, set pledge to 10k to center it
+		if ($zoomLevel === '3x') {
+			pledge = 10_000; // Center at 10k pledge
+		}
+
 		// Apply offset for Custom Pool 2 to avoid overlap
 		if (offset) {
-			pledge = Math.min(maxX, pledge + CUSTOM_POOL_PLEDGE_STEP); // +10,000
+			pledge = Math.min(maxX, pledge + CUSTOM_POOL_PLEDGE_STEP); // +1,000
 			stake = Math.min(maxY, stake + CUSTOM_POOL_STAKE_STEP); // +1,000,000
 		}
 
@@ -505,7 +516,7 @@
 	>
 </div>
 
-<div class="mt-4 grid grid-cols-[auto_auto_auto_auto] items-center gap-x-2 gap-y-2">
+<div class="mt-4 grid grid-cols-[auto_auto_auto_auto_auto] items-center gap-x-2 gap-y-2">
 	<span class="col-start-1 row-start-1">Zoom:</span>
 	<label class="col-start-2 row-start-1">
 		<input
@@ -521,20 +532,30 @@
 		<input
 			type="radio"
 			name="zoom-level"
-			value="zoom"
-			on:change={() => zoomLevel.set('zoom')}
-			checked={$zoomLevel === 'zoom'}
+			value="1x"
+			on:change={() => zoomLevel.set('1x')}
+			checked={$zoomLevel === '1x'}
 		/>
-		Zoom
+		1x
 	</label>
 	<label class="col-start-4 row-start-1">
 		<input
 			type="radio"
 			name="zoom-level"
-			value="superZoom"
-			on:change={() => zoomLevel.set('superZoom')}
-			checked={$zoomLevel === 'superZoom'}
+			value="2x"
+			on:change={() => zoomLevel.set('2x')}
+			checked={$zoomLevel === '2x'}
 		/>
-		Super Zoom
+		2x
+	</label>
+	<label class="col-start-5 row-start-1">
+		<input
+			type="radio"
+			name="zoom-level"
+			value="3x"
+			on:change={() => zoomLevel.set('3x')}
+			checked={$zoomLevel === '3x'}
+		/>
+		3x
 	</label>
 </div>

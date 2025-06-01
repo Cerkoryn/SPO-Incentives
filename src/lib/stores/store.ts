@@ -27,7 +27,7 @@ export interface CustomPool {
 
 export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50' | 'cip-7';
 export type RewardsMode = 'current' | 'full' | 'max';
-export type ZoomLevel = 'off' | 'zoom' | 'superZoom';
+export type ZoomLevel = 'off' | '1x' | '2x' | '3x';
 
 // --- Stores ------------------------------------------------------
 export const sliderParams = writable<SliderParameters>({

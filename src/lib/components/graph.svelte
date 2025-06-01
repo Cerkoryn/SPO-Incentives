@@ -23,9 +23,14 @@
 	import {
 		ADA_TOTAL_SUPPLY,
 		ADA_RESERVES,
-		GRAPH_X_ZOOM_INITIAL_MAX,
-		GRAPH_X_ZOOM_REACTIVE_MAX,
-		GRAPH_X_ZOOM_STEP,
+		GRAPH_X_ZOOM_OFF_MAX,
+		GRAPH_X_ZOOM_1X_MAX,
+		GRAPH_X_ZOOM_2X_MAX,
+		GRAPH_X_ZOOM_3X_MAX,
+		GRAPH_X_ZOOM_OFF_STEP,
+		GRAPH_X_ZOOM_1X_STEP,
+		GRAPH_X_ZOOM_2X_STEP,
+		GRAPH_X_ZOOM_3X_STEP,
 		GRAPH_Y_SCALE_DEFAULT_MAX,
 		GRAPH_Y_ZOOM_MAX,
 		GRAPH_Y_SCALE_DEFAULT_STEP,
@@ -34,9 +39,6 @@
 	import { get } from 'svelte/store';
 
 	Chart.register(...registerables);
-
-	const GRAPH_X_ZOOM_SUPER_MAX = 100_000;
-	const GRAPH_X_ZOOM_SUPER_STEP = 10_000;
 
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
@@ -109,18 +111,31 @@
 		const mode = get(saturationMode);
 		const rMode = get(rewardsMode);
 
-		const axisMaxX =
-			zoomState === 'superZoom'
-				? GRAPH_X_ZOOM_SUPER_MAX
-				: zoomState === 'zoom'
-					? GRAPH_X_ZOOM_INITIAL_MAX
-					: maxX;
-		const axisStepX =
-			zoomState === 'superZoom'
-				? GRAPH_X_ZOOM_SUPER_STEP
-				: zoomState === 'zoom'
-					? GRAPH_X_ZOOM_STEP
-					: stepSizeX;
+		// Determine x-axis range based on zoom level
+		let axisMinX = 0;
+		let axisMaxX: number;
+		let axisStepX: number;
+		switch (zoomState) {
+			case '3x':
+				axisMaxX = GRAPH_X_ZOOM_3X_MAX; // 20,000
+				axisStepX = GRAPH_X_ZOOM_3X_STEP; // 2,000
+				axisMinX = 0; // Start at 0 to include 10k in the center
+				break;
+			case '2x':
+				axisMaxX = GRAPH_X_ZOOM_2X_MAX; // 1,000,000
+				axisStepX = GRAPH_X_ZOOM_2X_STEP; // 100,000
+				break;
+			case '1x':
+				axisMaxX = GRAPH_X_ZOOM_1X_MAX; // 10,000,000
+				axisStepX = GRAPH_X_ZOOM_1X_STEP; // 1,000,000
+				break;
+			case 'off':
+			default:
+				axisMaxX = maxX; // 75,000,000
+				axisStepX = stepSizeX; // 5,000,000
+				break;
+		}
+
 		const axisMaxY = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
 		const axisStepY = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_STEP : GRAPH_Y_ZOOM_STEP;
 
@@ -145,7 +160,7 @@
 				{
 					label: 'Saturation Cap',
 					data: [
-						{ x: 0, y: baseCap },
+						{ x: axisMinX, y: baseCap },
 						{ x: axisMaxX, y: baseCap }
 					],
 					type: 'line' as const,
@@ -171,7 +186,7 @@
 			];
 		} else if (mode === 'cip-50') {
 			const dottedData: { x: number; y: number }[] = [];
-			for (let x = 0; x <= axisMaxX; x += axisStepX) {
+			for (let x = axisMinX; x <= axisMaxX; x += axisStepX) {
 				dottedData.push({ x, y: L * x });
 			}
 			lineDatasets = [
@@ -189,7 +204,7 @@
 				{
 					label: 'Saturation Cap',
 					data: [
-						{ x: 0, y: baseCap },
+						{ x: axisMinX, y: baseCap },
 						{ x: axisMaxX, y: baseCap }
 					],
 					type: 'line' as const,
@@ -232,7 +247,7 @@
 							display: true,
 							text: 'Pledge'
 						},
-						min: 0,
+						min: axisMinX,
 						max: axisMaxX,
 						ticks: {
 							stepSize: axisStepX,
@@ -310,18 +325,31 @@
 		const { maxX, stepSizeX } = $graphSettings;
 		const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 		const zoomState = $zoomLevel;
-		const axisMaxX =
-			zoomState === 'superZoom'
-				? GRAPH_X_ZOOM_SUPER_MAX
-				: zoomState === 'zoom'
-					? GRAPH_X_ZOOM_REACTIVE_MAX
-					: maxX;
-		const axisStepX =
-			zoomState === 'superZoom'
-				? GRAPH_X_ZOOM_SUPER_STEP
-				: zoomState === 'zoom'
-					? GRAPH_X_ZOOM_STEP
-					: stepSizeX;
+
+		// Determine x-axis range based on zoom level
+		let axisMinX = 0;
+		let axisMaxX: number;
+		let axisStepX: number;
+		switch (zoomState) {
+			case '3x':
+				axisMaxX = GRAPH_X_ZOOM_3X_MAX; // 20,000
+				axisStepX = GRAPH_X_ZOOM_3X_STEP; // 2,000
+				axisMinX = 0; // Center around 10k
+				break;
+			case '2x':
+				axisMaxX = GRAPH_X_ZOOM_2X_MAX; // 1,000,000
+				axisStepX = GRAPH_X_ZOOM_2X_STEP; // 100,000
+				break;
+			case '1x':
+				axisMaxX = GRAPH_X_ZOOM_1X_MAX; // 10,000,000
+				axisStepX = GRAPH_X_ZOOM_1X_STEP; // 1,000,000
+				break;
+			case 'off':
+			default:
+				axisMaxX = maxX; // 75,000,000
+				axisStepX = stepSizeX; // 5,000,000
+				break;
+		}
 
 		// Update line datasets
 		{
@@ -336,7 +364,7 @@
 			if (isCip50) {
 				if (dashedIdx === -1) {
 					const dotted: { x: number; y: number }[] = [];
-					for (let x = 0; x <= axisMaxX; x += axisStepX) {
+					for (let x = axisMinX; x <= axisMaxX; x += axisStepX) {
 						dotted.push({ x, y: L * x });
 					}
 					datasets.push({
@@ -355,7 +383,7 @@
 					datasets.push({
 						label: 'Saturation Cap',
 						data: [
-							{ x: 0, y: base },
+							{ x: axisMinX, y: base },
 							{ x: axisMaxX, y: base }
 						],
 						type: 'line' as const,
@@ -388,7 +416,7 @@
 				let newData: { x: number; y: number }[] | undefined;
 				if ($saturationMode === 'current') {
 					newData = [
-						{ x: 0, y: base },
+						{ x: axisMinX, y: base },
 						{ x: axisMaxX, y: base }
 					];
 				} else if ($saturationMode === 'linear') {
@@ -398,13 +426,13 @@
 				} else if ($saturationMode === 'cip-50') {
 					if ((ds as any).borderDash) {
 						const dotted: { x: number; y: number }[] = [];
-						for (let x = 0; x <= axisMaxX; x += axisStepX) {
+						for (let x = axisMinX; x <= axisMaxX; x += axisStepX) {
 							dotted.push({ x, y: L * x });
 						}
 						newData = dotted;
 					} else {
 						newData = [
-							{ x: 0, y: base },
+							{ x: axisMinX, y: base },
 							{ x: axisMaxX, y: base }
 						];
 					}
@@ -495,18 +523,32 @@
 		const scales: any = chart.options.scales as any;
 		const xScale: any = scales.x;
 		const yScale: any = scales.y;
-		xScale.max =
-			zoomState === 'superZoom'
-				? GRAPH_X_ZOOM_SUPER_MAX
-				: zoomState === 'zoom'
-					? GRAPH_X_ZOOM_REACTIVE_MAX
-					: maxX;
-		xScale.ticks.stepSize =
-			zoomState === 'superZoom'
-				? GRAPH_X_ZOOM_SUPER_STEP
-				: zoomState === 'zoom'
-					? GRAPH_X_ZOOM_STEP
-					: stepSizeX;
+
+		// Update x-axis based on zoom level
+		switch (zoomState) {
+			case '3x':
+				xScale.min = 0; // Center around 10k
+				xScale.max = GRAPH_X_ZOOM_3X_MAX; // 20,000
+				xScale.ticks.stepSize = GRAPH_X_ZOOM_3X_STEP; // 2,000
+				break;
+			case '2x':
+				xScale.min = 0;
+				xScale.max = GRAPH_X_ZOOM_2X_MAX; // 1,000,000
+				xScale.ticks.stepSize = GRAPH_X_ZOOM_2X_STEP; // 100,000
+				break;
+			case '1x':
+				xScale.min = 0;
+				xScale.max = GRAPH_X_ZOOM_1X_MAX; // 10,000,000
+				xScale.ticks.stepSize = GRAPH_X_ZOOM_1X_STEP; // 1,000,000
+				break;
+			case 'off':
+			default:
+				xScale.min = 0;
+				xScale.max = maxX; // 75,000,000
+				xScale.ticks.stepSize = stepSizeX; // 5,000,000
+				break;
+		}
+
 		yScale.max = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
 		yScale.suggestedMax = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_MAX : GRAPH_Y_ZOOM_MAX;
 		yScale.ticks.stepSize = zoomState === 'off' ? GRAPH_Y_SCALE_DEFAULT_STEP : GRAPH_Y_ZOOM_STEP;

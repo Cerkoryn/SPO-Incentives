@@ -520,7 +520,7 @@
             on:change={() => applyModeDefaults('cip-50')}
             checked={$saturationMode === 'cip-50'}
         />
-        CIP-50 R
+        CIP-50
     </label>
     <label class="col-start-3 row-start-2">
         <input

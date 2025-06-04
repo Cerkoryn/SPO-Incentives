@@ -25,6 +25,13 @@ export interface CustomPool {
 	stake: number;
 }
 
+
+export interface Cip50StakeTotals {
+	aboveL: number;
+	belowL: number;
+}
+
+
 export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50' | 'cip-7';
 export type RewardsMode = 'current' | 'full' | 'max';
 export type ZoomLevel = 'off' | '1x' | '2x' | '3x';
@@ -57,6 +64,9 @@ export const customPool2 = writable<CustomPool>({ pledge: 0, stake: 0 });
 export const saturationMode = writable<SaturationMode>('current');
 export const zoomLevel = writable<ZoomLevel>('off');
 export const rewardsMode = writable<RewardsMode>('current');
+export const cip50StakeTotals = writable<Cip50StakeTotals>({ aboveL: 0, belowL: 0 });
+
+
 
 export const adaTotalStaked = derived(
 	sliderParams,

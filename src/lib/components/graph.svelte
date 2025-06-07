@@ -153,7 +153,7 @@
 
 		const baseCap = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 
-		let lineDatasets: any[] = [];
+		let lineDatasets: any[] = []; // Initialize to empty array
 		if (mode === 'current') {
 			lineDatasets = [
 				{
@@ -181,17 +181,16 @@
 					fill: false,
 					pointRadius: 0,
 					showLine: true
-				},
+				}
+			];
+		} else if (mode === 'exponential') {
+			lineDatasets = [
 				{
-					label: 'k-Based Saturation Cap',
-					data: [
-						{ x: axisMinX, y: baseCap },
-						{ x: axisMaxX, y: baseCap }
-					],
+					label: 'Saturation Cap',
+					data: getSaturationCapExpSaturation(k, L, L2, axisMaxX, axisStepX),
 					type: 'line' as const,
 					borderColor: 'red',
 					borderWidth: 2,
-					borderDash: [5, 5],
 					fill: false,
 					pointRadius: 0,
 					showLine: true
@@ -223,33 +222,6 @@
 					type: 'line' as const,
 					borderColor: 'red',
 					borderWidth: 2,
-					fill: false,
-					pointRadius: 0,
-					showLine: true
-				}
-			];
-		} else if (mode === 'exponential') {
-			lineDatasets = [
-				{
-					label: 'Saturation Cap',
-					data: getSaturationCapExpSaturation(k, L, L2, axisMaxX, axisStepX),
-					type: 'line' as const,
-					borderColor: 'red',
-					borderWidth: 2,
-					fill: false,
-					pointRadius: 0,
-					showLine: true
-				},
-				{
-					label: 'k-Based Saturation Cap',
-					data: [
-						{ x: axisMinX, y: baseCap },
-						{ x: axisMaxX, y: baseCap }
-					],
-					type: 'line' as const,
-					borderColor: 'red',
-					borderWidth: 2,
-					borderDash: [5, 5],
 					fill: false,
 					pointRadius: 0,
 					showLine: true
@@ -504,20 +476,6 @@
 					pointRadius: 0,
 					showLine: true
 				});
-				lineDatasets.push({
-					label: 'k-Based Saturation Cap',
-					data: [
-						{ x: axisMinX, y: base },
-						{ x: axisMaxX, y: base }
-					],
-					type: 'line' as const,
-					borderColor: 'red',
-					borderWidth: 2,
-					borderDash: [5, 5],
-					fill: false,
-					pointRadius: 0,
-					showLine: true
-				});
 			} else if ($saturationMode === 'exponential') {
 				lineDatasets.push({
 					label: 'Saturation Cap',
@@ -525,20 +483,6 @@
 					type: 'line' as const,
 					borderColor: 'red',
 					borderWidth: 2,
-					fill: false,
-					pointRadius: 0,
-					showLine: true
-				});
-				lineDatasets.push({
-					label: 'k-Based Saturation Cap',
-					data: [
-						{ x: axisMinX, y: base },
-						{ x: axisMaxX, y: base }
-					],
-					type: 'line' as const,
-					borderColor: 'red',
-					borderWidth: 2,
-					borderDash: [5, 5],
 					fill: false,
 					pointRadius: 0,
 					showLine: true

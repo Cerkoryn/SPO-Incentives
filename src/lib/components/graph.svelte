@@ -7,7 +7,9 @@
 		pools,
 		getSaturationCapLinear,
 		getSaturationCapExpSaturation,
-		getRewards
+		getRewards,
+		computeRewardScale,
+		type ExtraPoolInput
 	} from '$lib/utils/graphs';
 	import {
 		showCustomPool,
@@ -111,6 +113,21 @@
 		const mode = get(saturationMode);
 		const rMode = get(rewardsMode);
 
+		const extraPools: ExtraPoolInput[] = [];
+		if ($showCustomPool) {
+			const { pledge, stake } = $customPool;
+			if (!isNaN(pledge) && !isNaN(stake) && stake > 0) {
+				extraPools.push({ stake, pledge });
+			}
+		}
+		if ($showCustomPool2) {
+			const { pledge, stake } = $customPool2;
+			if (!isNaN(pledge) && !isNaN(stake) && stake > 0) {
+				extraPools.push({ stake, pledge });
+			}
+		}
+		const { rewardScale, stakeScale } = computeRewardScale(params, maxX, mode, rMode, extraPools);
+
 		let axisMinX = 0;
 		let axisMaxX: number;
 		let axisStepX: number;
@@ -140,7 +157,7 @@
 
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
 			const data = dataPoints.map((dp) => {
-				const roi = getRewards(dp.y, dp.x, params, maxX, mode, rMode);
+				const roi = getRewards(dp.y, dp.x, params, maxX, mode, rMode, rewardScale, stakeScale);
 				return { ...dp, roi, r: getPointRadius(roi) };
 			});
 			return {
@@ -341,6 +358,27 @@
 		const base = (ADA_TOTAL_SUPPLY - ADA_RESERVES) / k;
 		const zoomState = $zoomLevel;
 
+		const extraPools: ExtraPoolInput[] = [];
+		if ($showCustomPool) {
+			const { pledge, stake } = $customPool;
+			if (!isNaN(pledge) && !isNaN(stake) && stake > 0) {
+				extraPools.push({ stake, pledge });
+			}
+		}
+		if ($showCustomPool2) {
+			const { pledge, stake } = $customPool2;
+			if (!isNaN(pledge) && !isNaN(stake) && stake > 0) {
+				extraPools.push({ stake, pledge });
+			}
+		}
+		const { rewardScale, stakeScale } = computeRewardScale(
+			params,
+			maxX,
+			$saturationMode,
+			$rewardsMode,
+			extraPools
+		);
+
 		// Calculate stake totals for k-based saturation cap (all modes)
 		let aboveK = 0;
 		let belowK = 0;
@@ -539,7 +577,16 @@
 		chart.data.datasets.forEach((ds: any) => {
 			if (ds.type === 'bubble') {
 				ds.data = (ds.data as any[]).map((pt: any) => {
-					const roi = getRewards(pt.y, pt.x, params, maxX, $saturationMode, $rewardsMode);
+					const roi = getRewards(
+						pt.y,
+						pt.x,
+						params,
+						maxX,
+						$saturationMode,
+						$rewardsMode,
+						rewardScale,
+						stakeScale
+					);
 					return { ...pt, roi, r: getPointRadius(roi) };
 				});
 			}
@@ -550,7 +597,16 @@
 		if ($showCustomPool) {
 			const { pledge, stake } = $customPool;
 			if (!isNaN(pledge) && !isNaN(stake)) {
-				const roi = getRewards(stake, pledge, params, maxX, $saturationMode, $rewardsMode);
+				const roi = getRewards(
+					stake,
+					pledge,
+					params,
+					maxX,
+					$saturationMode,
+					$rewardsMode,
+					rewardScale,
+					stakeScale
+				);
 				const rVal = getPointRadius(roi);
 				const customData = {
 					x: pledge,
@@ -581,7 +637,16 @@
 		if ($showCustomPool2) {
 			const { pledge, stake } = $customPool2;
 			if (!isNaN(pledge) && !isNaN(stake)) {
-				const roi = getRewards(stake, pledge, params, maxX, $saturationMode, $rewardsMode);
+				const roi = getRewards(
+					stake,
+					pledge,
+					params,
+					maxX,
+					$saturationMode,
+					$rewardsMode,
+					rewardScale,
+					stakeScale
+				);
 				const rVal = getPointRadius(roi);
 				const customData = {
 					x: pledge,

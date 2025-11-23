@@ -159,12 +159,6 @@
 					rel="noopener noreferrer">earncoinpool</a
 				>
 				<a
-					href="https://x.com/KpunToN00b"
-					class="m-0 text-sm text-blue-600 underline"
-					target="_blank"
-					rel="noopener noreferrer">KpunToN00b</a
-				>
-				<a
 					href="https://x.com/Star_Forge_Pool"
 					class="m-0 text-sm text-blue-600 underline"
 					target="_blank"

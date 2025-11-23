@@ -187,9 +187,9 @@
 		label="k:"
 		value={$sliderParams.k}
 		min={1}
-		max={2000}
+		max={10000}
 		step={1}
-		hint="min: 1, max: 2000"
+		hint="min: 1, max: 10000"
 		onChange={(value: number) => sliderParams.update((s: SliderParameters) => ({ ...s, k: value }))}
 	/>
 	<SliderControl

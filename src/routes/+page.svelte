@@ -65,7 +65,7 @@
 			subtext: 'Bubble size represents pool ROI.',
 			subtext2: 'Note that ROI calculations will differ slightly from live data.',
 			legend: [
-				'σ\'  - Pool Stake Eligible for Rewards',
+				"σ'  - Pool Stake Eligible for Rewards",
 				'σ  - Pool Stake',
 				'p  - Pool Pledge',
 				'L  - Pledge Leverage (new)',

@@ -116,6 +116,11 @@
 		{/each}
 	</div>
 	<div class="flex min-w-0 flex-col items-center gap-1 text-center leading-tight">
+		<p
+			class="mb-2 inline-flex items-center rounded-full border border-amber-300 bg-amber-100 px-4 py-1.5 text-xs font-semibold tracking-wide text-amber-900 sm:text-sm"
+		>
+			Stake Snapshot Taken on 5 February, 2026
+		</p>
 		<p class="m-0 text-sm">Brought to you by the community driven SPO Incentives Working Group</p>
 		<p class="m-0 text-sm">Want to join the discussion? Contact one of our community members:</p>
 		<div class="mt-2 grid w-full grid-cols-1 gap-4 md:grid-cols-2">

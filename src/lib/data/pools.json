@@ -19891,42 +19891,42 @@
     "ticker": "CF1",
     "pledge": 76000000,
     "active_stake": 76314124,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool1xmlq3sgssww6kwu8dupgxukzhlk77j40p9c4r3qux3j5z2ysk2c",
     "ticker": "CF2",
     "pledge": 76000000,
     "active_stake": 76301499,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool1l0erdjregched3dj828q93rfa2f4w4p62nr248xshj5huq6zuvp",
     "ticker": "CF3",
     "pledge": 76000000,
     "active_stake": 76301499,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool1n6erydn8x79sa3fmrqmj7mcyqa9em5fppr447j6d9k0xwfl7sc5",
     "ticker": "CF4",
     "pledge": 76000000,
     "active_stake": 76301500,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool1luhm55xxqp0cv7a43rcfrr8m6m74kfe7wdvqdgfzt483x29lr0t",
     "ticker": "CF5",
     "pledge": 73000000,
     "active_stake": 75500025,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool1r2fph82mjhgu955cesn4yejjva4sk7uuh06yhwf8e9ln5djy5h7",
     "ticker": "CF6",
     "pledge": 73000000,
     "active_stake": 75500001,
-    "group": "sSPO"
+    "group": "MPO"
   },
   {
     "pool_id_bech32": "pool1t6xhh2stg5k50sjdzjglp2h0j59vupwv3kur45efvkk7cps5hwq",

@@ -22,7 +22,8 @@
 		zoomLevel,
 		rewardsMode,
 		cip50StakeTotals,
-		kStakeTotals
+		kStakeTotals,
+		adaTotalStaked
 	} from '$lib/stores/store';
 	import {
 		ADA_TOTAL_SUPPLY,
@@ -41,8 +42,14 @@
 		GRAPH_Y_ZOOM_STEP
 	} from '$lib/utils/constants';
 	import { get } from 'svelte/store';
+	import {
+		getEffectivePoolValues,
+		getSaturationTotals,
+		getSnapshotPoolValues
+	} from '$lib/utils/pool-display';
 
 	Chart.register(...registerables);
+	const snapshotStakeTotal = pools.reduce((sum, pool) => sum + pool.active_stake, 0);
 
 	function getPointRadius(roi: number): number {
 		const minROI = 0;
@@ -158,7 +165,17 @@
 		const scatterDatasets = Object.entries(groups).map(([group, dataPoints]) => {
 			const data = dataPoints.map((dp) => {
 				const roi = getRewards(dp.y, dp.x, params, maxX, mode, rMode, rewardScale, stakeScale);
-				return { ...dp, roi, r: getPointRadius(roi) };
+				const effective = getEffectivePoolValues(dp.y, dp.x, stakeScale);
+				return {
+					...dp,
+					rawStake: dp.y,
+					rawPledge: dp.x,
+					x: effective.pledge,
+					y: effective.stake,
+					invalidPledge: dp.x > dp.y,
+					roi,
+					r: getPointRadius(roi)
+				};
 			});
 			return {
 				label: group,
@@ -311,12 +328,13 @@
 						external: externalTooltipHandler,
 						callbacks: {
 							label: function (context: any): string[] {
-								const { ticker, name, x, y, roi } = context.raw as {
+								const { ticker, name, x, y, roi, invalidPledge } = context.raw as {
 									ticker: string;
 									name: string;
 									x: number;
 									y: number;
 									roi: number;
+									invalidPledge: boolean;
 								};
 								const formattedX =
 									typeof x === 'number' ? new Intl.NumberFormat('en-US').format(x) : x;
@@ -329,7 +347,7 @@
 									`Pledge: ${formattedX}`,
 									`ROI: ${formattedROI}%`
 								];
-								if ((name === 'Custom Pool' || name === 'Custom Pool 2') && y < x) {
+								if ((name === 'Custom Pool' || name === 'Custom Pool 2') && invalidPledge) {
 									lines.push('Stake cannot be lower than pledge');
 								}
 								return lines;
@@ -339,7 +357,19 @@
 				}
 			}
 		});
-		enableCustomPoolDrag(chart, canvas);
+		enableCustomPoolDrag(chart, canvas, (stake, pledge, selectedPool) => {
+			if (get(rewardsMode) === 'current') return { stake, pledge };
+			const otherPool = selectedPool === 'Custom Pool' ? get(customPool2) : get(customPool);
+			const otherShown =
+				selectedPool === 'Custom Pool' ? get(showCustomPool2) : get(showCustomPool);
+			const otherStake =
+				otherShown && isFinite(otherPool.stake) && otherPool.stake > 0 ? otherPool.stake : 0;
+			return getSnapshotPoolValues(
+				{ stake, pledge },
+				snapshotStakeTotal + otherStake,
+				get(adaTotalStaked)
+			);
+		});
 	}
 
 	$: if (
@@ -379,83 +409,22 @@
 			extraPools
 		);
 
-		// Calculate stake totals for k-based saturation cap (all modes)
-		let aboveK = 0;
-		let belowK = 0;
+		const effectivePools = [
+			...pools.map((pool) => ({ stake: pool.active_stake, pledge: pool.pledge })),
+			...extraPools
+		].map((pool) => getEffectivePoolValues(pool.stake, pool.pledge, stakeScale));
+		const kTotals = getSaturationTotals(effectivePools, () => base);
+		kStakeTotals.set({ aboveK: kTotals.above, belowK: kTotals.below, excessK: kTotals.excess });
 
-		pools.forEach((pool) => {
-			const stake = pool.active_stake;
-			if (stake > base) {
-				aboveK += stake;
-			} else {
-				belowK += stake;
-			}
-		});
-
-		if ($showCustomPool) {
-			const { pledge, stake } = $customPool;
-			if (!isNaN(pledge) && !isNaN(stake)) {
-				if (stake > base) {
-					aboveK += stake;
-				} else {
-					belowK += stake;
-				}
-			}
-		}
-
-		if ($showCustomPool2) {
-			const { pledge, stake } = $customPool2;
-			if (!isNaN(pledge) && !isNaN(stake)) {
-				if (stake > base) {
-					aboveK += stake;
-				} else {
-					belowK += stake;
-				}
-			}
-		}
-
-		kStakeTotals.set({ aboveK, belowK });
-
-		// Calculate stake totals for cip-50 (L-based, only in cip-50 mode)
 		if ($saturationMode === 'cip-50') {
-			let aboveL = 0;
-			let belowL = 0;
-
-			pools.forEach((pool) => {
-				const stake = pool.active_stake;
-				const pledge = pool.pledge;
-				if (stake > L * pledge) {
-					aboveL += stake;
-				} else {
-					belowL += stake;
-				}
+			const lTotals = getSaturationTotals(effectivePools, (pool) => Math.max(L, 0.1) * pool.pledge);
+			cip50StakeTotals.set({
+				aboveL: lTotals.above,
+				belowL: lTotals.below,
+				excessL: lTotals.excess
 			});
-
-			if ($showCustomPool) {
-				const { pledge, stake } = $customPool;
-				if (!isNaN(pledge) && !isNaN(stake)) {
-					if (stake > L * pledge) {
-						aboveL += stake;
-					} else {
-						belowL += stake;
-					}
-				}
-			}
-
-			if ($showCustomPool2) {
-				const { pledge, stake } = $customPool2;
-				if (!isNaN(pledge) && !isNaN(stake)) {
-					if (stake > L * pledge) {
-						aboveL += stake;
-					} else {
-						belowL += stake;
-					}
-				}
-			}
-
-			cip50StakeTotals.set({ aboveL, belowL });
 		} else {
-			cip50StakeTotals.set({ aboveL: 0, belowL: 0 });
+			cip50StakeTotals.set({ aboveL: 0, belowL: 0, excessL: 0 });
 		}
 
 		let axisMinX = 0;
@@ -578,8 +547,8 @@
 			if (ds.type === 'bubble') {
 				ds.data = (ds.data as any[]).map((pt: any) => {
 					const roi = getRewards(
-						pt.y,
-						pt.x,
+						pt.rawStake,
+						pt.rawPledge,
 						params,
 						maxX,
 						$saturationMode,
@@ -587,7 +556,8 @@
 						rewardScale,
 						stakeScale
 					);
-					return { ...pt, roi, r: getPointRadius(roi) };
+					const effective = getEffectivePoolValues(pt.rawStake, pt.rawPledge, stakeScale);
+					return { ...pt, x: effective.pledge, y: effective.stake, roi, r: getPointRadius(roi) };
 				});
 			}
 		});
@@ -608,9 +578,13 @@
 					stakeScale
 				);
 				const rVal = getPointRadius(roi);
+				const effective = getEffectivePoolValues(stake, pledge, stakeScale);
 				const customData = {
-					x: pledge,
-					y: stake,
+					x: effective.pledge,
+					y: effective.stake,
+					rawStake: stake,
+					rawPledge: pledge,
+					invalidPledge: pledge > stake,
 					ticker: 'CUSTOM',
 					name: 'Custom Pool',
 					group: 'Custom Pool',
@@ -648,9 +622,13 @@
 					stakeScale
 				);
 				const rVal = getPointRadius(roi);
+				const effective = getEffectivePoolValues(stake, pledge, stakeScale);
 				const customData = {
-					x: pledge,
-					y: stake,
+					x: effective.pledge,
+					y: effective.stake,
+					rawStake: stake,
+					rawPledge: pledge,
+					invalidPledge: pledge > stake,
 					ticker: 'CUSTOM2',
 					name: 'Custom Pool 2',
 					group: 'Custom Pool 2',

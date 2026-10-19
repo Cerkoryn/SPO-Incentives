@@ -4,6 +4,7 @@ import poolData from '../data/pools.json';
 import { ADA_CIRCULATING, ADA_RESERVES } from './constants';
 import { adaTotalStaked } from '$lib/stores/store';
 import { get } from 'svelte/store';
+import { getEffectivePoolValues } from './pool-display';
 import type { Env } from '$lib/utils/types';
 import type { SaturationMode, RewardsMode, SliderParameters } from '$lib/stores/store';
 
@@ -165,15 +166,21 @@ export function computeRewardScale(
 
 	let sumF = 0;
 	for (const pool of pools) {
-		const scaledStake = pool.active_stake * stakeScale;
-		const scaledPledge = Math.min(pool.pledge * stakeScale, scaledStake);
+		const { stake: scaledStake, pledge: scaledPledge } = getEffectivePoolValues(
+			pool.active_stake,
+			pool.pledge,
+			stakeScale
+		);
 		sumF += calculatePoolFactor(scaledStake, scaledPledge, params, maxX, saturationMode, supply);
 	}
 
 	for (const extra of extraPools) {
 		if (!isFinite(extra.stake) || extra.stake <= 0) continue;
-		const scaledStake = extra.stake * stakeScale;
-		const scaledPledge = Math.min(extra.pledge * stakeScale, scaledStake);
+		const { stake: scaledStake, pledge: scaledPledge } = getEffectivePoolValues(
+			extra.stake,
+			extra.pledge,
+			stakeScale
+		);
 		sumF += calculatePoolFactor(scaledStake, scaledPledge, params, maxX, saturationMode, supply);
 	}
 
@@ -199,9 +206,11 @@ export function getRewards(
 	const { a0, rho, tau } = params;
 	const supply = rewardsMode === 'current' ? ADA_CIRCULATING : get(adaTotalStaked);
 
-	const scaledStake = rewardsMode === 'current' ? poolStake : poolStake * stakeScale;
-	const scaledPledgeRaw = rewardsMode === 'current' ? poolPledge : poolPledge * stakeScale;
-	const scaledPledge = Math.min(scaledPledgeRaw, scaledStake);
+	const { stake: scaledStake, pledge: scaledPledge } = getEffectivePoolValues(
+		poolStake,
+		poolPledge,
+		rewardsMode === 'current' ? 1 : stakeScale
+	);
 
 	const f = calculatePoolFactor(scaledStake, scaledPledge, params, maxX, saturationMode, supply);
 

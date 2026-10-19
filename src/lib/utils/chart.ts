@@ -56,7 +56,15 @@ export function externalTooltipHandler({
 	tooltipEl.style.top = y + 'px';
 }
 
-export function enableCustomPoolDrag(chart: Chart, canvas: HTMLCanvasElement) {
+export function enableCustomPoolDrag(
+	chart: Chart,
+	canvas: HTMLCanvasElement,
+	toSnapshotValues: (
+		stake: number,
+		pledge: number,
+		pool: 'Custom Pool' | 'Custom Pool 2'
+	) => { stake: number; pledge: number }
+) {
 	let dragging = false;
 	let dsIdx = 0;
 	let ptIdx = 0;
@@ -91,11 +99,15 @@ export function enableCustomPoolDrag(chart: Chart, canvas: HTMLCanvasElement) {
 		pt.x = xVal;
 		pt.y = yVal;
 
-		// Update the appropriate store based on which pool is being dragged
+		// The chart uses effective values; input stores retain snapshot values.
+		const input = toSnapshotValues(yVal, xVal, selectedPool);
+		pt.rawStake = input.stake;
+		pt.rawPledge = input.pledge;
+		pt.invalidPledge = input.pledge > input.stake;
 		if (selectedPool === 'Custom Pool') {
-			customPool.set({ pledge: xVal, stake: yVal });
+			customPool.set(input);
 		} else if (selectedPool === 'Custom Pool 2') {
-			customPool2.set({ pledge: xVal, stake: yVal });
+			customPool2.set(input);
 		}
 
 		chart.update('none');

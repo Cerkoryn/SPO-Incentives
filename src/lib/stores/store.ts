@@ -28,11 +28,13 @@ export interface CustomPool {
 export interface Cip50StakeTotals {
 	aboveL: number;
 	belowL: number;
+	excessL: number;
 }
 
 export interface KStakeTotals {
 	aboveK: number;
 	belowK: number;
+	excessK: number;
 }
 
 export type SaturationMode = 'current' | 'linear' | 'exponential' | 'cip-50' | 'cip-7';
@@ -66,8 +68,8 @@ export const customPool2 = writable<CustomPool>({ pledge: 0, stake: 0 });
 export const saturationMode = writable<SaturationMode>('current');
 export const zoomLevel = writable<ZoomLevel>('off');
 export const rewardsMode = writable<RewardsMode>('current');
-export const cip50StakeTotals = writable<Cip50StakeTotals>({ aboveL: 0, belowL: 0 });
-export const kStakeTotals = writable<KStakeTotals>({ aboveK: 0, belowK: 0 });
+export const cip50StakeTotals = writable<Cip50StakeTotals>({ aboveL: 0, belowL: 0, excessL: 0 });
+export const kStakeTotals = writable<KStakeTotals>({ aboveK: 0, belowK: 0, excessK: 0 });
 
 export const adaTotalStaked = derived(
 	sliderParams,

@@ -257,19 +257,27 @@
 
 <div class="mt-4 flex flex-col gap-2">
 	<div class="flex items-center gap-2">
-		<span>Stake Above k-Cap (Solid Red):</span>
-		<span class="font-mono">{formatNumber($kStakeTotals.aboveK)} ₳</span>
+		<span>Stake in pools above k-cap:</span>
+		<span class="font-mono whitespace-nowrap">{formatNumber($kStakeTotals.aboveK)} ₳</span>
 		<span
 			class="flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
-			title="Total stake for pools where stake > (ADA_CIRCULATING / k)">?</span
+			title="Total adjusted stake in pools above the global k-cap.">?</span
 		>
 	</div>
 	<div class="flex items-center gap-2">
-		<span>Stake Below k-Cap (Solid Red):</span>
-		<span class="font-mono">{formatNumber($kStakeTotals.belowK)} ₳</span>
+		<span>Stake in pools at or below k-cap:</span>
+		<span class="font-mono whitespace-nowrap">{formatNumber($kStakeTotals.belowK)} ₳</span>
 		<span
 			class="flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
-			title="Total stake for pools where stake <= (ADA_CIRCULATING / k)">?</span
+			title="Total adjusted stake in pools at or below the global k-cap.">?</span
+		>
+	</div>
+	<div class="flex items-center gap-2">
+		<span>Excess stake above k-cap:</span>
+		<span class="font-mono whitespace-nowrap">{formatNumber($kStakeTotals.excessK)} ₳</span>
+		<span
+			class="flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+			title="Only stake beyond the global k-cap, excluding each pool's below-cap portion.">?</span
 		>
 	</div>
 </div>
@@ -277,19 +285,28 @@
 {#if $saturationMode === 'cip-50'}
 	<div class="mt-4 flex flex-col gap-2">
 		<div class="flex items-center gap-2">
-			<span>Stake Above L-Cap (Dotted Red):</span>
-			<span class="font-mono">{formatNumber($cip50StakeTotals.aboveL)} ₳</span>
+			<span>Stake in pools above L-cap:</span>
+			<span class="font-mono whitespace-nowrap">{formatNumber($cip50StakeTotals.aboveL)} ₳</span>
 			<span
 				class="flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
-				title="Total stake for pools where stake > L * pledge">?</span
+				title="Total adjusted stake in pools above the L leverage cap.">?</span
 			>
 		</div>
 		<div class="flex items-center gap-2">
-			<span>Stake Below L-Cap (Dotted Red):</span>
-			<span class="font-mono">{formatNumber($cip50StakeTotals.belowL)} ₳</span>
+			<span>Stake in pools at or below L-cap:</span>
+			<span class="font-mono whitespace-nowrap">{formatNumber($cip50StakeTotals.belowL)} ₳</span>
 			<span
 				class="flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
-				title="Total stake for pools where stake <= L * pledge">?</span
+				title="Total adjusted stake in pools at or below the L leverage cap.">?</span
+			>
+		</div>
+		<div class="flex items-center gap-2">
+			<span>Excess stake above L-cap:</span>
+			<span class="font-mono whitespace-nowrap">{formatNumber($cip50StakeTotals.excessL)} ₳</span>
+			<span
+				class="flex inline-block h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-center text-xs font-bold text-white"
+				title="Only stake beyond each pool's L leverage cap, excluding its below-cap portion."
+				>?</span
 			>
 		</div>
 	</div>
@@ -345,6 +362,13 @@
 		{/if}
 	</div>
 </div>
+
+{#if ($showCustomPool || $showCustomPool2) && $rewardsMode !== 'current'}
+	<p class="mt-2 text-sm text-gray-600">
+		Custom pool inputs use snapshot amounts. The chart shows stake and pledge adjusted to the
+		selected Staked Ratio.
+	</p>
+{/if}
 
 {#if $showCustomPool}
 	<div class="mt-4 flex flex-col gap-2">
